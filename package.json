@@ -31,7 +31,6 @@
     "node-fetch": "^3.0.0",
     "npm-safe-install": "^1.1.0",
     "prop-types": "^15.7.2",
-    "react4xp-regions": "1.1.0",
     "rimraf": "^3.0.2",
     "stats-webpack-plugin": "^0.7.0"
   },
@@ -66,7 +65,6 @@
     "react4xp.gradle",
     "react4xp.properties",
     "README.md",
-    "README-mono.md",
     "updaters.gradle"
   ],
   "homepage": "https://github.com/enonic/enonic-react4xp#readme",
