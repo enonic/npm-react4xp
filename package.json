@@ -115,5 +115,5 @@
     "test:externals:webpack": "NODE_PATH=. webpack --config ./externals/webpack.config.js --env REACT4XP_CONFIG_FILE=/test/externals/react4xpConstants.json --env BUILD_R4X=$(pwd)/build --env ROOT=$(pwd)/../.. && echo \"\" && echo \"--> build/\" && ls build && echo \"-------------- react4xp-runtime-externals builds. ADD SOME ACTUAL TESTS PLZ?\"",
     "test:nashornPolyfills:constants": "webpack --config nashornPolyfills/webpack.config.js --env REACT4XP_CONFIG_FILE=test/nashornPolyfills/output/testConfig.json && node test/nashornPolyfills/output/testPolyfilled.js"
   },
-  "version": "3.0.0"
+  "version": "3.0.1"
 }
