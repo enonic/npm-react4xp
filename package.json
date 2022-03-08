@@ -86,7 +86,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:enonic/react4xp-npm.git"
+    "url": "git+ssh://git@github.com:enonic/enonic-react4xp.git"
   },
   "scripts": {
     "build": "npm run build:constants && npm run build:components",
