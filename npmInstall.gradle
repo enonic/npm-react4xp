@@ -6,7 +6,7 @@
 
 
 // These are not supplied from react4xp, they are just names used for buildtime housekeeping:
-def markerName = "node_modules/react4xp/npmInstalled.marker"
+def markerName = "node_modules/@enonic/react4xp/npmInstalled.marker"
 
 if (project.ext.react4xp.NPMLINKED == true) {
   task nsiInstall(type: NodeTask) {
