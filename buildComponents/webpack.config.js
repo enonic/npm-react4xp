@@ -463,9 +463,9 @@ module.exports = (env = {}) => {
     module: {
       rules: [
         {
-          // Babel for building static assets. Excluding node_modules BUT ALLOWING node_modules/react4xp-regions
+          // Babel for building static assets. Excluding node_modules BUT ALLOWING node_modules/@enonic/react-components
           test: /\.((jsx?)|(es6))$/,
-          exclude: /(?=.*[\\/]node_modules[\\/](?!react4xp-regions))^(\w+)$/,
+          exclude: /(?=.*[\\/]node_modules[\\/](?!@enonic[\\/]react-components))^(\w+)$/,
           use: {
             loader: "babel-loader",
             options: {

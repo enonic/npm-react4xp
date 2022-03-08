@@ -6,7 +6,7 @@ Supplies a webpack setup that:
 
 - Locates React JSX source files in the folder structure:
   - under `src/main/resources/site/`,
-  - under `node_modules/react4xp-regions` (see [react4xp-regions](https://www.npmjs.com/package/react4xp-regions)),
+  - under `node_modules/@enonic/react-components` (see [react4xp-regions](https://www.npmjs.com/package/@enonic/react-components)),
   - AND as defined by `entryDirs` and `chunkDirs` in the root project's file `react4xp.properties`,
 - Compiles the primary JSX source files (_entries_) and their imported dependencies (_chunks_) into JS runtime assets:
   - `build/resources/main/assets/react4xp/*`
@@ -112,4 +112,3 @@ These are the same as the camel-case properties under react4xp.properties above:
 - `CHUNK_DIRS`: see `chunkDirs`
 - `BUILD_ENV`: see `buildEnv`
 - `VERBOSE`: see `verbose`
-
