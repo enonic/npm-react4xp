@@ -1,0 +1,35 @@
+{
+  "extends": [
+    "airbnb-base",
+    "prettier"
+  ],
+  "globals": {
+    Java: true,
+    window: true
+  },
+  "plugins": [
+    "json",
+    "prettier"
+  ],
+  "rules": {
+    "func-names": [
+      "off",
+      "as-needed"
+    ],
+    "no-plusplus": [
+      "off"
+    ],
+    "prefer-arrow-callback": [
+      "off"
+    ],
+    "prefer-rest-params": [
+      "off"
+    ],
+    "prettier/prettier": [
+      "off"
+    ],
+    "strict": [
+      "off"
+    ]
+  }
+}

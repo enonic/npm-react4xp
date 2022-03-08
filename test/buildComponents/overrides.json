@@ -1,0 +1,7 @@
+{
+  "verbose": true,
+  "overwriteConstantsFile": true,
+  "outputFileName": "test/buildComponents/build/constants.json",
+  "SRC_R4X": "test/buildComponents/main/resources/react4xp",
+  "SRC_SITE": "test/buildComponents/main/resources/site"
+}

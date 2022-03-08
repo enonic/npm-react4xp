@@ -1,0 +1,9 @@
+{
+  "BUILD_ENV": "development",
+  "outputFileName": "test/nashornPolyfills/output/testConfig.json",
+  "NASHORNPOLYFILLS_SOURCE": "test/nashornPolyfills/testPolyfiller.es6",
+  "NASHORNPOLYFILLS_FILENAME": "testPolyfilled",
+  "SUBFOLDER_BUILD_MAIN": "test/nashornPolyfills/output",
+  "R4X_TARGETSUBDIR": "",
+  "overwriteConstantsFile": true
+}

@@ -1,0 +1,11 @@
+{
+  "BUILD_ENV": "development",
+  "BUILD_R4X": "REPLACE_ME_WITH_PROJECT_ROOT_DIR/build/resources/main/react4xp_testcustombuildtarget",
+  "EXTERNALS": {
+    "react": "React",
+    "react-dom": "ReactDOM",
+    "react-dom/server": "ReactDOMServer"
+  },
+  "CHUNK_CONTENTHASH": 8,
+  "EXTERNALS_CHUNKS_FILENAME": "chunks.externals.json"
+}
