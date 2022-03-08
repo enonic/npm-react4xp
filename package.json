@@ -65,6 +65,8 @@
     "npmInstall.gradle",
     "react4xp.gradle",
     "react4xp.properties",
+    "README.md",
+    "README-mono.md",
     "updaters.gradle"
   ],
   "homepage": "https://github.com/enonic/enonic-react4xp#readme",
