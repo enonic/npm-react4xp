@@ -130,15 +130,26 @@ module.exports = (env) => {
       rules: [
         {
           test: /\.es6$/,
-          exclude: /node_modules/,
+          //exclude: /node_modules/,
+          exclude: [ // It takes time to transpile, if you know they don't need transpilation to run in Enonic you may list them here:
+    				/node_modules[\\/]core-js/, // will cause errors if they are transpiled by Babel
+    				/node_modules[\\/]webpack[\\/]buildin/ // will cause errors if they are transpiled by Babel
+    			],
           use: {
             loader: "babel-loader",
             options: {
+              babelrc: false,
+              comments: false,
               compact: BUILD_ENV !== "development",
-              presets: ["@babel/preset-react", "@babel/preset-env"],
+              minified: BUILD_ENV !== "development",
+              presets: [
+                "@babel/preset-react",
+                "@babel/preset-env"
+              ],
               plugins: [
-                "@babel/plugin-transform-arrow-functions",
                 "@babel/plugin-proposal-object-rest-spread",
+                "@babel/plugin-transform-arrow-functions",
+                '@babel/plugin-transform-block-scoping' // transpile 'const' and 'let to 'var'
               ],
             },
           },
