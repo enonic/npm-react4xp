@@ -81,19 +81,46 @@ module.exports = (env) => {
         NASHORNPOLYFILLS_SOURCE
       ),
     },
-
+    optimization: {
+  		minimize: BUILD_ENV !== "development"
+  	},
     output: {
       path: BUILD_R4X,
       filename: "[name].js",
       environment: {
         arrowFunction: false,
         bigIntLiteral: false,
-        const: false,
+
+        // Whether the environment supports const and let for variable declarations.
+        const: false, // Not enough to transpile 'const' and 'let' to 'var'
+
         destructuring: false,
         dynamicImport: false,
         forOf: false,
         module: false,
+        optionalChaining: true,
+        templateLiteral: false
       },
+
+      // In order for 'const' and 'let' to be transpiled to 'var',
+      // library or libraryTarget must be set!
+
+      //libraryTarget: 'commonjs' // 7963B
+      //libraryTarget: 'commonjs-module' // 7870B // ReferenceError: "module" is not defined
+      //libraryTarget: 'commonjs-static' // 7907B
+      //libraryTarget: 'commonjs2' // 7870B // ReferenceError: "module" is not defined
+
+      library: {  // 7893B Trying out what is used in buildComponents, also transpiles 'const' and 'let' to 'var'
+        name: "[name]",
+        type: "var",
+      }
+
+      // To make UMD build available on both browsers and Node.js, set output.globalObject option to 'this'.
+      /*libraryTarget: 'umd', // 8111B
+      globalObject: 'this'*/
+
+      /*libraryTarget: 'umd2', // 8111B
+      globalObject: 'this'*/
     },
 
     resolve: {
