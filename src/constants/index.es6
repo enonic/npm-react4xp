@@ -152,6 +152,13 @@ const buildConstants = (rootDir, overrides) => {
     SSR_MAX_THREADS: null,
   };
 
+  if (
+    overrides.BUILD_ENV
+    && overrides.BUILD_ENV === 'development'
+  ) {
+    overrides.CHUNK_CONTENTHASH = null;
+  }
+
   const constants = Object.assign(defaultConstants, overrides);
 
   // -------------------------- Derived values from the values above.
