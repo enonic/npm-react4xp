@@ -3,6 +3,7 @@
 **/build/
 **/test/output/
 **/*.log
+/dist/
 
 # Node modules folders
 **/node_modules/
