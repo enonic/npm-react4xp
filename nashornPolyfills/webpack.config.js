@@ -2,6 +2,8 @@
 
 const path = require("path");
 const { makeVerboseLogger, cleanAnyDoublequotes } = require("../util");
+const {FarmHash} = require('../dist/FarmHash');
+
 
 module.exports = (env) => {
   env = env || {}; // eslint-disable-line no-param-reassign
@@ -85,8 +87,10 @@ module.exports = (env) => {
   		minimize: BUILD_ENV !== "development"
   	},
     output: {
+      hashFunction: FarmHash,
       path: BUILD_R4X,
       filename: "[name].js",
+      //filename: `[name].[fullhash].js`, // TODO
       environment: {
         arrowFunction: false,
         bigIntLiteral: false,

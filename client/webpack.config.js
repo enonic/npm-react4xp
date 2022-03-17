@@ -9,6 +9,7 @@ const {makeVerboseLogger, cleanAnyDoublequotes} = require("../util");
 
 const Chunks2json = require('chunks-2-json-webpack-plugin');
 const webpack = require('webpack');
+const {FarmHash} = require('../dist/FarmHash');
 
 
 module.exports = env => {
@@ -51,7 +52,9 @@ module.exports = env => {
     "[name].js" :
     isNaN(CHUNK_CONTENTHASH) ?
       CHUNK_CONTENTHASH :
-      `[name].[contenthash:${parseInt(CHUNK_CONTENTHASH)}].js`;
+      //`[name].[contenthash:${parseInt(CHUNK_CONTENTHASH)}].js`;
+      //`[name].[contenthash].js`;
+      `[name].[fullhash].js`;
 
   const outputConfig = {
     mode: BUILD_ENV,
@@ -61,6 +64,7 @@ module.exports = env => {
     },
 
     output: {
+      hashFunction: FarmHash,
       path: buildR4X,  // <-- Sets the base url for plugins and other target dirs.
       filename: chunkFileName,
       library: {
