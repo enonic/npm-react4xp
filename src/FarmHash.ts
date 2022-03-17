@@ -30,7 +30,7 @@ export class FarmHash implements Hash {
     }
     if (encoding) {
       this._digest = fingerprint64(this._data);
-      console.debug('FarmHash.digest() encoding:%s digest:%s', encoding, this._digest);
+      //console.debug('FarmHash.digest() encoding:%s digest:%s', encoding, this._digest);
       return this._digest;
     } else {
       this._digest = 'digest previously called without encoding';
