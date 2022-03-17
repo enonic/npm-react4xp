@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "module": "commonjs",
+		"moduleResolution": "node",
+    "outDir": "dist",
+    "paths": {
+			"@enonic/js-utils/*": ["./node_modules/@enonic/js-utils/src/*"]
+		},
+    "rootDir": "src",
+    "target": "es3",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "types": [
+      "node"
+    ]
+  }
+}

@@ -33,6 +33,7 @@ const path = require("path");
 const fs = require("fs");
 
 const Chunks2json = require("chunks-2-json-webpack-plugin");
+const {FarmHash} = require('../dist/FarmHash');
 
 const { cleanAnyDoublequotes } = require("../util");
 
@@ -154,10 +155,12 @@ module.exports = (env = {}) => {
   } else if (typeof CHUNK_CONTENTHASH === "string") {
     chunkFileName = CHUNK_CONTENTHASH;
   } else {
-    chunkFileName = `[name].[contenthash:${parseInt(
+    /*chunkFileName = `[name].[contenthash:${parseInt(
       CHUNK_CONTENTHASH,
       10
-    )}].js`;
+    )}].js`;*/
+    //chunkFileName = `[name].[contenthash].js`;
+    chunkFileName = `[name].[fullhash].js`;
   }
 
   return {
@@ -167,6 +170,7 @@ module.exports = (env = {}) => {
     entry,
 
     output: {
+      hashFunction: FarmHash,
       path: BUILD_R4X, // <-- Sets the base url for plugins and other target dirs.
       filename: chunkFileName,
       environment: {
