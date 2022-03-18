@@ -9,7 +9,8 @@ const {makeVerboseLogger, cleanAnyDoublequotes} = require("../util");
 
 const Chunks2json = require('chunks-2-json-webpack-plugin');
 const webpack = require('webpack');
-const {FarmHash} = require('../dist/FarmHash');
+//const {FarmHash} = require('../dist/FarmHash');
+//const {h64: xxhash64} = require('xxhashjs');
 
 
 module.exports = env => {
@@ -53,8 +54,8 @@ module.exports = env => {
     isNaN(CHUNK_CONTENTHASH) ?
       CHUNK_CONTENTHASH :
       //`[name].[contenthash:${parseInt(CHUNK_CONTENTHASH)}].js`;
-      //`[name].[contenthash].js`;
-      `[name].[fullhash].js`;
+      `[name].[contenthash].js`;
+      //`[name].[fullhash].js`;
 
   const outputConfig = {
     mode: BUILD_ENV,
@@ -63,8 +64,13 @@ module.exports = env => {
       'react4xpClient': path.join(__dirname, 'react4xpClient.es6'),
     },
 
+    /*experiments: {
+      futureDefaults: true
+    },*/
+
     output: {
-      hashFunction: FarmHash,
+      //hashFunction: FarmHash,
+      //hashFunction: xxhash64,
       path: buildR4X,  // <-- Sets the base url for plugins and other target dirs.
       filename: chunkFileName,
       library: {

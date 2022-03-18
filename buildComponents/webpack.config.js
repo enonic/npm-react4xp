@@ -5,7 +5,8 @@ const path = require("path");
 const fs = require("fs");
 const { makeVerboseLogger, cleanAnyDoublequotes } = require("../util");
 const React4xpEntriesAndChunks = require("./entriesandchunks");
-const {FarmHash} = require('../dist/FarmHash');
+//const {FarmHash} = require('../dist/FarmHash');
+//const {h64: xxhash64} = require('xxhashjs');
 
 
 // Turns a comma-separated list of subdirectories below the root React4xp source folder (SRC_R4X, usually .../resources/react4xp/)
@@ -428,8 +429,8 @@ module.exports = (env = {}) => {
       CHUNK_CONTENTHASH,
       10
     )}].js`;*/
-    //chunkFileName = `[name].[contenthash].js`;
-    chunkFileName = `[name].[fullhash].js`;
+    chunkFileName = `[name].[contenthash].js`;
+    //chunkFileName = `[name].[fullhash].js`;
   }
 
   const config = {
@@ -437,8 +438,13 @@ module.exports = (env = {}) => {
 
     entry: entries,
 
+    /*experiments: {
+      futureDefaults: true
+    },*/
+
     output: {
-      hashFunction: FarmHash,
+      //hashFunction: FarmHash,
+      //hashFunction: xxhash64,
       path: BUILD_R4X, // <-- Sets the base url for plugins and other target dirs. Note the use of {{assetUrl}} in index.html (or index.ejs).
       //filename: (pathdata) => (pathdata.chunk || {}).chunkReason ? chunkFileName : "[name].js", // <-- Content-hash file names of dependency chunks but not entry components
       filename: chunkFileName,
