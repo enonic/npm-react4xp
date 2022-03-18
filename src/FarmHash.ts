@@ -7,7 +7,26 @@ import type {
 
 import {fingerprint64} from 'farmhash';
 import {isSet} from './isSet';
+//import {toStr} from './toStr';
 
+
+const changeEndianness = (string :string) => {
+  //console.debug('changeEndianness() string:%s', string);
+  const result = [];
+  let len = string.length - 2;
+  while (len >= 0) {
+    //console.debug('changeEndianness() string:%s len:%s', string, len);
+    result.push(string.substr(len, 2)); // shortest:14 longest:16
+    //console.debug('changeEndianness() string:%s len:%s result:%s', string, len, toStr(result));
+    //result.push(string.substring(len, len+2)); // // shortest:56 longest:72
+    len -= 2;
+  }
+  //console.debug('changeEndianness() string:%s len:%s result:%s', string, len, toStr(result));
+  return result.join('');
+}
+
+let shortest = 1000;
+let longest = 0;
 
 export class FarmHash implements Hash {
   _data :string|Buffer;
@@ -29,8 +48,21 @@ export class FarmHash implements Hash {
       throw new Error(`FarmHash.digest() digest already called! digest:${this._digest}`);
     }
     if (encoding) {
-      this._digest = fingerprint64(this._data);
-      //console.debug('FarmHash.digest() encoding:%s digest:%s', encoding, this._digest);
+      //this._digest = fingerprint64(this._data); // shortest:18 longest:20
+      this._digest = changeEndianness(BigInt(fingerprint64(this._data)).toString(16)); // shortest:14 longest:16
+      //this._digest = BigInt(fingerprint64(this._data)).toString(16); // shortest:14 longest:16
+
+      //this._digest = parseInt(fingerprint64(this._data)).toString(16); // shortest:15 longest:16
+      //this._digest = parseInt(fingerprint64(this._data), 10).toString(16); // same
+      //this._digest = BigInt(changeEndianness(fingerprint64(this._data))).toString(16); // shortest:14 longest:17
+
+      if (this._digest.length < shortest) {
+        shortest = this._digest.length;
+      } else if (this._digest.length > longest) {
+        longest = this._digest.length;
+      }
+      console.debug('FarmHash.digest() encoding:%s digest:%s length:%s shortest:%s longest:%s', encoding, this._digest, this._digest.length, shortest, longest);
+
       return this._digest;
     } else {
       this._digest = 'digest previously called without encoding';
