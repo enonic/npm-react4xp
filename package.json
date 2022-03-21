@@ -55,11 +55,14 @@
     "constants/index.js",
     "constants/README.md",
     "dist/constants.js",
+    "dist/index.js",
     "externals/README.md",
     "externals/webpack.config.js",
     "nashornPolyfills/nashornPolyfills.es6",
     "nashornPolyfills/README.md",
     "nashornPolyfills/webpack.config.js",
+    "src/constants.ts",
+    "src/index.ts",
     "util/index.js",
     "LICENSE",
     "npmInstall.gradle",
@@ -76,7 +79,7 @@
     "React"
   ],
   "license": "Apache-2.0",
-  "main": "react4xp.gradle",
+  "main": "dist/index.js",
   "name": "@enonic/react4xp",
   "peerDependencies": {
     "@babel/plugin-proposal-class-properties": "^7",
