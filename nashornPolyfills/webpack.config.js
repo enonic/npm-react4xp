@@ -2,8 +2,6 @@
 
 const path = require("path");
 const { makeVerboseLogger, cleanAnyDoublequotes } = require("../util");
-//const {FarmHash} = require('../dist/FarmHash');
-//const {h64: xxhash64} = require('xxhashjs');
 
 
 module.exports = (env) => {
@@ -85,16 +83,10 @@ module.exports = (env) => {
       ),
     },
 
-    /*experiments: {
-      futureDefaults: true
-    },*/
-
     optimization: {
   		minimize: BUILD_ENV !== "development"
   	},
     output: {
-      //hashFunction: FarmHash,
-      //hashFunction: xxhash64,
       path: BUILD_R4X,
       filename: "[name].js",
       //filename: `[name].[fullhash].js`, // TODO

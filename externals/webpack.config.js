@@ -33,8 +33,6 @@ const path = require("path");
 const fs = require("fs");
 
 const Chunks2json = require("chunks-2-json-webpack-plugin");
-//const {FarmHash} = require('../dist/FarmHash');
-//const {h64: xxhash64} = require('xxhashjs');
 
 const { cleanAnyDoublequotes } = require("../util");
 
@@ -170,13 +168,7 @@ module.exports = (env = {}) => {
 
     entry,
 
-    /*experiments: {
-      futureDefaults: true
-    },*/
-
     output: {
-      //hashFunction: FarmHash,
-      //hashFunction: xxhash64,
       path: BUILD_R4X, // <-- Sets the base url for plugins and other target dirs.
       filename: chunkFileName,
       environment: {
