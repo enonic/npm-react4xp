@@ -13,10 +13,9 @@ const STANDARD_OUTPUT_FILENAME = "react4xp_constants.json";
  *  @param rootDir The project root.
  *  @param overrides An object where you can insert any of these values to control them in the output field:
  *      {
- *          BUILD_ENV, LIBRARY_NAME, R4X_HOME, SRC_MAIN, SITE_SUBFOLDER, SUBFOLDER_BUILD_MAIN,
+ *          BUILD_ENV, R4X_HOME, SRC_MAIN, SITE_SUBFOLDER, SUBFOLDER_BUILD_MAIN,
  *          EXTERNALS, BUILD_MAIN, R4X_TARGETSUBDIR, SRC_R4X, BUILD_R4X, RELATIVE_BUILD_R4X, SRC_SITE,
  *          NASHORNPOLYFILLS_SOURCE, NASHORNPOLYFILLS_FILENAME,
- *          CLIENT_CHUNKS_FILENAME, EXTERNALS_CHUNKS_FILENAME, COMPONENT_CHUNKS_FILENAME,
  *          SSR_LAZYLOAD, SSR_ENGINE_SETTINGS
  *      }
  *  Overrides can also have a "verbose" parameter, which will cause logging of the values if true.
@@ -29,13 +28,10 @@ const STANDARD_OUTPUT_FILENAME = "react4xp_constants.json";
  *  @returns Only the necessary fields are returned:
  *      {
         BUILD_ENV,
-        LIBRARY_NAME,
         R4X_HOME, SITE_SUBFOLDER, SRC_SITE,
         R4X_TARGETSUBDIR, SRC_R4X,
         RELATIVE_BUILD_R4X, BUILD_MAIN, BUILD_R4X,
-        CHUNK_CONTENTHASH,
         NASHORNPOLYFILLS_SOURCE, NASHORNPOLYFILLS_FILENAME,
-        CLIENT_CHUNKS_FILENAME, EXTERNALS_CHUNKS_FILENAME, COMPONENT_CHUNKS_FILENAME, ENTRIES_FILENAME,
         EXTERNALS,
         SSR_LAZYLOAD, SSR_ENGINE_SETTINGS, SSR_MAX_THREADS,
         recommended,
@@ -101,29 +97,17 @@ const buildConstants = (rootDir, overrides) => {
   const defaultConstants = {
     BUILD_ENV: 'production',
 
-    LIBRARY_NAME: 'React4xp',
-
     R4X_HOME: 'react4xp',
     R4X_TARGETSUBDIR: 'assets/react4xp',
 
-    SRC_MAIN: path.join(rootDir, 'src', 'main', 'resources'),        // <project>/src/main/resources
+    SRC_MAIN: path.join(rootDir, 'src', 'main', 'resources'), // <project>/src/main/resources
 
     SITE_SUBFOLDER: 'site',
-    SUBFOLDER_BUILD_MAIN: path.join('build', 'resources', 'main'),      // build/resources/main
+    SUBFOLDER_BUILD_MAIN: path.join('build', 'resources', 'main'), // build/resources/main
 
     // These are names for files used for summarizing dynamic outputs from different build steps for use by the runtime
     NASHORNPOLYFILLS_FILENAME: "nashornPolyfills",
-    CLIENT_CHUNKS_FILENAME: "chunks.client.json",
-    EXTERNALS_CHUNKS_FILENAME: "chunks.externals.json",
-    ENTRIES_FILENAME: "entries.json",
-    COMPONENT_STATS_FILENAME: "stats.components.json",
-
-    // Length of the content hash in the dependency chunk filenames.
-    // 9 (or "9") makes chunk filenames along the pattern "[name].[contenthash:9].js".
-    // Integer, integer-parseable string, OR a standard string that overrides webpack's output.chunkFilename setting
-    // (so, e.g CHUNK_CONTENTHASH: "[name].[hash:8].js" is valid and will override the entire pattern.
-    // If 0 or otherwise falsy, hashing is omitted.
-    CHUNK_CONTENTHASH: 9,
+    NASHORNPOLYFILLS_SOURCE: "node_modules/@enonic/react4xp/nashornPolyfills/nashornPolyfills.es6",
 
     /*  If ever using anything else than output.libraryTarget: 'var' (corresponds to global variable, or "root"),
         use this in the json file instead, etc:
@@ -152,13 +136,6 @@ const buildConstants = (rootDir, overrides) => {
     SSR_MAX_THREADS: null,
   };
 
-  /*if (
-    overrides.BUILD_ENV
-    && overrides.BUILD_ENV === 'development'
-  ) {
-    overrides.CHUNK_CONTENTHASH = null;
-  }*/
-
   const constants = Object.assign(defaultConstants, overrides);
 
   // -------------------------- Derived values from the values above.
@@ -185,36 +162,50 @@ const buildConstants = (rootDir, overrides) => {
   // Select fields for output
   const {
     BUILD_ENV,
-    LIBRARY_NAME,
-    R4X_HOME, SITE_SUBFOLDER, SRC_SITE,
-    R4X_TARGETSUBDIR, SRC_R4X,
-    RELATIVE_BUILD_R4X, BUILD_MAIN, BUILD_R4X,
-    CHUNK_CONTENTHASH,
-    CLIENT_CHUNKS_FILENAME, EXTERNALS_CHUNKS_FILENAME, ENTRIES_FILENAME, COMPONENT_STATS_FILENAME,
-    SSR_LAZYLOAD, SSR_ENGINE_SETTINGS, SSR_MAX_THREADS,
+    R4X_HOME,
+    SITE_SUBFOLDER,
+    SRC_SITE,
+    R4X_TARGETSUBDIR,
+    SRC_R4X,
+    RELATIVE_BUILD_R4X,
+    BUILD_MAIN,
+    BUILD_R4X,
+    NASHORNPOLYFILLS_FILENAME,
+    NASHORNPOLYFILLS_SOURCE,
+    SSR_LAZYLOAD,
+    SSR_ENGINE_SETTINGS,
+    SSR_MAX_THREADS,
     EXTERNALS,
     recommended,
   } = constants;
 
   const output = {
     BUILD_ENV,
-    LIBRARY_NAME,
-    R4X_HOME, SITE_SUBFOLDER, SRC_SITE,
-    R4X_TARGETSUBDIR, SRC_R4X,
-    RELATIVE_BUILD_R4X, BUILD_MAIN, BUILD_R4X,
-    CHUNK_CONTENTHASH,
-    CLIENT_CHUNKS_FILENAME, EXTERNALS_CHUNKS_FILENAME, ENTRIES_FILENAME, COMPONENT_STATS_FILENAME,
-    SSR_LAZYLOAD, SSR_ENGINE_SETTINGS, SSR_MAX_THREADS,
+    BUILD_MAIN,
+    BUILD_R4X,
     EXTERNALS,
+    NASHORNPOLYFILLS_FILENAME,
+    NASHORNPOLYFILLS_SOURCE,
+    R4X_HOME,
+    R4X_TARGETSUBDIR,
+    RELATIVE_BUILD_R4X,
+    SITE_SUBFOLDER,
+    SRC_R4X,
+    SRC_SITE,
+    SSR_ENGINE_SETTINGS,
+    SSR_LAZYLOAD,
+    SSR_MAX_THREADS,
     recommended,
   };
 
   // NASHORNPOLYFILLS* are optional, EXTRA user-polyfills in addition to (or replacing) the default polyfills that come with the
   // lib-react4xp. If there is no input NASHORNPOLYFILLS_SOURCE among the overrides, neither that nor NASHORNPOLYFILLS_FILENAME
   // will be output, and no extra nashorn polyfills will be generated (beyond the default ones in the lib).
+  if (((overrides.NASHORNPOLYFILLS_FILENAME || '') + '').trim()) {
+    output.NASHORNPOLYFILLS_FILENAME = constants.NASHORNPOLYFILLS_FILENAME;
+  }
   if (((overrides.NASHORNPOLYFILLS_SOURCE || '') + '').trim()) {
     output.NASHORNPOLYFILLS_SOURCE = overrides.NASHORNPOLYFILLS_SOURCE;
-    output.NASHORNPOLYFILLS_FILENAME = constants.NASHORNPOLYFILLS_FILENAME;
   }
   output.__meta__ = "This file was generated by react4xp-build-constants" + ME; // eslint-disable-line no-underscore-dangle
 

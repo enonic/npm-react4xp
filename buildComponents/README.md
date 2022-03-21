@@ -99,8 +99,7 @@ with the capital-letter env keys below).
 - `REACT4XP_CONFIG_FILE`: root-project-relative path to a react4xp-project constant-values JSON file.
   - This file follows the format of, and is usually produced in the project
     by, [react4xp-buildconstants](https://www.npmjs.com/package/react4xp-buildconstants).
-  - The used values from it can be overriden by CLI env arguments: `SRC_R4X`, `BUILD_R4X`, `SRC_SITE`, `LIBRARY_NAME`
-    , `EXTERNALS`, `COMPONENT_STATS_FILENAME`, `CHUNK_CONTENTHASH`, `ENTRIES_FILENAME`.
+  - The used values from it can be overriden by CLI env arguments: `SRC_R4X`, `BUILD_R4X`, `SRC_SITE`, `EXTERNALS`.
 - `ROOT`: absolute path to the root project
 
 ### Optional env values

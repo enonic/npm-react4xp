@@ -15,7 +15,6 @@ describe("constants", ()=>{
 
         const EXPECTED_DEFAULT_OUTPUT = deepFreeze({
             BUILD_ENV: "production",
-            LIBRARY_NAME: "React4xp",
             SITE_SUBFOLDER: "site",
             SRC_SITE: path.join(DIR_NAME, 'src', 'main', 'resources', 'site'),
             R4X_HOME: 'react4xp',
@@ -24,19 +23,9 @@ describe("constants", ()=>{
             RELATIVE_BUILD_R4X: path.join('build', 'resources', 'main', 'assets', 'react4xp'),
             BUILD_MAIN: path.join(DIR_NAME, 'build', 'resources', 'main'),
             BUILD_R4X: path.join(DIR_NAME, 'build', 'resources', 'main', 'assets', 'react4xp'),
-
-            // NASHORNPOLYFILLS_FILENAME: "nashornPolyfills",
-            CLIENT_CHUNKS_FILENAME: "chunks.client.json",
-            EXTERNALS_CHUNKS_FILENAME: "chunks.externals.json",
-            ENTRIES_FILENAME: "entries.json",
-            COMPONENT_STATS_FILENAME: "stats.components.json",
-
-            CHUNK_CONTENTHASH: 9,
-
             SSR_LAZYLOAD: true,
             SSR_ENGINE_SETTINGS: 0,
             SSR_MAX_THREADS: null,
-
             EXTERNALS: {
                 "react": "React",
                 "react-dom": "ReactDOM",
@@ -227,7 +216,6 @@ describe("constants", ()=>{
             const actualOutput = deepFreeze(require(path.join(TEST_OUTPUT_ROOT, outputFileName)));
 
             // Just sampling a few unchanged ones
-            expect(actualOutput.LIBRARY_NAME).to.equal(EXPECTED_DEFAULT_OUTPUT.LIBRARY_NAME);
             expect(actualOutput.EXTERNALS).to.deep.equal(EXPECTED_DEFAULT_OUTPUT.EXTERNALS);
 
             // Just sampling two changed ones
@@ -253,7 +241,6 @@ describe("constants", ()=>{
             const actualOutput = deepFreeze(require(outputFileName));
 
             // Just sampling a few unchanged ones
-            expect(actualOutput.LIBRARY_NAME).to.equal(EXPECTED_DEFAULT_OUTPUT.LIBRARY_NAME);
             expect(actualOutput.EXTERNALS).to.deep.equal(EXPECTED_DEFAULT_OUTPUT.EXTERNALS);
 
             // The two directly changed ones
@@ -277,7 +264,6 @@ describe("constants", ()=>{
             const actualOutput = deepFreeze(require(outputFileName));
 
             // Just sampling a few unchanged ones
-            expect(actualOutput.LIBRARY_NAME).to.equal(EXPECTED_DEFAULT_OUTPUT.LIBRARY_NAME);
             expect(actualOutput.EXTERNALS).to.deep.equal(EXPECTED_DEFAULT_OUTPUT.EXTERNALS);
             expect(actualOutput.RELATIVE_BUILD_R4X).to.equal(EXPECTED_DEFAULT_OUTPUT.RELATIVE_BUILD_R4X);
 
@@ -303,7 +289,6 @@ describe("constants", ()=>{
             const actualOutput = deepFreeze(require(outputFileName));
 
             // Just sampling a few unchanged ones
-            expect(actualOutput.LIBRARY_NAME).to.equal(EXPECTED_DEFAULT_OUTPUT.LIBRARY_NAME);
             expect(actualOutput.EXTERNALS).to.deep.equal(EXPECTED_DEFAULT_OUTPUT.EXTERNALS);
             expect(actualOutput.RELATIVE_BUILD_R4X).to.equal(EXPECTED_DEFAULT_OUTPUT.RELATIVE_BUILD_R4X);
             expect(actualOutput.SRC_R4X).to.equal(EXPECTED_DEFAULT_OUTPUT.SRC_R4X);
@@ -336,7 +321,6 @@ describe("constants", ()=>{
             const actualOutput = deepFreeze(require(outputFileName));
 
             // Just sampling a few unchanged ones
-            expect(actualOutput.LIBRARY_NAME).to.equal(EXPECTED_DEFAULT_OUTPUT.LIBRARY_NAME);
             expect(actualOutput.BUILD_ENV).to.deep.equal(EXPECTED_DEFAULT_OUTPUT.BUILD_ENV);
 
             // The two directly changed ones

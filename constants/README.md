@@ -45,8 +45,6 @@ Keys in the `overrides` object (and the default values they'll get if not overri
 - `SUBFOLDER_BUILD_MAIN` ("build/resources/main"): Base pre-JAR folder for building, relative to
   rootDir. `RELATIVE_BUILD_R4X` _must_ be below this folder.
 - `BUILD_ENV` ("development"): environment variable for production or development.
-- `LIBRARY_NAME` ("React4xp"): name of the runtime JS library, used for calls in both the client and during serverside
-  rendering.
 - `SITE_SUBFOLDER` ("site"): name of the subfolder where the Enonic XP site structure is found (
   below `<SRC_MAIN>/resources/`).
 - `SRC_SITE` (derived: `SRC_MAIN` + `SITE_SUBFOLDER`, should be "<rootDir>/src/main/resources/site"): absolute path to
@@ -60,9 +58,6 @@ Keys in the `overrides` object (and the default values they'll get if not overri
 - `BUILD_R4X` (derived: `BUILD_MAIN` + `R4X_TARGETSUBDIR`, usually "<rootDir>/build/resources/main/assets/react4xp"):
   absolute path to target folder into which the React4xp core assets and all React components will be built - both
   entries and shared chunks - along with the "housekeeping files".
-- `CHUNK_CONTENTHASH` (9): Content hash length in the dependency chunk filenames, sets webpack's output.chunkFilename.
-  Set to something falsy to omit hashing entirely. Can also be an integer-parseable string such as "9", or a full
-  webpack's output.chunkFilename setting string such as "[name].[hash:8].js".
 - `SSR_LAZYLOAD` (`true`) Main switch for SSR nashorn asset lazy-loading.
 - `SSR_ENGINE_SETTINGS` (`0`) [Nashorn engine settings](https://github.com/JetBrains/jdk8u_nashorn/blob/master/src/jdk/nashorn/internal/runtime/resources/Options.properties)
   for the SSR renderer. A pure number above 0 sets only caching size, changing the number X in the setting
@@ -83,15 +78,6 @@ Some more attributes are names for some "housekeeping files" that sync up the bu
 are auto-built files that summarize the dynamic output from different React4xp built steps, allowing the runtime to
 handle dependencies that have hashed and unpredictable names, as well as tracing chunk dependencies for each specific
 entry component...
-
-- `CLIENT_CHUNKS_FILENAME` ("chunks.client.json"),
-- `EXTERNALS_CHUNKS_FILENAME` ("chunks.externals.json"),
-- `ENTRIES_FILENAME` ("entries.json"),
-- `COMPONENT_STATS_FILENAME` ("stats.components.json")
-
-The last file names are used to run code on the backend on app startup, to polyfill the nashorn engine so it can render
-Server-Side React (SSR is a native function of React that is made to run on node, not nashorn - therefore some
-polyfilling is needed):
 
 - `NASHORNPOLYFILLS_SOURCE` (No default value, since lib-react4xp comes with a basic nashorn polyfill by default and
   will run the most common scenarios without anything else): used to point to an uncompiled source file with additional
@@ -120,13 +106,9 @@ above:
 ```
 {
         BUILD_ENV,
-        LIBRARY_NAME,
         R4X_HOME, SITE_SUBFOLDER, SRC_SITE,
         R4X_TARGETSUBDIR, SRC_R4X,
         RELATIVE_BUILD_R4X, BUILD_MAIN, BUILD_R4X,
-        CHUNK_CONTENTHASH,
-        CLIENT_CHUNKS_FILENAME, EXTERNALS_CHUNKS_FILENAME, ENTRIES_FILENAME, COMPONENT_STATS_FILENAME,
         EXTERNALS
 }
 ```
-

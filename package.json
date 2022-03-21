@@ -54,6 +54,7 @@
     "constants/ensureTargetOutputPath.js",
     "constants/index.js",
     "constants/README.md",
+    "dist/constants.js",
     "externals/README.md",
     "externals/webpack.config.js",
     "nashornPolyfills/nashornPolyfills.es6",
@@ -89,7 +90,7 @@
     "url": "git+ssh://git@github.com:enonic/enonic-react4xp.git"
   },
   "scripts": {
-    "build": "yarn build:constants && yarn build:components",
+    "build": "npx tsc && yarn build:constants && yarn build:components",
     "build:components": "npx babel --compact true --minified --no-comments -o buildComponents/entriesandchunks.js --presets=@babel/preset-env src/buildComponents/entriesandchunks.js",
     "build:components:test": "./bin/buildConstants.js test/buildComponents \"$(< test/buildComponents/overrides.json)\"",
     "build:constants": "npm run build:constants:bin && npm run build:constants:src",
@@ -106,14 +107,15 @@
     "pretest:components:override": "npm run build:components:test",
     "pretest:constants": "npm run build:constants && npm run build:components:test",
     "test": "npm run test:client:webpack && npm run test:components && npm run test:constants && test:externals:webpack && npm run test:nashornPolyfills:constants",
-    "test:client:webpack": "webpack --config client/webpack.config.js --env BUILD_R4X=$(pwd)/test/client/output --env LIBRARY_NAME=React4xp --env CHUNK_CONTENTHASH=9 --env CLIENT_CHUNKS_FILENAME=chunky.json && echo \"-------------- react4xp-runtimeclient builds. ADD SOME ACTUAL TESTS PLZ?\"",
+    "test:client:webpack": "webpack --config client/webpack.config.js --env BUILD_R4X=$(pwd)/test/client/output && echo \"-------------- react4xp-runtimeclient builds. ADD SOME ACTUAL TESTS PLZ?\"",
     "test:constants": "NODE_PATH=. mocha --require @babel/register --require @babel/polyfill --require test/constants/test_helper.js \"test/constants/**/*@(spec.js)\" && mkdir test/constants/output/cli; bin/buildConstants.js test/constants/output/cli && path-exists test/constants/output/cli/react4xp_constants.json && path-exists test/constants/output/cli/build/resources/main/lib/enonic/react4xp/react4xp_constants.json",
     "test:components": "npm run test:components:entriesAndChunks && npm run test:components:raw && npm run test:components:override",
     "test:components:entriesAndChunks": "mocha --require @babel/register --require @babel/polyfill --require test/buildComponents/test_helper.js \"test/**/*@(spec.js)\"",
     "test:components:raw": "webpack --config buildComponents/webpack.config.js --env ENTRY_DIRS=entries --env CHUNK_DIRS=sharedComps,redux --env ROOT=$(pwd)/../.. --env OVERRIDE_COMPONENT_WEBPACK=test/buildComponents/webpack.config.symlinks.override.js --env REACT4XP_CONFIG_FILE=test/buildComponents/build/constants.json --env VERBOSE=true",
     "test:components:override": "webpack --config buildComponents/webpack.config.js --env OVERRIDE_COMPONENT_WEBPACK=test/buildComponents/webpack.config.override.js --env ROOT=$(pwd)/../.. --env VERBOSE=true --env REACT4XP_CONFIG_FILE=test/buildComponents/build/constants.json",
     "test:externals:webpack": "NODE_PATH=. webpack --config ./externals/webpack.config.js --env REACT4XP_CONFIG_FILE=/test/externals/react4xpConstants.json --env BUILD_R4X=$(pwd)/build --env ROOT=$(pwd)/../.. && echo \"\" && echo \"--> build/\" && ls build && echo \"-------------- react4xp-runtime-externals builds. ADD SOME ACTUAL TESTS PLZ?\"",
-    "test:nashornPolyfills:constants": "webpack --config nashornPolyfills/webpack.config.js --env REACT4XP_CONFIG_FILE=test/nashornPolyfills/output/testConfig.json && node test/nashornPolyfills/output/testPolyfilled.js"
+    "test:nashornPolyfills:constants": "webpack --config nashornPolyfills/webpack.config.js --env REACT4XP_CONFIG_FILE=test/nashornPolyfills/output/testConfig.json && node test/nashornPolyfills/output/testPolyfilled.js",
+    "tsc":"npx tsc"
   },
   "version": "3.0.5"
 }

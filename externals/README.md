@@ -79,9 +79,6 @@ of [lib-react4xp](https://github.com/enonic/lib-react4xp)).
   ...where the objects are import source names in JS and the values are their name in the global namespace after
   importing (e.g. the familiar `import React from 'react'`).
 
-- `EXTERNALS_CHUNKS_FILENAME` and `CHUNK_CONTENTHASH`: results in the output asset file
-  name `externals.<contenthash>.js`.
-
 ### Output
 
 Produces a JS asset: `build/resources/main/assets/react4xp/externals.<contenthash>.js`.
