@@ -97,6 +97,7 @@ if (project.ext.react4xp.verbose) {
 task config_react4xp(type: NodeTask) {
   group 'React4xp'
   description 'Build the master config JSON file and its copy'
+  mustRunAfter(processResources)
 
   script = file('node_modules/@enonic/react4xp/bin/buildConstants.js')
   // react4xp-buildconstants comes with react4xp@^0.2.0
@@ -104,8 +105,6 @@ task config_react4xp(type: NodeTask) {
 }
 config_react4xp.inputs.file("react4xp.properties")
 config_react4xp.outputs.file(project.ext.react4xp.masterConfigFileName)
-
-config_react4xp.mustRunAfter += 'processResources'
 
 
 // Necessary placeholder, will be filled during build
