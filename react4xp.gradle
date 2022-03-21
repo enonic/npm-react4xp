@@ -105,7 +105,7 @@ task config_react4xp(type: NodeTask) {
 config_react4xp.inputs.file("react4xp.properties")
 config_react4xp.outputs.file(project.ext.react4xp.masterConfigFileName)
 
-config_react4xp.dependsOn += 'processResources'
+config_react4xp.mustRunAfter += 'processResources'
 
 
 // Necessary placeholder, will be filled during build
@@ -143,6 +143,7 @@ config_tasks.dependsOn += 'config_react4xp'
 // Compile:
 task react4xpComponents(type: NodeTask) {
   group 'React4xp'
+  dependsOn(config_tasks)
   description 'Compile the parent projects react components'
 
   // 1 MANDATORY STEP: react4xp/buildComponents compiles the components added in this project into runnable/renderable components. See react4xp/buildComponents docs.
@@ -176,12 +177,12 @@ task react4xpComponents(type: NodeTask) {
   inputs.file("package.json")
   inputs.file("package-lock.json")
 }
-react4xpComponents.dependsOn += 'config_tasks'
 jar.dependsOn += "react4xpComponents"
 
 
 task react4xpExternals(type: NodeTask) {
   group 'React4xp'
+  dependsOn(config_tasks)
   description 'Compile the externals (react and react-dom'
 
   // 1 MANDATORY STEP: react4xp/buildComponents compiles the components added in this project into runnable/renderable components. See react4xp/buildComponents docs.
@@ -212,7 +213,6 @@ task react4xpExternals(type: NodeTask) {
   inputs.file("package.json")
   inputs.file("package-lock.json")
 }
-react4xpExternals.dependsOn += 'config_tasks'
 if (project.ext.react4xp.buildExternals) {
   jar.dependsOn += 'react4xpExternals'
 }
@@ -220,9 +220,12 @@ if (project.ext.react4xp.buildExternals) {
 
 task react4xpClient(type: NodeTask) {
   group 'React4xp'
+  dependsOn(config_tasks)
   description 'Compile the react4xp runtime client'
 
-  // 1 MANDATORY STEP: react4xp/buildComponents compiles the components added in this project into runnable/renderable components. See react4xp/buildComponents docs.
+  // 1 MANDATORY STEP: react4xp/buildComponents compiles the components added in
+  // this project into runnable/renderable components.
+  // See react4xp/buildComponents docs.
   script = file('node_modules/webpack/bin/webpack.js')
   args = [
     '--config', 'node_modules/@enonic/react4xp/client/webpack.config.js',
@@ -238,7 +241,8 @@ task react4xpClient(type: NodeTask) {
     args.addAll(['--progress'])
   }
 
-  // Finally, and mandatorily: tells all of the webpack steps here where to find the react4xp master config file that was built during the config_react4xp task
+  // Finally, and mandatorily: tells all of the webpack steps here where to find
+  // the react4xp master config file that was built during the config_react4xp task
   args.addAll(['--env', 'REACT4XP_CONFIG_FILE=' + project.ext.react4xp.masterConfigFileName])
 
   if (project.ext.react4xp.verbose && project.ext.react4xp.buildRuntimeClient) {
@@ -250,7 +254,6 @@ task react4xpClient(type: NodeTask) {
   inputs.file("package.json")
   inputs.file("package-lock.json")
 }
-react4xpClient.dependsOn += 'config_tasks'
 if (project.ext.react4xp.buildRuntimeClient) {
   jar.dependsOn += 'react4xpClient'
 }
@@ -258,6 +261,7 @@ if (project.ext.react4xp.buildRuntimeClient) {
 
 task react4xpNashornPolyfills(type: NodeTask) {
   group 'React4xp'
+  dependsOn(config_tasks)
   description 'Run the imported react4xp webpack scripts that compile the components and externals (as well as client and nashorn polyfills if needed)'
 
   script = file('node_modules/webpack/bin/webpack.js')
@@ -287,7 +291,6 @@ task react4xpNashornPolyfills(type: NodeTask) {
   inputs.file("package.json")
   inputs.file("package-lock.json")
 }
-react4xpNashornPolyfills.dependsOn += 'config_tasks'
 if (project.ext.react4xp.nashornPolyfillsSource != null) {
   jar.dependsOn += 'react4xpNashornPolyfills'
 }

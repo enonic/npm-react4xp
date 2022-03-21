@@ -5,7 +5,11 @@ const path = require("path");
 const fs = require("fs");
 const { makeVerboseLogger, cleanAnyDoublequotes } = require("../util");
 const React4xpEntriesAndChunks = require("./entriesandchunks");
-
+const {
+  COMPONENT_STATS_FILENAME,
+  ENTRIES_FILENAME,
+  LIBRARY_NAME
+} = require('../dist/constants');
 
 // Turns a comma-separated list of subdirectories below the root React4xp source folder (SRC_R4X, usually .../resources/react4xp/)
 // into an array of unique, verified, absolute-path'd and OS-compliant folder names.
@@ -111,18 +115,18 @@ const makeExclusionsRegexpString = (currentDir, otherDirs, verboseLog) =>
 // -------------------------------------------------------------
 
 module.exports = (env = {}) => {
+  // eslint-disable-next-line import/no-dynamic-require, global-require
+  const react4xpConfig = require(path.join(process.cwd(), env.REACT4XP_CONFIG_FILE));
+
   const {
     SRC_R4X,
-    BUILD_R4X,
     BUILD_ENV,
     SRC_SITE,
-    LIBRARY_NAME,
-    EXTERNALS,
-    COMPONENT_STATS_FILENAME,
-    CHUNK_CONTENTHASH,
-    ENTRIES_FILENAME,
-    // eslint-disable-next-line import/no-dynamic-require, global-require
-  } = require(path.join(process.cwd(), env.REACT4XP_CONFIG_FILE));
+    EXTERNALS
+  } = react4xpConfig
+
+  let {BUILD_R4X} = react4xpConfig; // Relative
+  BUILD_R4X = path.join(process.cwd(),BUILD_R4X); // Absolute
 
   const DEVMODE = BUILD_ENV !== "production";
 
@@ -263,11 +267,13 @@ module.exports = (env = {}) => {
   // Build the entries
   const entrySets = [
     {
-      sourcePath: SRC_SITE,
+      //sourcePath: SRC_SITE,
+      //sourcePath: `./${SRC_SITE}`, // Relative
+      sourcePath: path.resolve(process.cwd(), SRC_SITE), // Absolute
       sourceExtensions: ["jsx", "tsx"],
       targetSubDir: "site",
     },
-    {
+    /*{
       sourcePath: path.join(
         ROOT || process.cwd(),
         "node_modules",
@@ -275,19 +281,22 @@ module.exports = (env = {}) => {
         "entries"
       ),
       sourceExtensions: ["jsx", "tsx", "js", "ts", "es6", "es"],
-    },
+    },*/
     ...entryDirs.map((entryDir) => ({
       sourcePath: entryDir,
       sourceExtensions: entryExtensions,
     })),
   ];
 
+  //console.debug('entrySets', entrySets);
+  //console.debug('ENTRIES_FILENAME', ENTRIES_FILENAME); // entries.json
   const entries = React4xpEntriesAndChunks.getEntries(
     entrySets,
     BUILD_R4X,
     ENTRIES_FILENAME,
     verboseLog
   );
+  //console.debug('entries', entries);
 
   // ------------------------------------------- Entries are generated. Error reporting and verbose output:
 
@@ -416,21 +425,6 @@ module.exports = (env = {}) => {
 
   // ------------------------------------------
 
-  // Decides whether or not to hash filenames of common-component chunk files, and the length of the hash
-  let chunkFileName;
-  if (!CHUNK_CONTENTHASH) {
-    chunkFileName = "[name].js";
-  } else if (typeof CHUNK_CONTENTHASH === "string") {
-    chunkFileName = CHUNK_CONTENTHASH;
-  } else {
-    /*chunkFileName = `[name].[contenthash:${parseInt(
-      CHUNK_CONTENTHASH,
-      10
-    )}].js`;*/
-    chunkFileName = `[name].[contenthash].js`;
-    //chunkFileName = `[name].[fullhash].js`;
-  }
-
   const config = {
     mode: BUILD_ENV,
 
@@ -438,8 +432,7 @@ module.exports = (env = {}) => {
 
     output: {
       path: BUILD_R4X, // <-- Sets the base url for plugins and other target dirs. Note the use of {{assetUrl}} in index.html (or index.ejs).
-      //filename: (pathdata) => (pathdata.chunk || {}).chunkReason ? chunkFileName : "[name].js", // <-- Content-hash file names of dependency chunks but not entry components
-      filename: chunkFileName,
+      filename: '[name].[contenthash].js',
       library: {
         name: [LIBRARY_NAME, "[name]"],
         type: "var",
@@ -457,8 +450,7 @@ module.exports = (env = {}) => {
     },
 
     resolve: {
-      extensions: [".es6", ".js", ".jsx"],
-      modules: [path.resolve(ROOT, "node_modules")],
+      extensions: [".es6", ".js", ".jsx"]
     },
 
     devtool: DEVMODE ? "source-map" : false,

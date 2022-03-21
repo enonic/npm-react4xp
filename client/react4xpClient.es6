@@ -1,7 +1,9 @@
 // LIBRARY_NAME is provided at buildtime by the react constants file via webpack, SERVICE_URL_ROOT may or may not be added globally:
-/* global LIBRARY_NAME, SERVICE_URL_ROOT */
+/* global SERVICE_URL_ROOT */
 
 import ReactDOM from "react-dom";
+import {LIBRARY_NAME} from '../dist/constants';
+
 
 /** Adjusted version of https://www.oreilly.com/library/view/high-performance-javascript/9781449382308/ch01.html#I_programlisting1_d1e1051
  * in order to parallelly load internally independent scripts from multiple urls, and only when they've ALL completely loaded

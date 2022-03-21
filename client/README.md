@@ -18,8 +18,7 @@ where X is any of the capital-letter keys below.
 - `REACT4XP_CONFIG_FILE`: root-project-relative path to a react4xp-project constant-values JSON file.
   - This file follows the format of, and is usually produced in the project
     by, [react4xp-buildconstants](https://www.npmjs.com/package/react4xp-buildconstants).
-  - The used values from it can be overriden by CLI env arguments: `BUILD_R4X`, `LIBRARY_NAME`, `BUILD_ENV`
-    , `CHUNK_CONTENTHASH`, `CLIENT_CHUNKS_FILENAME`.
+  - The used values from it can be overriden by CLI env arguments: `BUILD_R4X`, `BUILD_ENV`.
 - `ROOT`: absolute path to the root project
 
 ## API: client runtime
@@ -28,8 +27,7 @@ In a standard react4xp setup, [lib-react4xp](https://github.com/enonic/lib-react
 the service `react4xp-client`. The lib also offers `render` controller-functions, that add a call to
 this `react4xp-client` URL, to the page contribution.
 
-That client asset adds an object to the global namespace in the browser: `React4xp` (or whatever the value
-of `LIBRARY_NAME` is). This object will contain the entries, under a key corresponding to their jsxPath.
+That client asset adds an object to the global namespace in the browser: `React4xp`. This object will contain the entries, under a key corresponding to their jsxPath.
 
 In addition to those, there is `React4xp.CLIENT`, which exposes three methods. These methods are also automatically
 called in the browser when using the `render` controller functions, but should you ever need them they are:
@@ -88,4 +86,3 @@ React4xp.CLIENT.renderWithDependencies(entriesWithTargetIdsAndProps, callback, s
   - For example, if they have the URLs `/_/service/my.app/react4xp/` and `/_/service/my.app/react4xp-dependencies/`,
     then `serviceRootUrl` should be `/_/service/my.app` - _without_ a trailing slash.
   - You can skip this argument ONLY IF you define the constant SERVICE_URL_ROOT in global namespace before this call.
-

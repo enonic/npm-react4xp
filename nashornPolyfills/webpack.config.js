@@ -1,7 +1,11 @@
 // Transpiles nashorn polyfill from, among other things, npm libraries.
 
+const Chunks2json = require('chunks-2-json-webpack-plugin');
 const path = require("path");
 const { makeVerboseLogger, cleanAnyDoublequotes } = require("../util");
+const {
+  NASHORNPOLYFILLS_CHUNKS_FILENAME
+} = require('../dist/constants');
 
 
 module.exports = (env) => {
@@ -34,7 +38,7 @@ module.exports = (env) => {
 
   const verboseLog = makeVerboseLogger(verbose);
 
-  if (`${NASHORNPOLYFILLS_SOURCE || ""}`.trim() === "") {
+  /*if (`${NASHORNPOLYFILLS_SOURCE || ""}`.trim() === "") {
     throw Error(
       `react4xp-runtime-nashornpolyfills: no source filename is set (NASHORNPOLYFILLS_SOURCE). Check react4xp-runtime-nashornpolyfills build setup, for env parameters${
         env.REACT4XP_CONFIG_FILE
@@ -42,9 +46,12 @@ module.exports = (env) => {
           : ""
       }.`
     );
-  }
+  }*/
 
-  BUILD_R4X = cleanAnyDoublequotes("BUILD_R4X", BUILD_R4X);
+  BUILD_R4X = path.join(
+    process.cwd(),
+    cleanAnyDoublequotes("BUILD_R4X", BUILD_R4X)
+  );
 
   if (`${BUILD_R4X || ""}`.trim() === "") {
     throw Error(
@@ -88,8 +95,9 @@ module.exports = (env) => {
   	},
     output: {
       path: BUILD_R4X,
-      filename: "[name].js",
-      //filename: `[name].[fullhash].js`, // TODO
+      //filename: "[name].js",
+      filename: `[name].[contenthash].js`,
+      //filename: `[name].[fullhash].js`,
       environment: {
         arrowFunction: false,
         bigIntLiteral: false,
@@ -125,6 +133,12 @@ module.exports = (env) => {
       /*libraryTarget: 'umd2', // 8111B
       globalObject: 'this'*/
     },
+    plugins: [
+      new Chunks2json({
+        outputDir: BUILD_R4X,
+        filename: NASHORNPOLYFILLS_CHUNKS_FILENAME,
+      }),
+    ],
 
     resolve: {
       extensions: [".es6", ".js", ".jsx"],

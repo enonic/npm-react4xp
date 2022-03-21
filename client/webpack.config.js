@@ -5,6 +5,10 @@
 /* global __filename, process, __dirname */
 
 const path = require('path');
+const {
+  CLIENT_CHUNKS_FILENAME,
+  LIBRARY_NAME
+} = require('../dist/constants');
 const {makeVerboseLogger, cleanAnyDoublequotes} = require("../util");
 
 const Chunks2json = require('chunks-2-json-webpack-plugin');
@@ -18,7 +22,7 @@ module.exports = env => {
 
   // Gets the following constants from the config file UNLESS they are overridden by an env parameter, which takes priority:
   const {
-    BUILD_R4X, LIBRARY_NAME, BUILD_ENV, CHUNK_CONTENTHASH, CLIENT_CHUNKS_FILENAME, VERBOSE,
+    BUILD_R4X, BUILD_ENV, VERBOSE,
 
   } = Object.assign(
     {},
@@ -34,7 +38,10 @@ module.exports = env => {
   const ROOT = cleanAnyDoublequotes("ROOT", env.ROOT || __dirname);
   verboseLog(ROOT, "ROOT", 1);
 
-  const buildR4X = cleanAnyDoublequotes("BUILD_R4X", BUILD_R4X);
+  const buildR4X = path.join(
+    process.cwd(),
+    cleanAnyDoublequotes("BUILD_R4X", BUILD_R4X)
+  );
   verboseLog(buildR4X, "buildR4X", 1);
 
   const libraryName = cleanAnyDoublequotes("LIBRARY_NAME", LIBRARY_NAME);
@@ -42,18 +49,9 @@ module.exports = env => {
 
   if (overridden) {
     verboseLog({
-      buildR4X, libraryName, BUILD_ENV, CHUNK_CONTENTHASH, CLIENT_CHUNKS_FILENAME, ROOT,
+      buildR4X, libraryName, BUILD_ENV, CLIENT_CHUNKS_FILENAME, ROOT,
     }, "Client build config overridden at " + __filename, 1);
   }
-
-  // Decides whether or not to hash filenames of the produced asset, and the length of the hash
-  const chunkFileName = (!CHUNK_CONTENTHASH) ?
-    "[name].js" :
-    isNaN(CHUNK_CONTENTHASH) ?
-      CHUNK_CONTENTHASH :
-      //`[name].[contenthash:${parseInt(CHUNK_CONTENTHASH)}].js`;
-      `[name].[contenthash].js`;
-      //`[name].[fullhash].js`;
 
   const outputConfig = {
     mode: BUILD_ENV,
@@ -64,7 +62,7 @@ module.exports = env => {
 
     output: {
       path: buildR4X,  // <-- Sets the base url for plugins and other target dirs.
-      filename: chunkFileName,
+      filename: '[name].[contenthash].js',
       library: {
         name: [libraryName, 'CLIENT'],
         type: 'var',

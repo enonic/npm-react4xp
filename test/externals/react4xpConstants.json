@@ -5,7 +5,5 @@
     "react": "React",
     "react-dom": "ReactDOM",
     "react-dom/server": "ReactDOMServer"
-  },
-  "CHUNK_CONTENTHASH": 8,
-  "EXTERNALS_CHUNKS_FILENAME": "chunks.externals.json"
+  }
 }
