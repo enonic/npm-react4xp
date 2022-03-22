@@ -2,7 +2,7 @@
 /* global SERVICE_URL_ROOT */
 
 import ReactDOM from "react-dom";
-import {LIBRARY_NAME} from '../dist/constants';
+import {LIBRARY_NAME} from '../dist/constants.runtime';
 
 
 /** Adjusted version of https://www.oreilly.com/library/view/high-performance-javascript/9781449382308/ch01.html#I_programlisting1_d1e1051

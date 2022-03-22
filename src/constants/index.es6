@@ -38,6 +38,8 @@ const STANDARD_OUTPUT_FILENAME = "react4xp_constants.json";
  *      }
  */
 const buildConstants = (rootDir, overrides) => {
+  //console.debug('rootDir', rootDir);
+  //console.debug('overrides', overrides);
   if (!fs.existsSync(rootDir)) {
     throw Error("rootDir (root directory) doesn't exist: " + JSON.stringify(rootDir));
   }
@@ -61,6 +63,7 @@ const buildConstants = (rootDir, overrides) => {
   if (typeof overrides !== "object" || Array.isArray(overrides)) {
     throw Error("overrides must be an object (or a JSON string object): " + JSON.stringify(overrides));
   }
+  //console.debug('overrides', overrides);
 
   const verboseLog = makeVerboseLogger(overrides.verbose || overrides.VERBOSE);
 
@@ -73,9 +76,10 @@ const buildConstants = (rootDir, overrides) => {
   if (!outputFile.toLowerCase().endsWith(".json")) {
     outputFile += ".json";
   }
-  if (outputFile.indexOf(path.sep) === -1) {
+  if (!path.isAbsolute(outputFile)) {
     outputFile = path.join(rootDir, outputFile);
   }
+  //console.debug('outputFile', outputFile);
   verboseLog(outputFile);
 
   if (overrides && Object.keys(overrides).length > 0) {
@@ -152,7 +156,7 @@ const buildConstants = (rootDir, overrides) => {
   constants.BUILD_R4X = constants.BUILD_R4X || path.join(constants.BUILD_MAIN, constants.R4X_TARGETSUBDIR);
 
   // build/resources/main/assets/react4xp
-  constants.RELATIVE_BUILD_R4X = constants.RELATIVE_BUILD_R4X || path.join(constants.SUBFOLDER_BUILD_MAIN, constants.R4X_TARGETSUBDIR);
+  //constants.RELATIVE_BUILD_R4X = constants.RELATIVE_BUILD_R4X || path.join(constants.SUBFOLDER_BUILD_MAIN, constants.R4X_TARGETSUBDIR);
 
   // <project>/src/main/resources/site
   constants.SRC_SITE = constants.SRC_SITE || path.join(constants.SRC_MAIN, constants.SITE_SUBFOLDER);
@@ -167,7 +171,7 @@ const buildConstants = (rootDir, overrides) => {
     SRC_SITE,
     R4X_TARGETSUBDIR,
     SRC_R4X,
-    RELATIVE_BUILD_R4X,
+    //RELATIVE_BUILD_R4X,
     BUILD_MAIN,
     BUILD_R4X,
     NASHORNPOLYFILLS_FILENAME,
@@ -188,7 +192,7 @@ const buildConstants = (rootDir, overrides) => {
     NASHORNPOLYFILLS_SOURCE,
     R4X_HOME,
     R4X_TARGETSUBDIR,
-    RELATIVE_BUILD_R4X,
+    //RELATIVE_BUILD_R4X,
     SITE_SUBFOLDER,
     SRC_R4X,
     SRC_SITE,

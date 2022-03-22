@@ -33,11 +33,18 @@ const path = require("path");
 const fs = require("fs");
 
 const Chunks2json = require("chunks-2-json-webpack-plugin");
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 const {
   EXTERNALS_CHUNKS_FILENAME
-} = require('../dist/constants');
-const { cleanAnyDoublequotes } = require("../util");
+} = require('../dist/constants.runtime');
+const {
+  DIR_PATH_RELATIVE_BUILD_ASSETS_R4X
+} = require('../dist/constants.buildtime');
+const {
+  cleanAnyDoublequotes,
+  makeVerboseLogger
+} = require("../util");
 
 // TODO: Find a good pattern to control output name for chunks,
 // allowing for multi-chunks and still doing it in one pass (only one chunks.externals.json)
@@ -99,12 +106,23 @@ function generateTempES6SourceAndGetFilename(_externals, outputFileName) {
 }
 
 module.exports = (env = {}) => {
+  const DIR_PATH_ABSOLUTE_PROJECT = cleanAnyDoublequotes("DIR_PATH_ABSOLUTE_PROJECT", env.DIR_PATH_ABSOLUTE_PROJECT || process.cwd());
+  if (!path.isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
+    throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
+  }
+
+  const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = path.join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
+
   let config = {};
 
   if (env.REACT4XP_CONFIG_FILE) {
     try {
       // eslint-disable-next-line import/no-dynamic-require, global-require
-      config = require(path.join(process.cwd(), env.REACT4XP_CONFIG_FILE));
+      config = require(
+        path.isAbsolute(env.REACT4XP_CONFIG_FILE)
+          ? env.REACT4XP_CONFIG_FILE
+          : path.join(DIR_PATH_ABSOLUTE_PROJECT, env.REACT4XP_CONFIG_FILE)
+      );
     } catch (e) {
       console.error(e);
     }
@@ -112,11 +130,8 @@ module.exports = (env = {}) => {
 
   const BUILD_ENV = env.BUILD_ENV || config.BUILD_ENV;
 
-  const BUILD_R4X = path.join(process.cwd(),cleanAnyDoublequotes(
-    "BUILD_R4X",
-    env.BUILD_R4X || config.BUILD_R4X
-  ));
-  const ROOT = cleanAnyDoublequotes("ROOT", env.ROOT || __dirname);
+  const verboseLog = makeVerboseLogger(config.VERBOSE);
+  verboseLog(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, "DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X", 1);
 
   /* EXTERNALS is the main object handled here. By default it looks like this:
       {
@@ -138,8 +153,17 @@ module.exports = (env = {}) => {
 
   const plugins = tempFileName
     ? [
+        new FileManagerPlugin({
+          events: {
+            onStart: {
+              mkdir: [
+                DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X // Chunks2json fails without this (when using npm explore)
+              ]
+            }
+          }
+        }),
         new Chunks2json({
-          outputDir: BUILD_R4X,
+          outputDir: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
           filename: EXTERNALS_CHUNKS_FILENAME,
         }),
       ]
@@ -152,7 +176,7 @@ module.exports = (env = {}) => {
     entry,
 
     output: {
-      path: BUILD_R4X, // <-- Sets the base url for plugins and other target dirs.
+      path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, // <-- Sets the base url for plugins and other target dirs.
       filename: '[name].[contenthash].js',
       environment: {
         arrowFunction: false,

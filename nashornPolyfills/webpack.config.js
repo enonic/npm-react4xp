@@ -1,17 +1,27 @@
 // Transpiles nashorn polyfill from, among other things, npm libraries.
 
 const Chunks2json = require('chunks-2-json-webpack-plugin');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 const path = require("path");
 const { makeVerboseLogger, cleanAnyDoublequotes } = require("../util");
 const {
   NASHORNPOLYFILLS_CHUNKS_FILENAME
-} = require('../dist/constants');
+} = require('../dist/constants.runtime');
+const {
+  DIR_PATH_RELATIVE_BUILD_ASSETS_R4X
+} = require('../dist/constants.buildtime');
 
 
 module.exports = (env) => {
   env = env || {}; // eslint-disable-line no-param-reassign
 
-  let { BUILD_R4X } = env;
+  const DIR_PATH_ABSOLUTE_PROJECT = cleanAnyDoublequotes("DIR_PATH_ABSOLUTE_PROJECT", env.DIR_PATH_ABSOLUTE_PROJECT || process.cwd());
+  if (!path.isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
+    throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
+  }
+
+  const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = path.join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
+
   let BUILD_ENV = env.BUILD_ENV || "production";
   let { NASHORNPOLYFILLS_FILENAME } = env;
   let { verbose } = env;
@@ -21,11 +31,11 @@ module.exports = (env) => {
   if (env.REACT4XP_CONFIG_FILE) {
     try {
       // eslint-disable-next-line import/no-dynamic-require, global-require
-      const config = require(path.join(
-        process.cwd(),
-        env.REACT4XP_CONFIG_FILE
-      ));
-      BUILD_R4X = BUILD_R4X || config.BUILD_R4X;
+      const config = require(
+        path.isAbsolute(env.REACT4XP_CONFIG_FILE)
+          ? env.REACT4XP_CONFIG_FILE
+          : path.join(DIR_PATH_ABSOLUTE_PROJECT, env.REACT4XP_CONFIG_FILE)
+      );
       BUILD_ENV = BUILD_ENV || config.BUILD_ENV;
       NASHORNPOLYFILLS_SOURCE =
         NASHORNPOLYFILLS_SOURCE || config.NASHORNPOLYFILLS_SOURCE;
@@ -48,21 +58,6 @@ module.exports = (env) => {
     );
   }*/
 
-  BUILD_R4X = path.join(
-    process.cwd(),
-    cleanAnyDoublequotes("BUILD_R4X", BUILD_R4X)
-  );
-
-  if (`${BUILD_R4X || ""}`.trim() === "") {
-    throw Error(
-      `Can't build nashorn polyfills from source (${NASHORNPOLYFILLS_SOURCE}): missing build path (BUILD_R4X). Check react4xp-runtime-nashornpolyfills build setup, for env parameters${
-        env.REACT4XP_CONFIG_FILE
-          ? ` or in the master config file (${env.REACT4XP_CONFIG_FILE}, usually built by react4xp-buildconstants)`
-          : ""
-      }.`
-    );
-  }
-
   if (`${NASHORNPOLYFILLS_FILENAME || ""}`.trim() === "") {
     throw Error(
       `Can't build nashorn polyfills from source (${NASHORNPOLYFILLS_SOURCE}): missing target filename (NASHORNPOLYFILLS_FILENAME). Check react4xp-runtime-nashornpolyfills build setup, for env parameters${
@@ -77,15 +72,15 @@ module.exports = (env) => {
     `Adding custom nashorn polyfills: compiling ${path.join(
       process.cwd(),
       NASHORNPOLYFILLS_SOURCE
-    )} --> ${path.join(BUILD_R4X, NASHORNPOLYFILLS_FILENAME)}`
+    )} --> ${path.join(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, NASHORNPOLYFILLS_FILENAME)}`
   );
 
   return {
     mode: BUILD_ENV,
 
     entry: {
-      [NASHORNPOLYFILLS_FILENAME]: path.join(
-        process.cwd(),
+      [NASHORNPOLYFILLS_FILENAME]: path.isAbsolute(NASHORNPOLYFILLS_SOURCE) ? NASHORNPOLYFILLS_SOURCE : path.join(
+        DIR_PATH_ABSOLUTE_PROJECT,
         NASHORNPOLYFILLS_SOURCE
       ),
     },
@@ -94,7 +89,7 @@ module.exports = (env) => {
   		minimize: BUILD_ENV !== "development"
   	},
     output: {
-      path: BUILD_R4X,
+      path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
       //filename: "[name].js",
       filename: `[name].[contenthash].js`,
       //filename: `[name].[fullhash].js`,
@@ -134,8 +129,17 @@ module.exports = (env) => {
       globalObject: 'this'*/
     },
     plugins: [
+      new FileManagerPlugin({
+        events: {
+          onStart: {
+            mkdir: [
+              DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X // Chunks2json fails without this (when using npm explore)
+            ]
+          }
+        }
+      }),
       new Chunks2json({
-        outputDir: BUILD_R4X,
+        outputDir: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
         filename: NASHORNPOLYFILLS_CHUNKS_FILENAME,
       }),
     ],
