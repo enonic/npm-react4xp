@@ -26,12 +26,16 @@ const {
 const {
   existsSync,
   lstatSync,
+  mkdirSync,
+  openSync,
   readlinkSync,
   realpathSync,
-  statSync
+  statSync,
+  writeSync
 } = require("fs");
 
 const {getProperties} = require("../dist/properties/getProperties");
+const {isSet} = require("../dist/util/isSet");
 
 const {
   cleanAnyDoublequotes,
@@ -43,6 +47,7 @@ const React4xpEntriesAndChunks = require("./entriesandchunks");
 const {
   COMPONENT_STATS_FILENAME,
   ENTRIES_FILENAME,
+  FILE_NAME_R4X_RUNTIME_SETTINGS,
   LIBRARY_NAME
 } = require('../dist/constants.runtime');
 
@@ -162,11 +167,30 @@ module.exports = (env = {}) => {
 
   const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
 
+  const runtimeSettingsLibR4x = {
+    SSR_LAZYLOAD: true,
+    SSR_ENGINE_SETTINGS: 0,
+    SSR_MAX_THREADS: null
+  };
+
   let overrideComponentWebpack;
   const FILE_PATH_ABSOLUTE_R4X_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_PROPERTIES);
   const stats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
   if (stats.isFile()) {
     const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
+    //console.debug('properties', properties);
+
+    if (isSet(properties.ssrLazyload)) {
+      runtimeSettingsLibR4x.SSR_LAZYLOAD = properties.ssrLazyload !== 'false';
+    }
+    if (isSet(properties.ssrSettings)) {
+      const int = parseInt(properties.ssrSettings);
+      runtimeSettingsLibR4x.SSR_ENGINE_SETTINGS = `${int}` === properties.ssrSettings ? int : properties.ssrSettings;
+    }
+    if (isSet(properties.ssrMaxThreads)) {
+      runtimeSettingsLibR4x.SSR_MAX_THREADS = parseInt(properties.ssrMaxThreads);
+    }
+
     if (!isAbsolute(properties.overrideComponentWebpack)) {
       properties.overrideComponentWebpack = join(DIR_PATH_ABSOLUTE_PROJECT, properties.overrideComponentWebpack);
     }
@@ -177,6 +201,17 @@ module.exports = (env = {}) => {
     }
     console.debug('properties', properties);*/
   }
+  //console.debug('runtimeSettingsLibR4x', runtimeSettingsLibR4x);
+
+  //console.debug('DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X', DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X);
+  mkdirSync(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, {recursive: true});
+
+  //console.debug('FILE_NAME_R4X_RUNTIME_SETTINGS', FILE_NAME_R4X_RUNTIME_SETTINGS);
+  const FILE_PATH_ABSOLUTE_R4X_RUNTIME_SETTINGS = join(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, FILE_NAME_R4X_RUNTIME_SETTINGS);
+  //console.debug('FILE_PATH_ABSOLUTE_R4X_RUNTIME_SETTINGS', FILE_PATH_ABSOLUTE_R4X_RUNTIME_SETTINGS);
+
+  const fileDescriptorOverwriteMode = openSync(FILE_PATH_ABSOLUTE_R4X_RUNTIME_SETTINGS, 'w');
+  writeSync(fileDescriptorOverwriteMode, JSON.stringify(runtimeSettingsLibR4x));
 
   // eslint-disable-next-line import/no-dynamic-require, global-require
   const react4xpConfig = require(
