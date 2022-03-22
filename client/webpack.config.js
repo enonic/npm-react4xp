@@ -8,48 +8,61 @@ const path = require('path');
 const {
   CLIENT_CHUNKS_FILENAME,
   LIBRARY_NAME
-} = require('../dist/constants');
+} = require('../dist/constants.runtime');
+const {
+  DIR_PATH_RELATIVE_BUILD_ASSETS_R4X
+} = require('../dist/constants.buildtime');
 const {makeVerboseLogger, cleanAnyDoublequotes} = require("../util");
 
 const Chunks2json = require('chunks-2-json-webpack-plugin');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 const webpack = require('webpack');
 
 
 module.exports = env => {
   env = env || {};
+  //console.debug('env', env);
+
+  const DIR_PATH_ABSOLUTE_PROJECT = cleanAnyDoublequotes("DIR_PATH_ABSOLUTE_PROJECT", env.DIR_PATH_ABSOLUTE_PROJECT || process.cwd());
+  if (!path.isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
+    throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
+  }
+
+  const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = path.join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
 
   const overridden = (Object.keys(env).length !== 1 && Object.keys(env)[0] !== "REACT4XP_CONFIG_FILE");
+  //console.debug('overridden', overridden);
 
   // Gets the following constants from the config file UNLESS they are overridden by an env parameter, which takes priority:
   const {
-    BUILD_R4X, BUILD_ENV, VERBOSE,
-
+    BUILD_ENV, VERBOSE
   } = Object.assign(
     {},
     env,
     env.REACT4XP_CONFIG_FILE ?
-      require(path.join(process.cwd(), env.REACT4XP_CONFIG_FILE)) :
+      require(path.isAbsolute(env.REACT4XP_CONFIG_FILE)
+        ? env.REACT4XP_CONFIG_FILE
+        : path.join(DIR_PATH_ABSOLUTE_PROJECT, env.REACT4XP_CONFIG_FILE)) :
       {}
   );
+  //console.debug('BUILD_ENV', BUILD_ENV);
+  //console.debug('VERBOSE', VERBOSE);
 
   const verboseLog = makeVerboseLogger(VERBOSE);
 
-  // Optional root from which to look for node_modules
-  const ROOT = cleanAnyDoublequotes("ROOT", env.ROOT || __dirname);
-  verboseLog(ROOT, "ROOT", 1);
+  verboseLog(DIR_PATH_ABSOLUTE_PROJECT, "DIR_PATH_ABSOLUTE_PROJECT", 1);
 
-  const buildR4X = path.join(
-    process.cwd(),
-    cleanAnyDoublequotes("BUILD_R4X", BUILD_R4X)
-  );
-  verboseLog(buildR4X, "buildR4X", 1);
+  verboseLog(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, "DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X", 1);
 
-  const libraryName = cleanAnyDoublequotes("LIBRARY_NAME", LIBRARY_NAME);
-  verboseLog(libraryName, "libraryName", 1);
+  verboseLog(LIBRARY_NAME, "LIBRARY_NAME", 1);
 
   if (overridden) {
     verboseLog({
-      buildR4X, libraryName, BUILD_ENV, CLIENT_CHUNKS_FILENAME, ROOT,
+      DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
+      LIBRARY_NAME,
+      BUILD_ENV,
+      CLIENT_CHUNKS_FILENAME,
+      DIR_PATH_ABSOLUTE_PROJECT,
     }, "Client build config overridden at " + __filename, 1);
   }
 
@@ -61,10 +74,10 @@ module.exports = env => {
     },
 
     output: {
-      path: buildR4X,  // <-- Sets the base url for plugins and other target dirs.
+      path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,  // <-- Sets the base url for plugins and other target dirs.
       filename: '[name].[contenthash].js',
       library: {
-        name: [libraryName, 'CLIENT'],
+        name: [LIBRARY_NAME, 'CLIENT'],
         type: 'var',
       },
       globalObject: 'window',
@@ -81,7 +94,7 @@ module.exports = env => {
 
     resolve: {
       extensions: ['.es6', '.js', '.jsx'],
-      modules: [path.resolve(ROOT, "node_modules")],
+      modules: [path.resolve(DIR_PATH_ABSOLUTE_PROJECT, 'node_modules')],
     },
     devtool: (BUILD_ENV === 'production') ? false : 'source-map',
     module: {
@@ -116,9 +129,21 @@ module.exports = env => {
     },
 
     plugins: [
-      new Chunks2json({outputDir: buildR4X, filename: CLIENT_CHUNKS_FILENAME}),
+      new FileManagerPlugin({
+        events: {
+          onStart: {
+            mkdir: [
+              DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X // Chunks2json fails without this (when using npm explore)
+            ]
+          }
+        }
+      }),
+      new Chunks2json({
+        outputDir: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
+        filename: CLIENT_CHUNKS_FILENAME
+      }),
       new webpack.DefinePlugin({
-        LIBRARY_NAME: JSON.stringify(libraryName),
+        LIBRARY_NAME,
         DEVMODE_WARN_AGAINST_CLIENTRENDERED_REGIONS: BUILD_ENV === 'production' ?
           '' :
           '\nregionPathsPostfilled.push(component.path);\n' +

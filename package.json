@@ -25,11 +25,13 @@
     "deep-freeze": "^0.0.1",
     "es6-set-and-map": "^1.0.5",
     "fetch-timeout": "^0.0.2",
+    "filemanager-webpack-plugin": "^6.1.7",
     "glob": "^7.1.7",
     "mocha": "^9.2.2",
     "node-fetch": "^3.2.3",
     "npm-safe-install": "^1.1.0",
     "prop-types": "^15.7.2",
+    "properties-reader": "^2.2.0",
     "q-i": "^2.0.1",
     "rimraf": "^3.0.2",
     "stats-webpack-plugin": "^0.7.0"
@@ -54,15 +56,13 @@
     "constants/ensureTargetOutputPath.js",
     "constants/index.js",
     "constants/README.md",
-    "dist/constants.js",
-    "dist/index.js",
+    "dist/**/*.js",
     "externals/README.md",
     "externals/webpack.config.js",
     "nashornPolyfills/nashornPolyfills.es6",
     "nashornPolyfills/README.md",
     "nashornPolyfills/webpack.config.js",
-    "src/constants.ts",
-    "src/index.ts",
+    "src/**/*.ts",
     "util/index.js",
     "LICENSE",
     "npmInstall.gradle",
@@ -93,6 +93,7 @@
     "url": "git+ssh://git@github.com:enonic/enonic-react4xp.git"
   },
   "scripts": {
+    "buildConstants": "./bin/buildConstants.js",
     "build": "npx tsc && yarn build:constants && yarn build:components",
     "build:components": "npx babel --compact true --minified --no-comments -o buildComponents/entriesandchunks.js --presets=@babel/preset-env src/buildComponents/entriesandchunks.js",
     "build:components:test": "./bin/buildConstants.js test/buildComponents \"$(< test/buildComponents/overrides.json)\"",
@@ -118,7 +119,11 @@
     "test:components:override": "webpack --config buildComponents/webpack.config.js --env OVERRIDE_COMPONENT_WEBPACK=test/buildComponents/webpack.config.override.js --env ROOT=$(pwd)/../.. --env VERBOSE=true --env REACT4XP_CONFIG_FILE=test/buildComponents/build/constants.json",
     "test:externals:webpack": "NODE_PATH=. webpack --config ./externals/webpack.config.js --env REACT4XP_CONFIG_FILE=/test/externals/react4xpConstants.json --env BUILD_R4X=$(pwd)/build --env ROOT=$(pwd)/../.. && echo \"\" && echo \"--> build/\" && ls build && echo \"-------------- react4xp-runtime-externals builds. ADD SOME ACTUAL TESTS PLZ?\"",
     "test:nashornPolyfills:constants": "webpack --config nashornPolyfills/webpack.config.js --env REACT4XP_CONFIG_FILE=test/nashornPolyfills/output/testConfig.json && node test/nashornPolyfills/output/testPolyfilled.js",
-    "tsc":"npx tsc"
+    "tsc": "npx tsc",
+    "webpack:client": "npx webpack --config client/webpack.config.js",
+    "webpack:components": "npx webpack --config buildComponents/webpack.config.js",
+    "webpack:externals": "npx webpack --config externals/webpack.config.js",
+    "webpack:nashornPolyfills": "npx webpack --config nashornPolyfills/webpack.config.js"
   },
   "version": "3.0.5"
 }

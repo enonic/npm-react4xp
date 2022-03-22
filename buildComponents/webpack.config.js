@@ -1,15 +1,55 @@
 // TODO: New general comment explanation!
 
+/*
+There is a file 'react4xp.properties' which exists at the Enonic XP application project.projectdir.
+
+The 'react4xp.properties' file is used to build resources/main/lib/enonic/react4xp/react4xp_constants.json,
+which is used by lib-react4xp during runtime.
+
+The 'react4xp_constants.json' is also used when building components.
+
+The 'react4xp.properties' file may define where an overrideComponentWebpack file exists.
+The 'overrideComponentWebpack' file is only used when building components.
+In this webpack.config.js file it's the same as OVERRIDE_COMPONENT_WEBPACK.
+*/
+
 const StatsPlugin = require("stats-webpack-plugin");
-const path = require("path");
-const fs = require("fs");
-const { makeVerboseLogger, cleanAnyDoublequotes } = require("../util");
+
+const {
+  isAbsolute,
+  join,
+  parse,
+  resolve,
+  sep
+} = require("path");
+
+const {
+  existsSync,
+  lstatSync,
+  readlinkSync,
+  realpathSync,
+  statSync
+} = require("fs");
+
+const {getProperties} = require("../dist/properties/getProperties");
+
+const {
+  cleanAnyDoublequotes,
+  makeVerboseLogger
+} = require("../util");
+
 const React4xpEntriesAndChunks = require("./entriesandchunks");
+
 const {
   COMPONENT_STATS_FILENAME,
   ENTRIES_FILENAME,
   LIBRARY_NAME
-} = require('../dist/constants');
+} = require('../dist/constants.runtime');
+
+const {
+  DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
+  FILE_NAME_R4X_PROPERTIES
+} = require('../dist/constants.buildtime');
 
 // Turns a comma-separated list of subdirectories below the root React4xp source folder (SRC_R4X, usually .../resources/react4xp/)
 // into an array of unique, verified, absolute-path'd and OS-compliant folder names.
@@ -26,7 +66,7 @@ const normalizeDirList = (
         new Set(
           commaSepDirList
             .trim()
-            .replace(/[\\/]/g, path.sep)
+            .replace(/[\\/]/g, sep)
             .replace(/[´`'"]/g, "")
             .split(",")
 
@@ -34,11 +74,11 @@ const normalizeDirList = (
             .filter((item) => !!item)
             .map((item) => item.replace(/[\\/]$/, ""))
             .map((orig) => {
-              let dir = path.resolve(path.join(SRC_R4X, orig));
+              let dir = resolve(join(SRC_R4X, orig));
 
               let realDir = null;
               try {
-                realDir = fs.realpathSync(dir);
+                realDir = realpathSync(dir);
               } catch (e) {
                 if (VERBOSE) {
                   console.warn(
@@ -59,17 +99,17 @@ const normalizeDirList = (
               }
 
               let symlinkTargetDir = null;
-              let lstat = fs.lstatSync(dir);
+              let lstat = lstatSync(dir);
               while (lstat.isSymbolicLink()) {
-                symlinkTargetDir = fs.readlinkSync(dir);
-                dir = path.resolve(dir, "..", symlinkTargetDir);
+                symlinkTargetDir = readlinkSync(dir);
+                dir = resolve(dir, "..", symlinkTargetDir);
 
-                if (fs.existsSync(dir)) {
+                if (existsSync(dir)) {
                   if (dir.startsWith(SRC_R4X)) {
                     // eslint-disable-next-line no-param-reassign
                     symlinksUnderReact4xpRoot[orig] = true;
                   }
-                  lstat = fs.lstatSync(dir);
+                  lstat = lstatSync(dir);
                 } else {
                   throw Error(
                     `${singularLabel.replace(/^\w/, (c) =>
@@ -79,7 +119,7 @@ const normalizeDirList = (
                 }
               }
 
-              lstat = fs.lstatSync(realDir);
+              lstat = lstatSync(realDir);
               if (!lstat.isDirectory()) {
                 throw Error(
                   `Can't add ${singularLabel} '${orig}' from react4xp.properties - ${realDir} was found but is not a directory.`
@@ -99,10 +139,10 @@ const makeExclusionsRegexpString = (currentDir, otherDirs, verboseLog) =>
     .map((dir) => dir.slice(currentDir.length))
     .map((d) => {
       let dir = d;
-      if (dir.startsWith(path.sep)) {
+      if (dir.startsWith(sep)) {
         dir = dir.slice(1);
       }
-      if (dir.endsWith(path.sep)) {
+      if (dir.endsWith(sep)) {
         dir = dir.slice(0, dir.length - 1);
       }
       verboseLog(`\tExcluding '${dir}' relative to '${currentDir}'`);
@@ -115,8 +155,35 @@ const makeExclusionsRegexpString = (currentDir, otherDirs, verboseLog) =>
 // -------------------------------------------------------------
 
 module.exports = (env = {}) => {
+  const DIR_PATH_ABSOLUTE_PROJECT = cleanAnyDoublequotes("DIR_PATH_ABSOLUTE_PROJECT", env.DIR_PATH_ABSOLUTE_PROJECT || process.cwd());
+  if (!isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
+    throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
+  }
+
+  const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
+
+  let overrideComponentWebpack;
+  const FILE_PATH_ABSOLUTE_R4X_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_PROPERTIES);
+  const stats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
+  if (stats.isFile()) {
+    const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
+    if (!isAbsolute(properties.overrideComponentWebpack)) {
+      properties.overrideComponentWebpack = join(DIR_PATH_ABSOLUTE_PROJECT, properties.overrideComponentWebpack);
+    }
+    overrideComponentWebpack = properties.overrideComponentWebpack;
+
+    /*if (!isAbsolute(properties.masterConfigFileName)) {
+      properties.masterConfigFileName = join(DIR_PATH_ABSOLUTE_PROJECT, properties.masterConfigFileName);
+    }
+    console.debug('properties', properties);*/
+  }
+
   // eslint-disable-next-line import/no-dynamic-require, global-require
-  const react4xpConfig = require(path.join(process.cwd(), env.REACT4XP_CONFIG_FILE));
+  const react4xpConfig = require(
+    isAbsolute(env.REACT4XP_CONFIG_FILE)
+      ? env.REACT4XP_CONFIG_FILE
+      : join(DIR_PATH_ABSOLUTE_PROJECT, env.REACT4XP_CONFIG_FILE)
+    );
 
   const {
     SRC_R4X,
@@ -125,30 +192,20 @@ module.exports = (env = {}) => {
     EXTERNALS
   } = react4xpConfig
 
-  let {BUILD_R4X} = react4xpConfig; // Relative
-  BUILD_R4X = path.join(process.cwd(),BUILD_R4X); // Absolute
-
   const DEVMODE = BUILD_ENV !== "production";
 
   const VERBOSE = `${env.VERBOSE || ""}`.trim().toLowerCase() === "true";
   const verboseLog = makeVerboseLogger(VERBOSE);
 
-  const ROOT = cleanAnyDoublequotes("ROOT", env.ROOT || __dirname);
-  verboseLog(ROOT, "ROOT", 1);
+  verboseLog(DIR_PATH_ABSOLUTE_PROJECT, "DIR_PATH_ABSOLUTE_PROJECT", 1);
 
   // TODO: Probably more consistent if this too is a master config file property. Add to react4xp-buildconstants and import above from env.REACT4XP_CONFIG_FILE.
-  let OVERRIDE_COMPONENT_WEBPACK = `${
-    env.OVERRIDE_COMPONENT_WEBPACK || ""
-  }`.trim();
   let overrideCallback = (_, config) => config;
-  if (OVERRIDE_COMPONENT_WEBPACK) {
-    OVERRIDE_COMPONENT_WEBPACK = path.join(
-      process.cwd(),
-      OVERRIDE_COMPONENT_WEBPACK
-    );
+  if (overrideComponentWebpack) {
 
     // eslint-disable-next-line import/no-dynamic-require, global-require
-    const overridden = require(OVERRIDE_COMPONENT_WEBPACK);
+    const overridden = require(overrideComponentWebpack);
+    //console.debug('overridden', overridden); // function
 
     if (typeof overridden === "object") {
       overrideCallback = () => overridden;
@@ -156,7 +213,7 @@ module.exports = (env = {}) => {
       overrideCallback = overridden;
     } else {
       throw Error(
-        `Optional overrideComponentWebpack (${OVERRIDE_COMPONENT_WEBPACK}) doesn't seem to default-export an object or a (env, config) => config function. Should either export a webpack-config-style object directly, OR take an env object and a webpack-config-type object 'config' as arguments, then manipulate or replace config, then return it.`
+        `Optional overrideComponentWebpack (${overrideComponentWebpack}) doesn't seem to default-export an object or a (env, config) => config function. Should either export a webpack-config-style object directly, OR take an env object and a webpack-config-type object 'config' as arguments, then manipulate or replace config, then return it.`
       );
     }
   }
@@ -212,13 +269,13 @@ module.exports = (env = {}) => {
     );
   }
 
-  const siteParsed = path.parse(SRC_SITE);
-  const tooGeneralPaths = SRC_SITE.split(path.sep).reduce((accum, current) => {
+  const siteParsed = parse(SRC_SITE);
+  const tooGeneralPaths = SRC_SITE.split(sep).reduce((accum, current) => {
     const longestPath = accum.slice(-1)[0];
     if (longestPath === undefined) {
       return [siteParsed.root];
     }
-    const dir = path.resolve(longestPath, current);
+    const dir = resolve(longestPath, current);
     if (dir !== SRC_SITE) {
       accum.push(dir);
     }
@@ -269,13 +326,13 @@ module.exports = (env = {}) => {
     {
       //sourcePath: SRC_SITE,
       //sourcePath: `./${SRC_SITE}`, // Relative
-      sourcePath: path.resolve(process.cwd(), SRC_SITE), // Absolute
+      sourcePath: resolve(process.cwd(), SRC_SITE), // Absolute
       sourceExtensions: ["jsx", "tsx"],
       targetSubDir: "site",
     },
     /*{
-      sourcePath: path.join(
-        ROOT || process.cwd(),
+      sourcePath: join(
+        DIR_PATH_ABSOLUTE_PROJECT || process.cwd(),
         "node_modules",
         "react4xp-regions",
         "entries"
@@ -292,7 +349,7 @@ module.exports = (env = {}) => {
   //console.debug('ENTRIES_FILENAME', ENTRIES_FILENAME); // entries.json
   const entries = React4xpEntriesAndChunks.getEntries(
     entrySets,
-    BUILD_R4X,
+    DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
     ENTRIES_FILENAME,
     verboseLog
   );
@@ -382,11 +439,11 @@ module.exports = (env = {}) => {
   // Add new cacheGroups, excluding (by regexp) both other chunknames and entrydirs
   const takenNames = ["vendors", "templates", "react4xp"];
   chunkDirs.forEach((chunkDir) => {
-    let name = chunkDir.split(path.sep).slice(-1)[0];
+    let name = chunkDir.split(sep).slice(-1)[0];
     if (takenNames.indexOf(name) !== -1) {
       name = `react4xp_${chunkDir
         .slice(SRC_R4X.length)
-        .replace(new RegExp(path.sep, "g"), "__")}`;
+        .replace(new RegExp(sep, "g"), "__")}`;
 
       while (takenNames.indexOf(name) !== -1) {
         name += "_";
@@ -431,7 +488,7 @@ module.exports = (env = {}) => {
     entry: entries,
 
     output: {
-      path: BUILD_R4X, // <-- Sets the base url for plugins and other target dirs. Note the use of {{assetUrl}} in index.html (or index.ejs).
+      path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, // <-- Sets the base url for plugins and other target dirs. Note the use of {{assetUrl}} in index.html (or index.ejs).
       filename: '[name].[contenthash].js',
       library: {
         name: [LIBRARY_NAME, "[name]"],
