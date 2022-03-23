@@ -34,12 +34,6 @@ See the caveat above, but if you want to override any parameters locally to this
 
 - `REACT4XP_CONFIG_FILE`: mandatory webpack CLI argument: the name of a shared general react4xp config file.
 
-- `BUILD_R4X`: absolute path to target folder into which the nashorn-polyfills assets will be compiled along with other
-  react4xp assets - and where the runtime will be looking for them.
-
 - `NASHORNPOLYFILLS_SOURCE`: the nashornpolyfills package supplies a standard polyfills setup. But with this parameter
   you can point to an uncompiled source file with _additional_ polyfill code. Path with file name and extension,
   relative to the root project.
-
-- `NASHORNPOLYFILLS_FILENAME`: name of compiled output file for the additional nashorn polyfilling. No path or file
-  extension, only file name.

@@ -2,92 +2,127 @@
 
 const Chunks2json = require('chunks-2-json-webpack-plugin');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
-const path = require("path");
-const { makeVerboseLogger, cleanAnyDoublequotes } = require("../util");
+
 const {
+  statSync
+} = require("fs");
+
+const {
+  isAbsolute,
+  join,
+  resolve
+} = require('path');
+
+const {
+  cleanAnyDoublequotes,
+  makeVerboseLogger
+} = require("../util");
+
+const {
+  FILE_STEM_NASHORNPOLYFILLS,
   NASHORNPOLYFILLS_CHUNKS_FILENAME
 } = require('../dist/constants.runtime');
 const {
-  DIR_PATH_RELATIVE_BUILD_ASSETS_R4X
+  DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
+  FILE_NAME_R4X_PROPERTIES
 } = require('../dist/constants.buildtime');
+const {getProperties} = require("../dist/properties/getProperties");
+const {isSet} = require("../dist/util/isSet");
 
 
 module.exports = (env) => {
   env = env || {}; // eslint-disable-line no-param-reassign
 
   const DIR_PATH_ABSOLUTE_PROJECT = cleanAnyDoublequotes("DIR_PATH_ABSOLUTE_PROJECT", env.DIR_PATH_ABSOLUTE_PROJECT || process.cwd());
-  if (!path.isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
+  if (!isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
     throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
   }
 
-  const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = path.join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
+  const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
 
-  let BUILD_ENV = env.BUILD_ENV || "production";
-  let { NASHORNPOLYFILLS_FILENAME } = env;
-  let { verbose } = env;
+  let {
+    BUILD_ENV = 'production',
+    NASHORNPOLYFILLS_SOURCE = join(__dirname, 'nashornPolyfills.es6'),
+    VERBOSE = false
+  } = env;
+  //console.debug('BUILD_ENV', BUILD_ENV);
+  //console.debug('NASHORNPOLYFILLS_SOURCE', NASHORNPOLYFILLS_SOURCE);
+  //console.debug('VERBOSE', VERBOSE);
 
-  let { NASHORNPOLYFILLS_SOURCE } = env; // || path.join(__dirname, 'nashornPolyfills.es6');
-
-  if (env.REACT4XP_CONFIG_FILE) {
-    try {
-      // eslint-disable-next-line import/no-dynamic-require, global-require
-      const config = require(
-        path.isAbsolute(env.REACT4XP_CONFIG_FILE)
-          ? env.REACT4XP_CONFIG_FILE
-          : path.join(DIR_PATH_ABSOLUTE_PROJECT, env.REACT4XP_CONFIG_FILE)
-      );
-      BUILD_ENV = BUILD_ENV || config.BUILD_ENV;
-      NASHORNPOLYFILLS_SOURCE =
-        NASHORNPOLYFILLS_SOURCE || config.NASHORNPOLYFILLS_SOURCE;
-      NASHORNPOLYFILLS_FILENAME = config.NASHORNPOLYFILLS_FILENAME;
-      verbose = verbose || config.verbose;
-    } catch (e) {
-      console.error(e);
+  const FILE_PATH_ABSOLUTE_R4X_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_PROPERTIES);
+  const stats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
+  if (stats.isFile()) {
+    const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
+    //console.debug('nashornPolyfills/webpack.config.js properties', properties);
+    if (isSet(properties.buildEnv)) {
+      BUILD_ENV = cleanAnyDoublequotes('buildEnv', properties.buildEnv);
     }
-  }
+    if (isSet(properties.nashornPolyfillsSource)) {
+      NASHORNPOLYFILLS_SOURCE = cleanAnyDoublequotes('nashornPolyfillsSource', properties.nashornPolyfillsSource);
+    }
+    if (isSet(properties.verbose)) {
+      VERBOSE = cleanAnyDoublequotes('verbose', properties.verbose) !== 'false';
+    }
+  } // if react4xp.properties
+  //console.debug('BUILD_ENV', BUILD_ENV);
+  //console.debug('NASHORNPOLYFILLS_SOURCE', NASHORNPOLYFILLS_SOURCE);
+  //console.debug('VERBOSE', VERBOSE);
 
-  const verboseLog = makeVerboseLogger(verbose);
+  const verboseLog = makeVerboseLogger(VERBOSE);
 
-  /*if (`${NASHORNPOLYFILLS_SOURCE || ""}`.trim() === "") {
-    throw Error(
-      `react4xp-runtime-nashornpolyfills: no source filename is set (NASHORNPOLYFILLS_SOURCE). Check react4xp-runtime-nashornpolyfills build setup, for env parameters${
-        env.REACT4XP_CONFIG_FILE
-          ? ` or in the master config file (${env.REACT4XP_CONFIG_FILE}, usually built by react4xp-buildconstants)`
-          : ""
-      }.`
+  const FILE_PATH_ABSOLUTE_SRC_NASHORNPOLYFILLS = isAbsolute(NASHORNPOLYFILLS_SOURCE)
+    ? NASHORNPOLYFILLS_SOURCE
+    : join(
+      DIR_PATH_ABSOLUTE_PROJECT,
+      NASHORNPOLYFILLS_SOURCE
     );
-  }*/
-
-  if (`${NASHORNPOLYFILLS_FILENAME || ""}`.trim() === "") {
-    throw Error(
-      `Can't build nashorn polyfills from source (${NASHORNPOLYFILLS_SOURCE}): missing target filename (NASHORNPOLYFILLS_FILENAME). Check react4xp-runtime-nashornpolyfills build setup, for env parameters${
-        env.REACT4XP_CONFIG_FILE
-          ? ` or in the master config file (${env.REACT4XP_CONFIG_FILE}, usually built by react4xp-buildconstants)`
-          : ""
-      }.`
-    );
-  }
 
   verboseLog(
-    `Adding custom nashorn polyfills: compiling ${path.join(
-      process.cwd(),
-      NASHORNPOLYFILLS_SOURCE
-    )} --> ${path.join(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, NASHORNPOLYFILLS_FILENAME)}`
+    `Adding custom nashorn polyfills: compiling ${FILE_PATH_ABSOLUTE_SRC_NASHORNPOLYFILLS} --> ${join(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, FILE_STEM_NASHORNPOLYFILLS)}`
   );
 
   return {
+    entry: {
+      [FILE_STEM_NASHORNPOLYFILLS]: FILE_PATH_ABSOLUTE_SRC_NASHORNPOLYFILLS
+    },
+
     mode: BUILD_ENV,
 
-    entry: {
-      [NASHORNPOLYFILLS_FILENAME]: path.isAbsolute(NASHORNPOLYFILLS_SOURCE) ? NASHORNPOLYFILLS_SOURCE : path.join(
-        DIR_PATH_ABSOLUTE_PROJECT,
-        NASHORNPOLYFILLS_SOURCE
-      ),
-    },
+    module: {
+      rules: [
+        {
+          test: /\.es6$/,
+          //exclude: /node_modules/,
+          exclude: [ // It takes time to transpile, if you know they don't need transpilation to run in Enonic you may list them here:
+    				/node_modules[\\/]core-js/, // will cause errors if they are transpiled by Babel
+    				/node_modules[\\/]webpack[\\/]buildin/ // will cause errors if they are transpiled by Babel
+    			],
+          use: {
+            loader: "babel-loader",
+            options: {
+              babelrc: false,
+              comments: false,
+              compact: BUILD_ENV !== "development",
+              minified: BUILD_ENV !== "development",
+              presets: [
+                "@babel/preset-react",
+                "@babel/preset-env"
+              ],
+              plugins: [
+                "@babel/plugin-proposal-object-rest-spread",
+                "@babel/plugin-transform-arrow-functions",
+                '@babel/plugin-transform-block-scoping' // transpile 'const' and 'let to 'var'
+              ],
+            },
+          },
+        },
+      ],
+    }, // module
 
     optimization: {
   		minimize: BUILD_ENV !== "development"
   	},
+
     output: {
       path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
       //filename: "[name].js",
@@ -127,7 +162,8 @@ module.exports = (env) => {
 
       /*libraryTarget: 'umd2', // 8111B
       globalObject: 'this'*/
-    },
+    }, // output
+
     plugins: [
       new FileManagerPlugin({
         events: {
@@ -142,40 +178,11 @@ module.exports = (env) => {
         outputDir: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
         filename: NASHORNPOLYFILLS_CHUNKS_FILENAME,
       }),
-    ],
+    ], // plugins
 
     resolve: {
       extensions: [".es6", ".js", ".jsx"],
-    },
-    module: {
-      rules: [
-        {
-          test: /\.es6$/,
-          //exclude: /node_modules/,
-          exclude: [ // It takes time to transpile, if you know they don't need transpilation to run in Enonic you may list them here:
-    				/node_modules[\\/]core-js/, // will cause errors if they are transpiled by Babel
-    				/node_modules[\\/]webpack[\\/]buildin/ // will cause errors if they are transpiled by Babel
-    			],
-          use: {
-            loader: "babel-loader",
-            options: {
-              babelrc: false,
-              comments: false,
-              compact: BUILD_ENV !== "development",
-              minified: BUILD_ENV !== "development",
-              presets: [
-                "@babel/preset-react",
-                "@babel/preset-env"
-              ],
-              plugins: [
-                "@babel/plugin-proposal-object-rest-spread",
-                "@babel/plugin-transform-arrow-functions",
-                '@babel/plugin-transform-block-scoping' // transpile 'const' and 'let to 'var'
-              ],
-            },
-          },
-        },
-      ],
-    },
+      modules: [resolve(DIR_PATH_ABSOLUTE_PROJECT, 'node_modules')]
+    }
   };
 };

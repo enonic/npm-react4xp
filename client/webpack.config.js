@@ -4,14 +4,28 @@
 
 /* global __filename, process, __dirname */
 
-const path = require('path');
+const {
+  statSync
+} = require('fs');
+
+const {
+  isAbsolute,
+  join,
+  resolve
+} = require('path');
+
 const {
   CLIENT_CHUNKS_FILENAME,
   LIBRARY_NAME
 } = require('../dist/constants.runtime');
 const {
-  DIR_PATH_RELATIVE_BUILD_ASSETS_R4X
+  DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
+  EXTERNALS_DEFAULT,
+  FILE_NAME_R4X_CONFIG_JSON,
+  FILE_NAME_R4X_PROPERTIES
 } = require('../dist/constants.buildtime');
+const {getProperties} = require("../dist/properties/getProperties");
+const {isSet} = require("../dist/util/isSet");
 const {makeVerboseLogger, cleanAnyDoublequotes} = require("../util");
 
 const Chunks2json = require('chunks-2-json-webpack-plugin');
@@ -24,29 +38,48 @@ module.exports = env => {
   //console.debug('env', env);
 
   const DIR_PATH_ABSOLUTE_PROJECT = cleanAnyDoublequotes("DIR_PATH_ABSOLUTE_PROJECT", env.DIR_PATH_ABSOLUTE_PROJECT || process.cwd());
-  if (!path.isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
+  if (!isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
     throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
   }
 
-  const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = path.join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
+  const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
 
-  const overridden = (Object.keys(env).length !== 1 && Object.keys(env)[0] !== "REACT4XP_CONFIG_FILE");
-  //console.debug('overridden', overridden);
+  let EXTERNALS = EXTERNALS_DEFAULT;
+  //console.debug('EXTERNALS', EXTERNALS);
+  const FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JSON);
+  const configJsonStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
+  if (configJsonStats.isFile()) {
+    const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
+    //console.debug('config', config);
+    if (config.externals) {
+      EXTERNALS = Object.assign(config.externals, EXTERNALS);
+    }
+  } // if FILE_NAME_R4X_CONFIG_JSON
+  //console.debug('EXTERNALS', EXTERNALS);
 
-  // Gets the following constants from the config file UNLESS they are overridden by an env parameter, which takes priority:
-  const {
-    BUILD_ENV, VERBOSE
-  } = Object.assign(
-    {},
-    env,
-    env.REACT4XP_CONFIG_FILE ?
-      require(path.isAbsolute(env.REACT4XP_CONFIG_FILE)
-        ? env.REACT4XP_CONFIG_FILE
-        : path.join(DIR_PATH_ABSOLUTE_PROJECT, env.REACT4XP_CONFIG_FILE)) :
-      {}
-  );
-  //console.debug('BUILD_ENV', BUILD_ENV);
-  //console.debug('VERBOSE', VERBOSE);
+  let {
+    BUILD_ENV = 'production',
+    VERBOSE = false
+  } = env;
+  console.debug('BUILD_ENV', BUILD_ENV);
+  console.debug('VERBOSE', VERBOSE);
+
+  const FILE_PATH_ABSOLUTE_R4X_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_PROPERTIES);
+  const r4xPropertiesStats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
+  if (r4xPropertiesStats.isFile()) {
+    const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
+    //console.debug('properties', properties);
+
+    if (isSet(properties.buildEnv)) {
+      BUILD_ENV = cleanAnyDoublequotes('buildEnv', properties.buildEnv);
+    }
+
+    if (isSet(properties.verbose)) {
+      VERBOSE = cleanAnyDoublequotes('verbose', properties.verbose) !== 'false';
+    }
+  } // if FILE_NAME_R4X_PROPERTIES
+  console.debug('BUILD_ENV', BUILD_ENV);
+  console.debug('VERBOSE', VERBOSE);
 
   const verboseLog = makeVerboseLogger(VERBOSE);
 
@@ -54,49 +87,17 @@ module.exports = env => {
 
   verboseLog(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, "DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X", 1);
 
-  verboseLog(LIBRARY_NAME, "LIBRARY_NAME", 1);
-
-  if (overridden) {
-    verboseLog({
-      DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
-      LIBRARY_NAME,
-      BUILD_ENV,
-      CLIENT_CHUNKS_FILENAME,
-      DIR_PATH_ABSOLUTE_PROJECT,
-    }, "Client build config overridden at " + __filename, 1);
-  }
-
   const outputConfig = {
-    mode: BUILD_ENV,
+    devtool: (BUILD_ENV === 'production') ? false : 'source-map',
 
     entry: {
-      'react4xpClient': path.join(__dirname, 'react4xpClient.es6'),
+      'react4xpClient': join(__dirname, 'react4xpClient.es6'),
     },
 
-    output: {
-      path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,  // <-- Sets the base url for plugins and other target dirs.
-      filename: '[name].[contenthash].js',
-      library: {
-        name: [LIBRARY_NAME, 'CLIENT'],
-        type: 'var',
-      },
-      globalObject: 'window',
-      environment: {
-        arrowFunction: false,
-        bigIntLiteral: false,
-        const: false,
-        destructuring: false,
-        dynamicImport: false,
-        forOf: false,
-        module: false,
-      },
-    },
+    externals: EXTERNALS,
 
-    resolve: {
-      extensions: ['.es6', '.js', '.jsx'],
-      modules: [path.resolve(DIR_PATH_ABSOLUTE_PROJECT, 'node_modules')],
-    },
-    devtool: (BUILD_ENV === 'production') ? false : 'source-map',
+    mode: BUILD_ENV,
+
     module: {
       rules: [
         {
@@ -119,14 +120,26 @@ module.exports = env => {
           },
         },
       ],
-    },
+    }, // module
 
-    // TODO: Replace hardcoded values with EXTERNALS from buildconstants!
-    externals: {
-      "react": "React",
-      "react-dom": "ReactDOM",
-      "react-dom/server": "ReactDOMServer",
-    },
+    output: {
+      path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,  // <-- Sets the base url for plugins and other target dirs.
+      filename: '[name].[contenthash].js',
+      library: {
+        name: [LIBRARY_NAME, 'CLIENT'],
+        type: 'var',
+      },
+      globalObject: 'window',
+      environment: {
+        arrowFunction: false,
+        bigIntLiteral: false,
+        const: false,
+        destructuring: false,
+        dynamicImport: false,
+        forOf: false,
+        module: false,
+      },
+    }, // output
 
     plugins: [
       new FileManagerPlugin({
@@ -157,7 +170,12 @@ module.exports = env => {
           'those Regions.\\n\\n' +
           'See: https://github.com/enonic/lib-react4xp/issues/38`);\n}',
       }),
-    ],
+    ], // plugins
+
+    resolve: {
+      extensions: ['.es6', '.js', '.jsx'],
+      modules: [resolve(DIR_PATH_ABSOLUTE_PROJECT, 'node_modules')]
+    }
   };
 
   verboseLog(outputConfig, "Client build output config", 1);

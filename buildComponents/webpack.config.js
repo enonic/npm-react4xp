@@ -53,16 +53,20 @@ const {
 
 const {
   DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
+  DIR_PATH_RELATIVE_SRC_R4X,
+  DIR_PATH_RELATIVE_SRC_SITE,
+  EXTERNALS_DEFAULT,
+  FILE_NAME_R4X_CONFIG_JSON,
   FILE_NAME_R4X_PROPERTIES
 } = require('../dist/constants.buildtime');
 
-// Turns a comma-separated list of subdirectories below the root React4xp source folder (SRC_R4X, usually .../resources/react4xp/)
+// Turns a comma-separated list of subdirectories below the root React4xp source folder (DIR_PATH_ABSOLUTE_SRC_R4X, usually .../resources/react4xp/)
 // into an array of unique, verified, absolute-path'd and OS-compliant folder names.
 // Halts on errors, displays warnings, skips items that are not found.
 const normalizeDirList = (
   commaSepDirList,
   singularLabel,
-  SRC_R4X,
+  DIR_PATH_ABSOLUTE_SRC_R4X,
   symlinksUnderReact4xpRoot,
   VERBOSE
 ) =>
@@ -79,7 +83,7 @@ const normalizeDirList = (
             .filter((item) => !!item)
             .map((item) => item.replace(/[\\/]$/, ""))
             .map((orig) => {
-              let dir = resolve(join(SRC_R4X, orig));
+              let dir = resolve(join(DIR_PATH_ABSOLUTE_SRC_R4X, orig));
 
               let realDir = null;
               try {
@@ -110,7 +114,7 @@ const normalizeDirList = (
                 dir = resolve(dir, "..", symlinkTargetDir);
 
                 if (existsSync(dir)) {
-                  if (dir.startsWith(SRC_R4X)) {
+                  if (dir.startsWith(DIR_PATH_ABSOLUTE_SRC_R4X)) {
                     // eslint-disable-next-line no-param-reassign
                     symlinksUnderReact4xpRoot[orig] = true;
                   }
@@ -167,6 +171,26 @@ module.exports = (env = {}) => {
 
   const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
 
+  let {
+    BUILD_ENV = 'production',
+    VERBOSE = false
+  } = env;
+  //console.debug('BUILD_ENV', BUILD_ENV);
+  //console.debug('VERBOSE', VERBOSE);
+
+  let EXTERNALS = EXTERNALS_DEFAULT;
+  //console.debug('EXTERNALS', EXTERNALS);
+  const FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JSON);
+  const configJsonStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
+  if (configJsonStats.isFile()) {
+    const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
+    //console.debug('config', config);
+    if (config.externals) {
+      EXTERNALS = Object.assign(config.externals, EXTERNALS);
+    }
+  } // if FILE_NAME_R4X_CONFIG_JSON
+  //console.debug('EXTERNALS', EXTERNALS);
+
   const runtimeSettingsLibR4x = {
     SSR_LAZYLOAD: true,
     SSR_ENGINE_SETTINGS: 0,
@@ -179,6 +203,10 @@ module.exports = (env = {}) => {
   if (stats.isFile()) {
     const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
     //console.debug('properties', properties);
+
+    if (isSet(properties.buildEnv)) {
+      BUILD_ENV = cleanAnyDoublequotes('buildEnv', properties.buildEnv);
+    }
 
     if (isSet(properties.ssrLazyload)) {
       runtimeSettingsLibR4x.SSR_LAZYLOAD = properties.ssrLazyload !== 'false';
@@ -196,11 +224,10 @@ module.exports = (env = {}) => {
     }
     overrideComponentWebpack = properties.overrideComponentWebpack;
 
-    /*if (!isAbsolute(properties.masterConfigFileName)) {
-      properties.masterConfigFileName = join(DIR_PATH_ABSOLUTE_PROJECT, properties.masterConfigFileName);
+    if (isSet(properties.verbose)) {
+      VERBOSE = cleanAnyDoublequotes('verbose', properties.verbose) !== 'false';
     }
-    console.debug('properties', properties);*/
-  }
+  }  // if react4xp.properties
   //console.debug('runtimeSettingsLibR4x', runtimeSettingsLibR4x);
 
   //console.debug('DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X', DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X);
@@ -213,23 +240,14 @@ module.exports = (env = {}) => {
   const fileDescriptorOverwriteMode = openSync(FILE_PATH_ABSOLUTE_R4X_RUNTIME_SETTINGS, 'w');
   writeSync(fileDescriptorOverwriteMode, JSON.stringify(runtimeSettingsLibR4x));
 
-  // eslint-disable-next-line import/no-dynamic-require, global-require
-  const react4xpConfig = require(
-    isAbsolute(env.REACT4XP_CONFIG_FILE)
-      ? env.REACT4XP_CONFIG_FILE
-      : join(DIR_PATH_ABSOLUTE_PROJECT, env.REACT4XP_CONFIG_FILE)
-    );
+  const DIR_PATH_ABSOLUTE_SRC_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_SRC_R4X);
+  //console.debug('DIR_PATH_ABSOLUTE_SRC_R4X', DIR_PATH_ABSOLUTE_SRC_R4X);
 
-  const {
-    SRC_R4X,
-    BUILD_ENV,
-    SRC_SITE,
-    EXTERNALS
-  } = react4xpConfig
+  const DIR_PATH_ABSOLUTE_SRC_SITE = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_SRC_SITE);
+  //console.debug('DIR_PATH_ABSOLUTE_SRC_SITE', DIR_PATH_ABSOLUTE_SRC_SITE);
 
   const DEVMODE = BUILD_ENV !== "production";
 
-  const VERBOSE = `${env.VERBOSE || ""}`.trim().toLowerCase() === "true";
   const verboseLog = makeVerboseLogger(VERBOSE);
 
   verboseLog(DIR_PATH_ABSOLUTE_PROJECT, "DIR_PATH_ABSOLUTE_PROJECT", 1);
@@ -260,7 +278,7 @@ module.exports = (env = {}) => {
   const chunkDirs = normalizeDirList(
     env.CHUNK_DIRS,
     "chunkDir",
-    SRC_R4X,
+    DIR_PATH_ABSOLUTE_SRC_R4X,
     symlinksUnderReact4xpRoot,
     VERBOSE
   );
@@ -268,7 +286,7 @@ module.exports = (env = {}) => {
   const entryDirs = normalizeDirList(
     env.ENTRY_DIRS,
     "entryDir",
-    SRC_R4X,
+    DIR_PATH_ABSOLUTE_SRC_R4X,
     symlinksUnderReact4xpRoot,
     VERBOSE
   );
@@ -288,7 +306,7 @@ module.exports = (env = {}) => {
     console.warn(
       `Warning: ${
         symlinksUnderReact4xpRoot.length
-      } chunkDir(s) / entryDir(s) in react4xp.properties are symlinks that lead inside the folder structure below the React4xp root (${SRC_R4X}). This could cause a mess in React4xp's entry/chunk structure, so I hope you know what you're doing. These are: '${symlinksUnderReact4xpRoot.join(
+      } chunkDir(s) / entryDir(s) in react4xp.properties are symlinks that lead inside the folder structure below the React4xp root (${DIR_PATH_ABSOLUTE_SRC_R4X}). This could cause a mess in React4xp's entry/chunk structure, so I hope you know what you're doing. These are: '${symlinksUnderReact4xpRoot.join(
         "', '"
       )}'`
     );
@@ -304,14 +322,14 @@ module.exports = (env = {}) => {
     );
   }
 
-  const siteParsed = parse(SRC_SITE);
-  const tooGeneralPaths = SRC_SITE.split(sep).reduce((accum, current) => {
+  const siteParsed = parse(DIR_PATH_ABSOLUTE_SRC_SITE);
+  const tooGeneralPaths = DIR_PATH_ABSOLUTE_SRC_SITE.split(sep).reduce((accum, current) => {
     const longestPath = accum.slice(-1)[0];
     if (longestPath === undefined) {
       return [siteParsed.root];
     }
     const dir = resolve(longestPath, current);
-    if (dir !== SRC_SITE) {
+    if (dir !== DIR_PATH_ABSOLUTE_SRC_SITE) {
       accum.push(dir);
     }
     return accum;
@@ -319,8 +337,8 @@ module.exports = (env = {}) => {
 
   const badChunkDirs = chunkDirs.filter(
     (dir) =>
-      dir === SRC_SITE ||
-      dir.startsWith(SRC_SITE) ||
+      dir === DIR_PATH_ABSOLUTE_SRC_SITE ||
+      dir.startsWith(DIR_PATH_ABSOLUTE_SRC_SITE) ||
       tooGeneralPaths.indexOf(dir) !== -1
   );
   if (badChunkDirs.length) {
@@ -359,9 +377,7 @@ module.exports = (env = {}) => {
   // Build the entries
   const entrySets = [
     {
-      //sourcePath: SRC_SITE,
-      //sourcePath: `./${SRC_SITE}`, // Relative
-      sourcePath: resolve(process.cwd(), SRC_SITE), // Absolute
+      sourcePath: DIR_PATH_ABSOLUTE_SRC_SITE,
       sourceExtensions: ["jsx", "tsx"],
       targetSubDir: "site",
     },
@@ -439,7 +455,7 @@ module.exports = (env = {}) => {
 
   const detectedTargetDirs = [...entryDirs, ...chunkDirs];
   const react4xpExclusions = makeExclusionsRegexpString(
-    SRC_R4X,
+    DIR_PATH_ABSOLUTE_SRC_R4X,
     detectedTargetDirs,
     verboseLog
   );
@@ -463,7 +479,7 @@ module.exports = (env = {}) => {
       enforce: true,
       chunks: "all",
       priority: 1,
-      test: `${SRC_R4X}${
+      test: `${DIR_PATH_ABSOLUTE_SRC_R4X}${
         react4xpExclusions
           ? `[\\\\/]((?!(${react4xpExclusions})).)[\\\\/]?`
           : ""
@@ -477,7 +493,7 @@ module.exports = (env = {}) => {
     let name = chunkDir.split(sep).slice(-1)[0];
     if (takenNames.indexOf(name) !== -1) {
       name = `react4xp_${chunkDir
-        .slice(SRC_R4X.length)
+        .slice(DIR_PATH_ABSOLUTE_SRC_R4X.length)
         .replace(new RegExp(sep, "g"), "__")}`;
 
       while (takenNames.indexOf(name) !== -1) {
@@ -518,34 +534,13 @@ module.exports = (env = {}) => {
   // ------------------------------------------
 
   const config = {
-    mode: BUILD_ENV,
+    devtool: DEVMODE ? "source-map" : false,
 
     entry: entries,
 
-    output: {
-      path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, // <-- Sets the base url for plugins and other target dirs. Note the use of {{assetUrl}} in index.html (or index.ejs).
-      filename: '[name].[contenthash].js',
-      library: {
-        name: [LIBRARY_NAME, "[name]"],
-        type: "var",
-      },
-      globalObject: "window",
-      environment: {
-        arrowFunction: false,
-        bigIntLiteral: false,
-        const: false,
-        destructuring: false,
-        dynamicImport: false,
-        forOf: false,
-        module: false,
-      },
-    },
+    externals: EXTERNALS,
 
-    resolve: {
-      extensions: [".es6", ".js", ".jsx"]
-    },
-
-    devtool: DEVMODE ? "source-map" : false,
+    mode: BUILD_ENV,
 
     module: {
       rules: [
@@ -566,9 +561,8 @@ module.exports = (env = {}) => {
           },
         },
       ],
-    },
+    }, // module
 
-    externals: EXTERNALS,
 
     optimization: {
       splitChunks: {
@@ -576,6 +570,25 @@ module.exports = (env = {}) => {
         cacheGroups,
       },
     },
+
+    output: {
+      path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, // <-- Sets the base url for plugins and other target dirs. Note the use of {{assetUrl}} in index.html (or index.ejs).
+      filename: '[name].[contenthash].js',
+      library: {
+        name: [LIBRARY_NAME, "[name]"],
+        type: "var",
+      },
+      globalObject: "window",
+      environment: {
+        arrowFunction: false,
+        bigIntLiteral: false,
+        const: false,
+        destructuring: false,
+        dynamicImport: false,
+        forOf: false,
+        module: false,
+      },
+    }, // output
 
     plugins: [
       new StatsPlugin(COMPONENT_STATS_FILENAME, {
@@ -609,7 +622,12 @@ module.exports = (env = {}) => {
         usedExports: false,
         version: false,
       }),
-    ],
+    ], // plugins
+
+    resolve: {
+      extensions: [".es6", ".js", ".jsx"],
+      modules: [resolve(DIR_PATH_ABSOLUTE_PROJECT, 'node_modules')]
+    }
   };
 
   const outputConfig = overrideCallback(env, config);
