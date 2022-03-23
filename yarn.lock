@@ -2119,7 +2119,7 @@ es-module-lexer@^0.9.0:
 
 es6-set-and-map@^1.0.5:
   version "1.0.5"
-  resolved "https://registry.npmjs.org/es6-set-and-map/-/es6-set-and-map-1.0.5.tgz"
+  resolved "https://registry.yarnpkg.com/es6-set-and-map/-/es6-set-and-map-1.0.5.tgz#98524f76db4d4ac8cc37bff2c15696f3667c9db4"
   integrity sha1-mFJPdttNSsjMN7/ywVaW82Z8nbQ=
 
 escalade@^3.1.1:

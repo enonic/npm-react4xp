@@ -39,10 +39,11 @@ module.exports = (env) => {
   }
 
   const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
+  const FILE_PATH_ABSOLUTE_SRC_NASHORNPOLYFILLS_DEFAULT = join(__dirname, 'nashornPolyfills.es6');
 
   let {
     BUILD_ENV = 'production',
-    NASHORNPOLYFILLS_SOURCE = join(__dirname, 'nashornPolyfills.es6'),
+    NASHORNPOLYFILLS_SOURCE,
     VERBOSE = false
   } = env;
   //console.debug('BUILD_ENV', BUILD_ENV);
@@ -70,20 +71,28 @@ module.exports = (env) => {
 
   const verboseLog = makeVerboseLogger(VERBOSE);
 
-  const FILE_PATH_ABSOLUTE_SRC_NASHORNPOLYFILLS = isAbsolute(NASHORNPOLYFILLS_SOURCE)
-    ? NASHORNPOLYFILLS_SOURCE
-    : join(
+  if (
+    isSet(NASHORNPOLYFILLS_SOURCE) &&
+    !isAbsolute(NASHORNPOLYFILLS_SOURCE)
+  ) {
+    NASHORNPOLYFILLS_SOURCE = join(
       DIR_PATH_ABSOLUTE_PROJECT,
       NASHORNPOLYFILLS_SOURCE
     );
+  }
 
   verboseLog(
-    `Adding custom nashorn polyfills: compiling ${FILE_PATH_ABSOLUTE_SRC_NASHORNPOLYFILLS} --> ${join(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, FILE_STEM_NASHORNPOLYFILLS)}`
+    `Adding custom nashorn polyfills: compiling ${NASHORNPOLYFILLS_SOURCE} --> ${join(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, FILE_STEM_NASHORNPOLYFILLS)}`
   );
 
-  return {
+  const webpackConfigObjectNashornPolyfills = {
     entry: {
-      [FILE_STEM_NASHORNPOLYFILLS]: FILE_PATH_ABSOLUTE_SRC_NASHORNPOLYFILLS
+      [FILE_STEM_NASHORNPOLYFILLS]: isSet(NASHORNPOLYFILLS_SOURCE)
+        ? [
+          FILE_PATH_ABSOLUTE_SRC_NASHORNPOLYFILLS_DEFAULT,
+          NASHORNPOLYFILLS_SOURCE
+        ]
+        : FILE_PATH_ABSOLUTE_SRC_NASHORNPOLYFILLS_DEFAULT
     },
 
     mode: BUILD_ENV,
@@ -182,7 +191,12 @@ module.exports = (env) => {
 
     resolve: {
       extensions: [".es6", ".js", ".jsx"],
-      modules: [resolve(DIR_PATH_ABSOLUTE_PROJECT, 'node_modules')]
+      modules: [
+        resolve(DIR_PATH_ABSOLUTE_PROJECT, 'node_modules'),
+        'node_modules'
+      ]
     }
-  };
+  }; // webpackConfigObjectNashornPolyfills
+  //console.debug('webpackConfigObjectNashornPolyfills', webpackConfigObjectNashornPolyfills);
+  return webpackConfigObjectNashornPolyfills;
 };
