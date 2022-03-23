@@ -173,6 +173,9 @@ module.exports = (env = {}) => {
 
   let {
     BUILD_ENV = 'production',
+    CHUNK_DIRS,
+    ENTRY_DIRS,
+    ENTRY_EXT = 'jsx,tsx,js,ts,es6,es',
     VERBOSE = false
   } = env;
   //console.debug('BUILD_ENV', BUILD_ENV);
@@ -206,6 +209,18 @@ module.exports = (env = {}) => {
 
     if (isSet(properties.buildEnv)) {
       BUILD_ENV = cleanAnyDoublequotes('buildEnv', properties.buildEnv);
+    }
+
+    if (isSet(properties.chunkDirs)) {
+      CHUNK_DIRS = cleanAnyDoublequotes('chunkDirs', properties.chunkDirs);
+    }
+
+    if (isSet(properties.entryDirs)) {
+      ENTRY_DIRS = cleanAnyDoublequotes('entryDirs', properties.entryDirs);
+    }
+
+    if (isSet(properties.entryExtensions)) {
+      ENTRY_EXT = cleanAnyDoublequotes('entryExtensions', properties.entryExtensions);
     }
 
     if (isSet(properties.ssrLazyload)) {
@@ -276,7 +291,7 @@ module.exports = (env = {}) => {
   let symlinksUnderReact4xpRoot = {};
 
   const chunkDirs = normalizeDirList(
-    env.CHUNK_DIRS,
+    CHUNK_DIRS,
     "chunkDir",
     DIR_PATH_ABSOLUTE_SRC_R4X,
     symlinksUnderReact4xpRoot,
@@ -284,16 +299,16 @@ module.exports = (env = {}) => {
   );
 
   const entryDirs = normalizeDirList(
-    env.ENTRY_DIRS,
+    ENTRY_DIRS,
     "entryDir",
     DIR_PATH_ABSOLUTE_SRC_R4X,
     symlinksUnderReact4xpRoot,
     VERBOSE
   );
 
-  verboseLog(env.CHUNK_DIRS, "\n\n---\nenv.CHUNK_DIRS", 1);
+  verboseLog(CHUNK_DIRS, "\n\n---\nCHUNK_DIRS", 1);
   verboseLog(chunkDirs, "--> chunkDirs", 1);
-  verboseLog(env.ENTRY_DIRS, "\n\n---\nenv.ENTRY_DIRS", 1);
+  verboseLog(ENTRY_DIRS, "\n\n---\nENTRY_DIRS", 1);
   verboseLog(entryDirs, "--> entryDirs", 1);
   verboseLog("---\n");
 
@@ -366,7 +381,7 @@ module.exports = (env = {}) => {
   // ------------------- Build the entry list:
 
   // Normalize and clean the entry extensions list:
-  const entryExtensions = (env.ENTRY_EXT || "jsx,tsx,js,ts,es6,es")
+  const entryExtensions = ENTRY_EXT
     .trim()
     .replace(/[´`'"]/g, "")
     .split(",")
