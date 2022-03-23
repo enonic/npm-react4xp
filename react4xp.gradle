@@ -1,3 +1,11 @@
+/*project.ext.react4xp = {}
+file("react4xp.properties").withReader { reader ->
+  project.ext.react4xp = new Properties()
+  project.ext.react4xp.load(reader)
+}
+project.ext.react4xp.buildExternals = project.ext.react4xp.buildExternals != null && project.ext.react4xp.buildExternals.toBoolean()*/
+
+
 task react4xpClient(type: NpmTask) {
   group 'React4xp'
   description 'Compile the react4xp runtime client'
@@ -31,7 +39,10 @@ task react4xpExternals(type: NpmTask) {
     '--env', 'DIR_PATH_ABSOLUTE_PROJECT=' + project.projectDir
   ]
 }
-jar.dependsOn += 'react4xpExternals'
+// TODO The Java code in lib-react4xp doesn't handle when externals is missing!
+//if (project.ext.react4xp.buildExternals) {
+  jar.dependsOn += 'react4xpExternals'
+//}
 
 
 task react4xpNashornPolyfills(type: NpmTask) {
