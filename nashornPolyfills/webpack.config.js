@@ -1,8 +1,4 @@
 // Transpiles nashorn polyfill from, among other things, npm libraries.
-
-const Chunks2json = require('chunks-2-json-webpack-plugin');
-const FileManagerPlugin = require('filemanager-webpack-plugin');
-
 const {
   statSync
 } = require("fs");
@@ -20,7 +16,7 @@ const {
 
 const {
   FILE_STEM_NASHORNPOLYFILLS,
-  NASHORNPOLYFILLS_CHUNKS_FILENAME
+  FILE_STEM_NASHORNPOLYFILLS_USERADDED
 } = require('../dist/constants.runtime');
 const {
   DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
@@ -85,15 +81,15 @@ module.exports = (env) => {
     `Adding custom nashorn polyfills: compiling ${NASHORNPOLYFILLS_SOURCE} --> ${join(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, FILE_STEM_NASHORNPOLYFILLS)}`
   );
 
+  const entry = {
+    [FILE_STEM_NASHORNPOLYFILLS]: FILE_PATH_ABSOLUTE_SRC_NASHORNPOLYFILLS_DEFAULT
+  }
+  if (isSet(NASHORNPOLYFILLS_SOURCE)) {
+    entry[FILE_STEM_NASHORNPOLYFILLS_USERADDED] = NASHORNPOLYFILLS_SOURCE
+  }
+
   const webpackConfigObjectNashornPolyfills = {
-    entry: {
-      [FILE_STEM_NASHORNPOLYFILLS]: isSet(NASHORNPOLYFILLS_SOURCE)
-        ? [
-          FILE_PATH_ABSOLUTE_SRC_NASHORNPOLYFILLS_DEFAULT,
-          NASHORNPOLYFILLS_SOURCE
-        ]
-        : FILE_PATH_ABSOLUTE_SRC_NASHORNPOLYFILLS_DEFAULT
-    },
+    entry,
 
     mode: BUILD_ENV,
 
@@ -134,9 +130,9 @@ module.exports = (env) => {
 
     output: {
       path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
-      //filename: "[name].js",
-      filename: `[name].[contenthash].js`,
-      //filename: `[name].[fullhash].js`,
+
+      filename: "[name].js", // No need for contenthash as this is serverside
+
       environment: {
         arrowFunction: false,
         bigIntLiteral: false,
@@ -157,13 +153,13 @@ module.exports = (env) => {
 
       //libraryTarget: 'commonjs' // 7963B
       //libraryTarget: 'commonjs-module' // 7870B // ReferenceError: "module" is not defined
-      //libraryTarget: 'commonjs-static' // 7907B
+      libraryTarget: 'commonjs-static' // 7907B
       //libraryTarget: 'commonjs2' // 7870B // ReferenceError: "module" is not defined
 
-      library: {  // 7893B Trying out what is used in buildComponents, also transpiles 'const' and 'let' to 'var'
+      /*library: {  // 7893B Trying out what is used in buildComponents, also transpiles 'const' and 'let' to 'var'
         name: "[name]",
         type: "var",
-      }
+      }*/
 
       // To make UMD build available on both browsers and Node.js, set output.globalObject option to 'this'.
       /*libraryTarget: 'umd', // 8111B
@@ -172,22 +168,6 @@ module.exports = (env) => {
       /*libraryTarget: 'umd2', // 8111B
       globalObject: 'this'*/
     }, // output
-
-    plugins: [
-      new FileManagerPlugin({
-        events: {
-          onStart: {
-            mkdir: [
-              DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X // Chunks2json fails without this (when using npm explore)
-            ]
-          }
-        }
-      }),
-      new Chunks2json({
-        outputDir: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
-        filename: NASHORNPOLYFILLS_CHUNKS_FILENAME,
-      }),
-    ], // plugins
 
     resolve: {
       extensions: [".es6", ".js", ".jsx"],
