@@ -15,7 +15,6 @@ const {
 } = require("../util");
 
 const {
-  FILE_STEM_NASHORNPOLYFILLS,
   FILE_STEM_NASHORNPOLYFILLS_USERADDED
 } = require('../dist/constants.runtime');
 const {
@@ -78,12 +77,10 @@ module.exports = (env) => {
   }
 
   verboseLog(
-    `Adding custom nashorn polyfills: compiling ${NASHORNPOLYFILLS_SOURCE} --> ${join(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, FILE_STEM_NASHORNPOLYFILLS)}`
+    `Adding custom nashorn polyfills: compiling ${NASHORNPOLYFILLS_SOURCE} --> ${join(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, FILE_STEM_NASHORNPOLYFILLS_USERADDED)}`
   );
 
-  const entry = {
-    [FILE_STEM_NASHORNPOLYFILLS]: FILE_PATH_ABSOLUTE_SRC_NASHORNPOLYFILLS_DEFAULT
-  }
+  const entry = {}
   if (isSet(NASHORNPOLYFILLS_SOURCE)) {
     entry[FILE_STEM_NASHORNPOLYFILLS_USERADDED] = NASHORNPOLYFILLS_SOURCE
   }

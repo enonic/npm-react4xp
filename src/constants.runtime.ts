@@ -5,8 +5,7 @@ export const ENTRIES_FILENAME = 'entries.json';
 export const EXTERNALS_CHUNKS_FILENAME = 'chunks.externals.json';
 export const FILE_NAME_R4X_RUNTIME_SETTINGS = 'runtimeSettings.json';
 
-export const FILE_STEM_NASHORNPOLYFILLS = 'nashornPolyfills'; // NOTE/TODO Also hardcoded in Java inside lib-react4p!
-export const FILE_STEM_NASHORNPOLYFILLS_USERADDED = `${FILE_STEM_NASHORNPOLYFILLS}.userAdded`;
+export const FILE_STEM_NASHORNPOLYFILLS_USERADDED = 'nashornPolyfills.userAdded';
 
 export const LIBRARY_NAME = 'React4xp';
 
