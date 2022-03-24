@@ -10,19 +10,15 @@ const {
 } = require('path');
 
 const {
-  cleanAnyDoublequotes,
-  makeVerboseLogger
-} = require("../util");
-
-const {
-  FILE_STEM_NASHORNPOLYFILLS_USERADDED
-} = require('../dist/constants.runtime');
-const {
   DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
   FILE_NAME_R4X_PROPERTIES
 } = require('../dist/constants.buildtime');
+
+const {FILE_STEM_NASHORNPOLYFILLS_USERADDED} = require('../dist/constants.runtime');
 const {getProperties} = require("../dist/properties/getProperties");
+const {cleanAnyDoublequotes} = require('../dist/util/cleanAnyDoublequotes');
 const {isSet} = require("../dist/util/isSet");
+const {makeVerboseLogger} = require('../dist/util/makeVerboseLogger');
 
 
 module.exports = (env) => {

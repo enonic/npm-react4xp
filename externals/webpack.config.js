@@ -53,11 +53,9 @@ const {
   FILE_NAME_R4X_PROPERTIES
 } = require('../dist/constants.buildtime');
 const {getProperties} = require("../dist/properties/getProperties");
+const {cleanAnyDoublequotes} = require('../dist/util/cleanAnyDoublequotes');
 const {isSet} = require("../dist/util/isSet");
-const {
-  cleanAnyDoublequotes,
-  makeVerboseLogger
-} = require("../util");
+const {makeVerboseLogger} = require('../dist/util/makeVerboseLogger');
 
 // TODO: Find a good pattern to control output name for chunks,
 // allowing for multi-chunks and still doing it in one pass (only one chunks.externals.json)

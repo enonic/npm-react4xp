@@ -3,14 +3,8 @@
 /*
 There is a file 'react4xp.properties' which exists at the Enonic XP application project.projectdir.
 
-The 'react4xp.properties' file is used to build resources/main/lib/enonic/react4xp/react4xp_constants.json,
-which is used by lib-react4xp during runtime.
-
-The 'react4xp_constants.json' is also used when building components.
-
 The 'react4xp.properties' file may define where an overrideComponentWebpack file exists.
 The 'overrideComponentWebpack' file is only used when building components.
-In this webpack.config.js file it's the same as OVERRIDE_COMPONENT_WEBPACK.
 */
 
 const StatsPlugin = require("stats-webpack-plugin");
@@ -34,23 +28,6 @@ const {
   writeSync
 } = require("fs");
 
-const {getProperties} = require("../dist/properties/getProperties");
-const {isSet} = require("../dist/util/isSet");
-
-const {
-  cleanAnyDoublequotes,
-  makeVerboseLogger
-} = require("../util");
-
-const React4xpEntriesAndChunks = require("./entriesandchunks");
-
-const {
-  COMPONENT_STATS_FILENAME,
-  ENTRIES_FILENAME,
-  FILE_NAME_R4X_RUNTIME_SETTINGS,
-  LIBRARY_NAME
-} = require('../dist/constants.runtime');
-
 const {
   DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
   DIR_PATH_RELATIVE_SRC_R4X,
@@ -59,6 +36,20 @@ const {
   FILE_NAME_R4X_CONFIG_JSON,
   FILE_NAME_R4X_PROPERTIES
 } = require('../dist/constants.buildtime');
+
+const {
+  COMPONENT_STATS_FILENAME,
+  ENTRIES_FILENAME,
+  FILE_NAME_R4X_RUNTIME_SETTINGS,
+  LIBRARY_NAME
+} = require('../dist/constants.runtime');
+
+const {getEntries} = require('../dist/buildComponents/getEntries');
+const {getProperties} = require("../dist/properties/getProperties");
+const {cleanAnyDoublequotes} = require('../dist/util/cleanAnyDoublequotes');
+const {isSet} = require("../dist/util/isSet");
+const {makeVerboseLogger} = require('../dist/util/makeVerboseLogger');
+
 
 // Turns a comma-separated list of subdirectories below the root React4xp source folder (DIR_PATH_ABSOLUTE_SRC_R4X, usually .../resources/react4xp/)
 // into an array of unique, verified, absolute-path'd and OS-compliant folder names.
@@ -413,7 +404,7 @@ module.exports = (env = {}) => {
 
   //console.debug('entrySets', entrySets);
   //console.debug('ENTRIES_FILENAME', ENTRIES_FILENAME); // entries.json
-  const entries = React4xpEntriesAndChunks.getEntries(
+  const entries = getEntries(
     entrySets,
     DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
     ENTRIES_FILENAME,
