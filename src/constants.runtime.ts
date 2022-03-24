@@ -1,6 +1,5 @@
 // Changing any of these is probably a breaking change and requires a major release!
 
-export const CLIENT_CHUNKS_FILENAME = 'chunks.client.json';
 export const COMPONENT_STATS_FILENAME = 'stats.components.json';
 export const ENTRIES_FILENAME = 'entries.json';
 export const EXTERNALS_CHUNKS_FILENAME = 'chunks.externals.json';
