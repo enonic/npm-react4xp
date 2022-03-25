@@ -1,4 +1,7 @@
-import type {EntrySet} from './index.d';
+import type {
+  EntrySet,
+  VerboseLog
+} from './index.d';
 
 
 import {buildEntriesToSubfolder} from './buildEntriesToSubfolder';
@@ -13,7 +16,7 @@ export function getEntries(
   entrySets :Array<EntrySet>,
   outputPath :string,
   entriesFilename :string,
-  verboseLog
+  verboseLog :VerboseLog
 ) {
   const entries = entrySets.reduce(
     (accumulator, entrySet) =>
