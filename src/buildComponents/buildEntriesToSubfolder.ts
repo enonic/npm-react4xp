@@ -1,4 +1,7 @@
-import type {EntrySet} from './index.d';
+import type {
+  EntrySet,
+  VerboseLog
+} from './index.d';
 
 
 import {sync} from 'glob';
@@ -12,7 +15,7 @@ import {normalizePath} from './normalizePath';
 /** Builds component entries from files found under a directory, for selected file extensions, for being transpiled out to a target path. */
 export function buildEntriesToSubfolder(
   entrySet :EntrySet,
-  verboseLog
+  verboseLog :VerboseLog
 ) {
   verboseLog(entrySet, "Entries from subfolder - entry set", 1);
 

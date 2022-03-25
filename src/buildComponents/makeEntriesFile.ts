@@ -1,4 +1,4 @@
-//import type {EntrySet} from './index.d';
+import type {VerboseLog} from './index.d';
 
 
 import {
@@ -18,7 +18,7 @@ export function makeEntriesFile(
   entries :object,
   outputPath :string,
   entriesFilename :string,
-  verboseLog
+  verboseLog :VerboseLog
 ) {
   const entryList = Object.keys(entries);
   const entryFile = join(outputPath, entriesFilename);

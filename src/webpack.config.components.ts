@@ -6,155 +6,59 @@ There is a file 'react4xp.properties' which exists at the Enonic XP application 
 The 'react4xp.properties' file may define where an overrideComponentWebpack file exists.
 The 'overrideComponentWebpack' file is only used when building components.
 */
+import type {Environment} from './index.d';
+import type {
+  EntrySet,
+  SymlinksUnderR4xRoot
+} from './buildComponents/index.d';
 
-const StatsPlugin = require("stats-webpack-plugin");
 
-const {
+import * as StatsPlugin from 'stats-webpack-plugin';
+
+import {
   isAbsolute,
   join,
   parse,
   resolve,
   sep
-} = require("path");
+} from 'path';
 
-const {
-  existsSync,
-  lstatSync,
+import {
   mkdirSync,
   openSync,
-  readlinkSync,
-  realpathSync,
   statSync,
   writeSync
-} = require("fs");
+} from 'fs';
 
-const {
+import {
   DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
   DIR_PATH_RELATIVE_SRC_R4X,
   DIR_PATH_RELATIVE_SRC_SITE,
   EXTERNALS_DEFAULT,
   FILE_NAME_R4X_CONFIG_JSON,
   FILE_NAME_R4X_PROPERTIES
-} = require('../dist/constants.buildtime');
+} from './constants.buildtime';
 
-const {
+import {
   COMPONENT_STATS_FILENAME,
   ENTRIES_FILENAME,
   FILE_NAME_R4X_RUNTIME_SETTINGS,
   LIBRARY_NAME
-} = require('../dist/constants.runtime');
+} from './constants.runtime';
 
-const {getEntries} = require('../dist/buildComponents/getEntries');
-const {getProperties} = require("../dist/properties/getProperties");
-const {cleanAnyDoublequotes} = require('../dist/util/cleanAnyDoublequotes');
-const {isSet} = require("../dist/util/isSet");
-const {makeVerboseLogger} = require('../dist/util/makeVerboseLogger');
+import {getEntries} from './buildComponents/getEntries';
+import {makeExclusionsRegexpString} from './buildComponents/makeExclusionsRegexpString';
+import {normalizeDirList} from './buildComponents/normalizeDirList';
+
+import {getProperties} from './properties/getProperties';
+
+import {cleanAnyDoublequotes} from './util/cleanAnyDoublequotes';
+import {isSet} from './util/isSet';
+import {makeVerboseLogger} from './util/makeVerboseLogger';
+import {toStr} from './util/toStr';
 
 
-// Turns a comma-separated list of subdirectories below the root React4xp source folder (DIR_PATH_ABSOLUTE_SRC_R4X, usually .../resources/react4xp/)
-// into an array of unique, verified, absolute-path'd and OS-compliant folder names.
-// Halts on errors, displays warnings, skips items that are not found.
-const normalizeDirList = (
-  commaSepDirList,
-  singularLabel,
-  DIR_PATH_ABSOLUTE_SRC_R4X,
-  symlinksUnderReact4xpRoot,
-  VERBOSE
-) =>
-  (commaSepDirList || "").trim()
-    ? Array.from(
-        new Set(
-          commaSepDirList
-            .trim()
-            .replace(/[\\/]/g, sep)
-            .replace(/[´`'"]/g, "")
-            .split(",")
-
-            .map((item) => (item || "").trim())
-            .filter((item) => !!item)
-            .map((item) => item.replace(/[\\/]$/, ""))
-            .map((orig) => {
-              let dir = resolve(join(DIR_PATH_ABSOLUTE_SRC_R4X, orig));
-
-              let realDir = null;
-              try {
-                realDir = realpathSync(dir);
-              } catch (e) {
-                if (VERBOSE) {
-                  console.warn(
-                    `Warning - error message dump for ${singularLabel} '${orig}':\n--------`
-                  );
-                  console.warn(e);
-                }
-                console.warn(
-                  `${
-                    VERBOSE ? "-------->" : "Warning:"
-                  } skipping ${singularLabel} '${orig}' from react4xp.properties${
-                    !VERBOSE
-                      ? " - it probably just doesn't exist. If you're sure it exists, there may be another problem - run the build again with verbose option in react4xp.properties for full error dump"
-                      : ""
-                  }.`
-                );
-                return null;
-              }
-
-              let symlinkTargetDir = null;
-              let lstat = lstatSync(dir);
-              while (lstat.isSymbolicLink()) {
-                symlinkTargetDir = readlinkSync(dir);
-                dir = resolve(dir, "..", symlinkTargetDir);
-
-                if (existsSync(dir)) {
-                  if (dir.startsWith(DIR_PATH_ABSOLUTE_SRC_R4X)) {
-                    // eslint-disable-next-line no-param-reassign
-                    symlinksUnderReact4xpRoot[orig] = true;
-                  }
-                  lstat = lstatSync(dir);
-                } else {
-                  throw Error(
-                    `${singularLabel.replace(/^\w/, (c) =>
-                      c.toUpperCase()
-                    )} '${orig}' from react4xp.properties leads by resolved symlink(s) to '${dir}', which was not found.`
-                  );
-                }
-              }
-
-              lstat = lstatSync(realDir);
-              if (!lstat.isDirectory()) {
-                throw Error(
-                  `Can't add ${singularLabel} '${orig}' from react4xp.properties - ${realDir} was found but is not a directory.`
-                );
-              }
-
-              return realDir;
-            })
-            .filter((dir) => !!dir)
-        )
-      )
-    : [];
-
-const makeExclusionsRegexpString = (currentDir, otherDirs, verboseLog) =>
-  otherDirs
-    .filter((dir) => dir !== currentDir && dir.startsWith(currentDir))
-    .map((dir) => dir.slice(currentDir.length))
-    .map((d) => {
-      let dir = d;
-      if (dir.startsWith(sep)) {
-        dir = dir.slice(1);
-      }
-      if (dir.endsWith(sep)) {
-        dir = dir.slice(0, dir.length - 1);
-      }
-      verboseLog(`\tExcluding '${dir}' relative to '${currentDir}'`);
-      return dir;
-    })
-    // TODO: escape characters in folder names that actually are regexp characters
-    .join("|")
-    .trim();
-
-// -------------------------------------------------------------
-
-module.exports = (env = {}) => {
+module.exports = (env :Environment = {}) => {
   const DIR_PATH_ABSOLUTE_PROJECT = cleanAnyDoublequotes("DIR_PATH_ABSOLUTE_PROJECT", env.DIR_PATH_ABSOLUTE_PROJECT || process.cwd());
   if (!isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
     throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
@@ -191,7 +95,7 @@ module.exports = (env = {}) => {
     SSR_MAX_THREADS: null
   };
 
-  let overrideComponentWebpack;
+  let overrideComponentWebpack :string;
   const FILE_PATH_ABSOLUTE_R4X_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_PROPERTIES);
   const stats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
   if (stats.isFile()) {
@@ -279,13 +183,13 @@ module.exports = (env = {}) => {
 
   // -------------------------------------  Okay, settings and context are parsed. Let's go:
 
-  let symlinksUnderReact4xpRoot = {};
+  let symlinksUnderReact4xpRootObject = {} as SymlinksUnderR4xRoot;
 
   const chunkDirs = normalizeDirList(
     CHUNK_DIRS,
     "chunkDir",
     DIR_PATH_ABSOLUTE_SRC_R4X,
-    symlinksUnderReact4xpRoot,
+    symlinksUnderReact4xpRootObject,
     VERBOSE
   );
 
@@ -293,7 +197,7 @@ module.exports = (env = {}) => {
     ENTRY_DIRS,
     "entryDir",
     DIR_PATH_ABSOLUTE_SRC_R4X,
-    symlinksUnderReact4xpRoot,
+    symlinksUnderReact4xpRootObject,
     VERBOSE
   );
 
@@ -305,16 +209,16 @@ module.exports = (env = {}) => {
 
   // -----------------------------------------------------------  Catching some likely troublemakers:
 
-  symlinksUnderReact4xpRoot = Object.keys(symlinksUnderReact4xpRoot).filter(
-    (key) => !!symlinksUnderReact4xpRoot[key]
+  //console.debug('symlinksUnderReact4xpRootObject', toStr(symlinksUnderReact4xpRootObject));
+  const symlinksUnderReact4xpRootArray = Object.keys(symlinksUnderReact4xpRootObject).filter(
+    (key) => !!symlinksUnderReact4xpRootObject[key]
   );
-  if (symlinksUnderReact4xpRoot.length) {
+  if (symlinksUnderReact4xpRootArray.length) {
     console.warn(
       `Warning: ${
-        symlinksUnderReact4xpRoot.length
-      } chunkDir(s) / entryDir(s) in react4xp.properties are symlinks that lead inside the folder structure below the React4xp root (${DIR_PATH_ABSOLUTE_SRC_R4X}). This could cause a mess in React4xp's entry/chunk structure, so I hope you know what you're doing. These are: '${symlinksUnderReact4xpRoot.join(
-        "', '"
-      )}'`
+        symlinksUnderReact4xpRootArray.length
+      } chunkDir(s) / entryDir(s) in react4xp.properties are symlinks that lead inside the folder structure below the React4xp root (${DIR_PATH_ABSOLUTE_SRC_R4X}). This could cause a mess in React4xp's entry/chunk structure, so I hope you know what you're doing. These are: '${
+        symlinksUnderReact4xpRootArray.join("', '")}'`
     );
   }
   const duplicates = chunkDirs.filter((dir) => entryDirs.indexOf(dir) !== -1);
@@ -381,7 +285,7 @@ module.exports = (env = {}) => {
     .filter((ext) => !!ext);
 
   // Build the entries
-  const entrySets = [
+  const entrySets :Array<EntrySet> = [
     {
       sourcePath: DIR_PATH_ABSOLUTE_SRC_SITE,
       sourceExtensions: ["jsx", "tsx"],
@@ -402,7 +306,7 @@ module.exports = (env = {}) => {
     })),
   ];
 
-  //console.debug('entrySets', entrySets);
+  //console.debug('entrySets', toStr(entrySets));
   //console.debug('ENTRIES_FILENAME', ENTRIES_FILENAME); // entries.json
   const entries = getEntries(
     entrySets,
