@@ -4,5 +4,6 @@ export interface Environment {
   ENTRY_DIRS? :string
   ENTRY_EXT? :string
   DIR_PATH_ABSOLUTE_PROJECT? :string
+  NASHORNPOLYFILLS_SOURCE? :string
   VERBOSE? :boolean
 }
