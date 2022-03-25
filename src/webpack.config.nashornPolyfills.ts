@@ -31,14 +31,14 @@ module.exports = (env :Environment = {}) => {
   const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
   //const FILE_PATH_ABSOLUTE_SRC_NASHORNPOLYFILLS_DEFAULT = join(__dirname, 'nashornPolyfills.es6');
 
-  let {
-    BUILD_ENV = 'production',
-    NASHORNPOLYFILLS_SOURCE,
-    VERBOSE = false
-  } = env;
-  //console.debug('BUILD_ENV', BUILD_ENV);
-  //console.debug('NASHORNPOLYFILLS_SOURCE', NASHORNPOLYFILLS_SOURCE);
-  //console.debug('VERBOSE', VERBOSE);
+
+  const environmentObj = {
+    buildEnvString: 'production',
+    nashornPolyfillsSourceString: null,
+    isVerbose: false
+  };
+  //console.debug('environmentObj', environmentObj);
+
 
   const FILE_PATH_ABSOLUTE_R4X_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_PROPERTIES);
   const stats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
@@ -46,44 +46,55 @@ module.exports = (env :Environment = {}) => {
     const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
     //console.debug('nashornPolyfills/webpack.config.js properties', properties);
     if (isSet(properties.buildEnv)) {
-      BUILD_ENV = cleanAnyDoublequotes('buildEnv', properties.buildEnv);
+      environmentObj.buildEnvString = cleanAnyDoublequotes('buildEnv', properties.buildEnv);
     }
     if (isSet(properties.nashornPolyfillsSource)) {
-      NASHORNPOLYFILLS_SOURCE = cleanAnyDoublequotes('nashornPolyfillsSource', properties.nashornPolyfillsSource);
+      environmentObj.nashornPolyfillsSourceString = cleanAnyDoublequotes('nashornPolyfillsSource', properties.nashornPolyfillsSource);
     }
     if (isSet(properties.verbose)) {
-      VERBOSE = cleanAnyDoublequotes('verbose', properties.verbose) !== 'false';
+      environmentObj.isVerbose = cleanAnyDoublequotes('verbose', properties.verbose) !== 'false';
     }
   } // if react4xp.properties
-  //console.debug('BUILD_ENV', BUILD_ENV);
-  //console.debug('NASHORNPOLYFILLS_SOURCE', NASHORNPOLYFILLS_SOURCE);
-  //console.debug('VERBOSE', VERBOSE);
+  //console.debug('environmentObj', environmentObj);
 
-  const verboseLog = makeVerboseLogger(VERBOSE);
+
+  if (isSet(env.BUILD_ENV)) {
+    environmentObj.buildEnvString = env.BUILD_ENV;
+  }
+  if (isSet(env.NASHORNPOLYFILLS_SOURCE)) {
+    environmentObj.nashornPolyfillsSourceString = env.NASHORNPOLYFILLS_SOURCE;
+  }
+  if (isSet(env.VERBOSE)) {
+    environmentObj.isVerbose = env.VERBOSE !== 'false';
+  }
+  //console.debug('environmentObj', environmentObj);
+
+
+  const verboseLog = makeVerboseLogger(environmentObj.isVerbose);
 
   if (
-    isSet(NASHORNPOLYFILLS_SOURCE) &&
-    !isAbsolute(NASHORNPOLYFILLS_SOURCE)
+    isSet(environmentObj.nashornPolyfillsSourceString) &&
+    !isAbsolute(environmentObj.nashornPolyfillsSourceString)
   ) {
-    NASHORNPOLYFILLS_SOURCE = join(
+    environmentObj.nashornPolyfillsSourceString = join(
       DIR_PATH_ABSOLUTE_PROJECT,
-      NASHORNPOLYFILLS_SOURCE
+      environmentObj.nashornPolyfillsSourceString
     );
   }
 
   verboseLog(
-    `Adding custom nashorn polyfills: compiling ${NASHORNPOLYFILLS_SOURCE} --> ${join(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, FILE_STEM_NASHORNPOLYFILLS_USERADDED)}`
+    `Adding custom nashorn polyfills: compiling ${environmentObj.nashornPolyfillsSourceString} --> ${join(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, FILE_STEM_NASHORNPOLYFILLS_USERADDED)}`
   );
 
   const entry = {}
-  if (isSet(NASHORNPOLYFILLS_SOURCE)) {
-    entry[FILE_STEM_NASHORNPOLYFILLS_USERADDED] = NASHORNPOLYFILLS_SOURCE
+  if (isSet(environmentObj.nashornPolyfillsSourceString)) {
+    entry[FILE_STEM_NASHORNPOLYFILLS_USERADDED] = environmentObj.nashornPolyfillsSourceString
   }
 
   const webpackConfigObjectNashornPolyfills = {
     entry,
 
-    mode: BUILD_ENV,
+    mode: environmentObj.buildEnvString,
 
     module: {
       rules: [
@@ -99,8 +110,8 @@ module.exports = (env :Environment = {}) => {
             options: {
               babelrc: false,
               comments: false,
-              compact: BUILD_ENV !== 'development',
-              minified: BUILD_ENV !== 'development',
+              compact: environmentObj.buildEnvString !== 'development',
+              minified: environmentObj.buildEnvString !== 'development',
               presets: [
                 '@babel/preset-react',
                 '@babel/preset-env'
@@ -117,7 +128,7 @@ module.exports = (env :Environment = {}) => {
     }, // module
 
     optimization: {
-  		minimize: BUILD_ENV !== 'development'
+  		minimize: environmentObj.buildEnvString !== 'development'
   	},
 
     output: {

@@ -5,5 +5,5 @@ export interface Environment {
   ENTRY_EXT? :string
   DIR_PATH_ABSOLUTE_PROJECT? :string
   NASHORNPOLYFILLS_SOURCE? :string
-  VERBOSE? :boolean
+  VERBOSE? :string //Command line params can only be string (not boolean)
 }

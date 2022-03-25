@@ -55,7 +55,7 @@ import {getProperties} from './properties/getProperties';
 import {cleanAnyDoublequotes} from './util/cleanAnyDoublequotes';
 import {isSet} from './util/isSet';
 import {makeVerboseLogger} from './util/makeVerboseLogger';
-import {toStr} from './util/toStr';
+//import {toStr} from './util/toStr';
 
 
 module.exports = (env :Environment = {}) => {
@@ -66,15 +66,16 @@ module.exports = (env :Environment = {}) => {
 
   const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
 
-  let {
-    BUILD_ENV = 'production',
-    CHUNK_DIRS,
-    ENTRY_DIRS,
-    ENTRY_EXT = 'jsx,tsx,js,ts,es6,es',
-    VERBOSE = false
-  } = env;
-  //console.debug('BUILD_ENV', BUILD_ENV);
-  //console.debug('VERBOSE', VERBOSE);
+
+  const environmentObj = {
+    buildEnvString: 'production',
+    chunkDirsCommaString: null,
+    entryDirsCommaString: null,
+    entryExtCommaString: 'jsx,tsx,js,ts,es6,es',
+    isVerbose: false
+  };
+  //console.debug('environmentObj', environmentObj);
+
 
   let EXTERNALS = EXTERNALS_DEFAULT;
   //console.debug('EXTERNALS', EXTERNALS);
@@ -103,19 +104,19 @@ module.exports = (env :Environment = {}) => {
     //console.debug('properties', properties);
 
     if (isSet(properties.buildEnv)) {
-      BUILD_ENV = cleanAnyDoublequotes('buildEnv', properties.buildEnv);
+      environmentObj.buildEnvString = cleanAnyDoublequotes('buildEnvString', properties.buildEnv);
     }
 
     if (isSet(properties.chunkDirs)) {
-      CHUNK_DIRS = cleanAnyDoublequotes('chunkDirs', properties.chunkDirs);
+      environmentObj.chunkDirsCommaString = cleanAnyDoublequotes('chunkDirs', properties.chunkDirs);
     }
 
     if (isSet(properties.entryDirs)) {
-      ENTRY_DIRS = cleanAnyDoublequotes('entryDirs', properties.entryDirs);
+      environmentObj.entryDirsCommaString = cleanAnyDoublequotes('entryDirs', properties.entryDirs);
     }
 
     if (isSet(properties.entryExtensions)) {
-      ENTRY_EXT = cleanAnyDoublequotes('entryExtensions', properties.entryExtensions);
+      environmentObj.entryExtCommaString = cleanAnyDoublequotes('entryExtCommaStringensions', properties.entryExtensions);
     }
 
     if (isSet(properties.ssrLazyload)) {
@@ -135,10 +136,30 @@ module.exports = (env :Environment = {}) => {
     overrideComponentWebpack = properties.overrideComponentWebpack;
 
     if (isSet(properties.verbose)) {
-      VERBOSE = cleanAnyDoublequotes('verbose', properties.verbose) !== 'false';
+      environmentObj.isVerbose = cleanAnyDoublequotes('isVerbose', properties.verbose) !== 'false';
     }
   }  // if react4xp.properties
   //console.debug('runtimeSettingsLibR4x', runtimeSettingsLibR4x);
+  //console.debug('environmentObj', environmentObj);
+
+
+  if (isSet(env.BUILD_ENV)) {
+    environmentObj.buildEnvString = env.BUILD_ENV;
+  }
+  if (isSet(env.CHUNK_DIRS)) {
+    environmentObj.chunkDirsCommaString = env.CHUNK_DIRS;
+  }
+  if (isSet(env.ENTRY_DIRS)) {
+    environmentObj.entryDirsCommaString = env.ENTRY_DIRS;
+  }
+  if (isSet(env.ENTRY_EXT)) {
+    environmentObj.entryExtCommaString = env.ENTRY_EXT;
+  }
+  if (isSet(env.VERBOSE)) {
+    environmentObj.isVerbose = env.VERBOSE !== 'false';
+  }
+  //console.debug('environmentObj', environmentObj);
+
 
   //console.debug('DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X', DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X);
   mkdirSync(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, {recursive: true});
@@ -156,9 +177,9 @@ module.exports = (env :Environment = {}) => {
   const DIR_PATH_ABSOLUTE_SRC_SITE = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_SRC_SITE);
   //console.debug('DIR_PATH_ABSOLUTE_SRC_SITE', DIR_PATH_ABSOLUTE_SRC_SITE);
 
-  const DEVMODE = BUILD_ENV !== "production";
+  const DEVMODE = environmentObj.buildEnvString !== "production";
 
-  const verboseLog = makeVerboseLogger(VERBOSE);
+  const verboseLog = makeVerboseLogger(environmentObj.isVerbose);
 
   verboseLog(DIR_PATH_ABSOLUTE_PROJECT, "DIR_PATH_ABSOLUTE_PROJECT", 1);
 
@@ -186,24 +207,24 @@ module.exports = (env :Environment = {}) => {
   let symlinksUnderReact4xpRootObject = {} as SymlinksUnderR4xRoot;
 
   const chunkDirs = normalizeDirList(
-    CHUNK_DIRS,
+    environmentObj.chunkDirsCommaString,
     "chunkDir",
     DIR_PATH_ABSOLUTE_SRC_R4X,
     symlinksUnderReact4xpRootObject,
-    VERBOSE
+    environmentObj.isVerbose
   );
 
   const entryDirs = normalizeDirList(
-    ENTRY_DIRS,
+    environmentObj.entryDirsCommaString,
     "entryDir",
     DIR_PATH_ABSOLUTE_SRC_R4X,
     symlinksUnderReact4xpRootObject,
-    VERBOSE
+    environmentObj.isVerbose
   );
 
-  verboseLog(CHUNK_DIRS, "\n\n---\nCHUNK_DIRS", 1);
+  verboseLog(environmentObj.chunkDirsCommaString, "\n\n---\nchunkDirsCommaString", 1);
   verboseLog(chunkDirs, "--> chunkDirs", 1);
-  verboseLog(ENTRY_DIRS, "\n\n---\nENTRY_DIRS", 1);
+  verboseLog(environmentObj.entryDirsCommaString, "\n\n---\nentryDirsCommaString", 1);
   verboseLog(entryDirs, "--> entryDirs", 1);
   verboseLog("---\n");
 
@@ -276,7 +297,7 @@ module.exports = (env :Environment = {}) => {
   // ------------------- Build the entry list:
 
   // Normalize and clean the entry extensions list:
-  const entryExtensions = ENTRY_EXT
+  const entryExtCommaStringensions = environmentObj.entryExtCommaString
     .trim()
     .replace(/[´`'"]/g, "")
     .split(",")
@@ -302,7 +323,7 @@ module.exports = (env :Environment = {}) => {
     },*/
     ...entryDirs.map((entryDir) => ({
       sourcePath: entryDir,
-      sourceExtensions: entryExtensions,
+      sourceExtensions: entryExtCommaStringensions,
     })),
   ];
 
@@ -316,7 +337,7 @@ module.exports = (env :Environment = {}) => {
   );
   //console.debug('entries', entries);
 
-  // ------------------------------------------- Entries are generated. Error reporting and verbose output:
+  // ------------------------------------------- Entries are generated. Error reporting and isVerbose output:
 
   if (entries && typeof entries !== "object") {
     console.error(
@@ -330,7 +351,7 @@ module.exports = (env :Environment = {}) => {
       }): ${JSON.stringify(entrySets, null, 2)}`
     );
     throw Error(
-      `react4xp-build-components can't continue. The sub-package react4xp-build-entriesandchunks seems to have produced malformed 'entries' data, using the entrysets above. Run the build with verbose=true in react4xp.properties for more info. Expected an object, but got ${
+      `react4xp-build-components can't continue. The sub-package react4xp-build-entriesandchunks seems to have produced malformed 'entries' data, using the entrysets above. Run the build with isVerbose=true in react4xp.properties for more info. Expected an object, but got ${
         Array.isArray(entries)
           ? `array[${entries.length}]`
           : typeof entries +
@@ -355,7 +376,7 @@ module.exports = (env :Environment = {}) => {
     throw Error(
       `react4xp-build-components can't continue - no entries were found (entries=${JSON.stringify(
         entries
-      )}). Tip: the combination of entryDirs and entryExtensions in react4xp.properties was resolved to the entrySets above. Check the content of those directories, with those file extensions. Add entry source files, adjust react4xp.properties, or run the build with verbose=true in react4xp.properties for more info.`
+      )}). Tip: the combination of entryDirs and entryExtCommaStringensions in react4xp.properties was resolved to the entrySets above. Check the content of those directories, with those file extensions. Add entry source files, adjust react4xp.properties, or run the build with isVerbose=true in react4xp.properties for more info.`
     );
   }
 
@@ -450,7 +471,7 @@ module.exports = (env :Environment = {}) => {
 
     externals: EXTERNALS,
 
-    mode: BUILD_ENV,
+    mode: environmentObj.buildEnvString,
 
     module: {
       rules: [
