@@ -46,11 +46,7 @@
     "webpack-cli": "^4.8.0"
   },
   "files": [
-    "buildComponents/README.md",
-    "buildComponents/webpack.config.js",
     "dist/**/*.js",
-    "externals/README.md",
-    "externals/webpack.config.js",
     "nashornPolyfills/README.md",
     "nashornPolyfills/webpack.config.js",
     "src/**/*.ts",
@@ -58,7 +54,7 @@
     "npmInstall.gradle",
     "react4xp.gradle",
     "react4xp.properties",
-    "README.md",
+    "README*.md",
     "updaters.gradle"
   ],
   "homepage": "https://github.com/enonic/enonic-react4xp#readme",
