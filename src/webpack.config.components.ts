@@ -23,12 +23,7 @@ import {
   sep
 } from 'path';
 
-import {
-  mkdirSync,
-  openSync,
-  statSync,
-  writeSync
-} from 'fs';
+import {statSync} from 'fs';
 
 import {
   DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
@@ -42,7 +37,6 @@ import {
 import {
   COMPONENT_STATS_FILENAME,
   ENTRIES_FILENAME,
-  FILE_NAME_R4X_RUNTIME_SETTINGS,
   LIBRARY_NAME
 } from './constants.runtime';
 
@@ -90,12 +84,6 @@ module.exports = (env :Environment = {}) => {
   } // if FILE_NAME_R4X_CONFIG_JSON
   //console.debug('EXTERNALS', EXTERNALS);
 
-  const runtimeSettingsLibR4x = {
-    SSR_LAZYLOAD: true,
-    SSR_ENGINE_SETTINGS: 0,
-    SSR_MAX_THREADS: null
-  };
-
   let overrideComponentWebpack :string;
   const FILE_PATH_ABSOLUTE_R4X_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_PROPERTIES);
   const stats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
@@ -119,17 +107,6 @@ module.exports = (env :Environment = {}) => {
       environmentObj.entryExtCommaString = cleanAnyDoublequotes('entryExtCommaStringensions', properties.entryExtensions);
     }
 
-    if (isSet(properties.ssrLazyload)) {
-      runtimeSettingsLibR4x.SSR_LAZYLOAD = properties.ssrLazyload !== 'false';
-    }
-    if (isSet(properties.ssrSettings)) {
-      const int = parseInt(properties.ssrSettings);
-      runtimeSettingsLibR4x.SSR_ENGINE_SETTINGS = `${int}` === properties.ssrSettings ? int : properties.ssrSettings;
-    }
-    if (isSet(properties.ssrMaxThreads)) {
-      runtimeSettingsLibR4x.SSR_MAX_THREADS = parseInt(properties.ssrMaxThreads);
-    }
-
     if (!isAbsolute(properties.overrideComponentWebpack)) {
       properties.overrideComponentWebpack = join(DIR_PATH_ABSOLUTE_PROJECT, properties.overrideComponentWebpack);
     }
@@ -139,7 +116,6 @@ module.exports = (env :Environment = {}) => {
       environmentObj.isVerbose = cleanAnyDoublequotes('isVerbose', properties.verbose) !== 'false';
     }
   }  // if react4xp.properties
-  //console.debug('runtimeSettingsLibR4x', runtimeSettingsLibR4x);
   //console.debug('environmentObj', environmentObj);
 
 
@@ -160,16 +136,6 @@ module.exports = (env :Environment = {}) => {
   }
   //console.debug('environmentObj', environmentObj);
 
-
-  //console.debug('DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X', DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X);
-  mkdirSync(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, {recursive: true});
-
-  //console.debug('FILE_NAME_R4X_RUNTIME_SETTINGS', FILE_NAME_R4X_RUNTIME_SETTINGS);
-  const FILE_PATH_ABSOLUTE_R4X_RUNTIME_SETTINGS = join(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, FILE_NAME_R4X_RUNTIME_SETTINGS);
-  //console.debug('FILE_PATH_ABSOLUTE_R4X_RUNTIME_SETTINGS', FILE_PATH_ABSOLUTE_R4X_RUNTIME_SETTINGS);
-
-  const fileDescriptorOverwriteMode = openSync(FILE_PATH_ABSOLUTE_R4X_RUNTIME_SETTINGS, 'w');
-  writeSync(fileDescriptorOverwriteMode, JSON.stringify(runtimeSettingsLibR4x));
 
   const DIR_PATH_ABSOLUTE_SRC_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_SRC_R4X);
   //console.debug('DIR_PATH_ABSOLUTE_SRC_R4X', DIR_PATH_ABSOLUTE_SRC_R4X);
