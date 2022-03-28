@@ -41,21 +41,26 @@ module.exports = (env :Environment = {}) => {
 
 
   const FILE_PATH_ABSOLUTE_R4X_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_PROPERTIES);
-  const stats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
-  if (stats.isFile()) {
-    const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
-    //console.debug('nashornPolyfills/webpack.config.js properties', properties);
-    if (isSet(properties.buildEnv)) {
-      environmentObj.buildEnvString = cleanAnyDoublequotes('buildEnv', properties.buildEnv);
-    }
-    if (isSet(properties.nashornPolyfillsSource)) {
-      environmentObj.nashornPolyfillsSourceString = cleanAnyDoublequotes('nashornPolyfillsSource', properties.nashornPolyfillsSource);
-    }
-    if (isSet(properties.verbose)) {
-      environmentObj.isVerbose = cleanAnyDoublequotes('verbose', properties.verbose) !== 'false';
-    }
-  } // if react4xp.properties
-  //console.debug('environmentObj', environmentObj);
+  try {
+    const stats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
+    if (stats.isFile()) {
+      const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
+      //console.debug('nashornPolyfills/webpack.config.js properties', properties);
+      if (isSet(properties.buildEnv)) {
+        environmentObj.buildEnvString = cleanAnyDoublequotes('buildEnv', properties.buildEnv);
+      }
+      if (isSet(properties.nashornPolyfillsSource)) {
+        environmentObj.nashornPolyfillsSourceString = cleanAnyDoublequotes('nashornPolyfillsSource', properties.nashornPolyfillsSource);
+      }
+      if (isSet(properties.verbose)) {
+        environmentObj.isVerbose = cleanAnyDoublequotes('verbose', properties.verbose) !== 'false';
+      }
+    } // if react4xp.properties
+    //console.debug('environmentObj', environmentObj);
+  } catch (e) {
+    //console.debug('e', e);
+    console.info(`${FILE_PATH_ABSOLUTE_R4X_PROPERTIES} not found.`)
+  }
 
 
   if (isSet(env.BUILD_ENV)) {

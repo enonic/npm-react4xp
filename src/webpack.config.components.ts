@@ -74,49 +74,62 @@ module.exports = (env :Environment = {}) => {
   let EXTERNALS = EXTERNALS_DEFAULT;
   //console.debug('EXTERNALS', EXTERNALS);
   const FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JSON);
-  const configJsonStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
-  if (configJsonStats.isFile()) {
-    const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
-    //console.debug('config', config);
-    if (config.externals) {
-      EXTERNALS = Object.assign(config.externals, EXTERNALS);
-    }
-  } // if FILE_NAME_R4X_CONFIG_JSON
-  //console.debug('EXTERNALS', EXTERNALS);
+  console.debug('FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON', FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
+  try {
+
+    const configJsonStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
+    console.debug('configJsonStats', configJsonStats);
+    if (configJsonStats.isFile()) {
+      const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
+      //console.debug('config', config);
+      if (config.externals) {
+        EXTERNALS = Object.assign(config.externals, EXTERNALS);
+      }
+    } // if FILE_NAME_R4X_CONFIG_JSON
+    //console.debug('EXTERNALS', EXTERNALS);
+  } catch (e) {
+    //console.debug('e', e);
+    console.info(`${FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON} not found.`)
+  }
 
   let overrideComponentWebpack :string;
   const FILE_PATH_ABSOLUTE_R4X_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_PROPERTIES);
-  const stats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
-  if (stats.isFile()) {
-    const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
-    //console.debug('properties', properties);
+  try {
+    const stats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
+    if (stats.isFile()) {
+      const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
+      //console.debug('properties', properties);
 
-    if (isSet(properties.buildEnv)) {
-      environmentObj.buildEnvString = cleanAnyDoublequotes('buildEnvString', properties.buildEnv);
-    }
+      if (isSet(properties.buildEnv)) {
+        environmentObj.buildEnvString = cleanAnyDoublequotes('buildEnvString', properties.buildEnv);
+      }
 
-    if (isSet(properties.chunkDirs)) {
-      environmentObj.chunkDirsCommaString = cleanAnyDoublequotes('chunkDirs', properties.chunkDirs);
-    }
+      if (isSet(properties.chunkDirs)) {
+        environmentObj.chunkDirsCommaString = cleanAnyDoublequotes('chunkDirs', properties.chunkDirs);
+      }
 
-    if (isSet(properties.entryDirs)) {
-      environmentObj.entryDirsCommaString = cleanAnyDoublequotes('entryDirs', properties.entryDirs);
-    }
+      if (isSet(properties.entryDirs)) {
+        environmentObj.entryDirsCommaString = cleanAnyDoublequotes('entryDirs', properties.entryDirs);
+      }
 
-    if (isSet(properties.entryExtensions)) {
-      environmentObj.entryExtCommaString = cleanAnyDoublequotes('entryExtCommaStringensions', properties.entryExtensions);
-    }
+      if (isSet(properties.entryExtensions)) {
+        environmentObj.entryExtCommaString = cleanAnyDoublequotes('entryExtCommaStringensions', properties.entryExtensions);
+      }
 
-    if (!isAbsolute(properties.overrideComponentWebpack)) {
-      properties.overrideComponentWebpack = join(DIR_PATH_ABSOLUTE_PROJECT, properties.overrideComponentWebpack);
-    }
-    overrideComponentWebpack = properties.overrideComponentWebpack;
+      if (!isAbsolute(properties.overrideComponentWebpack)) {
+        properties.overrideComponentWebpack = join(DIR_PATH_ABSOLUTE_PROJECT, properties.overrideComponentWebpack);
+      }
+      overrideComponentWebpack = properties.overrideComponentWebpack;
 
-    if (isSet(properties.verbose)) {
-      environmentObj.isVerbose = cleanAnyDoublequotes('isVerbose', properties.verbose) !== 'false';
-    }
-  }  // if react4xp.properties
-  //console.debug('environmentObj', environmentObj);
+      if (isSet(properties.verbose)) {
+        environmentObj.isVerbose = cleanAnyDoublequotes('isVerbose', properties.verbose) !== 'false';
+      }
+    }  // if react4xp.properties
+    //console.debug('environmentObj', environmentObj);
+  } catch (e) {
+    //console.debug('e', e);
+    console.info(`${FILE_PATH_ABSOLUTE_R4X_PROPERTIES} not found.`)
+  }
 
 
   if (isSet(env.BUILD_ENV)) {
