@@ -46,6 +46,7 @@
     "webpack-cli": "^4.8.0"
   },
   "files": [
+    "app.cfg",
     "dist/**/*.js",
     "src/**/*.ts",
     "LICENSE",
