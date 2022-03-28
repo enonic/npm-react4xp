@@ -22,8 +22,19 @@ final web page can import react from outside the bundle, from a CDN - or similar
 This is an example of that _"or similar"_ part. `react4xp-runtime-externals` supplies a webpack config for compiling a
 JS bundle that _only_ consists of the dependencies that are marked as externals.
 
-By default, the react4xp externals are **react** and **react-dom**. This is tweakable, controlled by the `EXTERNALS`
-attribute/parameter in [react4xp-buildconstants](https://www.npmjs.com/package/react4xp-buildconstants).
+By default, the react4xp externals are **react** and **react-dom**. This is tweakable.
+
+Provide extra externals in a `react4xp.config.json` file in your Enonic XP application project root.
+
+For example:
+
+```json
+{
+  "externals": {
+    "lodash": "_"
+  }
+}
+```
 
 So basically, running the compiled output bundle in a browser is equivalent to getting react/react-dom from a CDN. But
 in addition, this package plugs into the backend flow of react4xp, supplying necessary externals to the server-side
@@ -50,34 +61,6 @@ versions of the packages in the `EXTERNALS` object - by default react and react-
 
 Since `react4xp-runtime-externals` are only declaring react and react-dom as peerDependencies, the parent project gets
 to decide the used versions in its `package.json`.
-
-The webpack config takes one or more CLI arguments. These are one the form of `--env X=Y`, where X is any of the _
-capital-letter_ keys below (X is the parameter name, Y is the value, usually a string - but if it's an object then Y is
-expected to be a valid _JSON string_)
-
-**The usual caveat about these parameters:** these are among a set of working default values that come
-from [react4xp-buildconstants](https://www.npmjs.com/package/react4xp-buildconstants), where all the parameters have the
-same name as below (and are better described!). The values can be changed as parameters to react4xp-runtime-externals,
-but apart from the mandatory `REACT4XP_CONFIG_FILE`, **it's recommended to override these parameters in _
-react4xp-buildconstants_ instead**. Use the same-name input parameters there. That will affect the general config file
-instead of only this package's behavior, the rest is handled for you (as long as you use the gradle setup from the
-starter, see for example the gradle-basic-setup section in the README
-of [lib-react4xp](https://github.com/enonic/lib-react4xp)).
-
-### Webpack parameters
-
-- `REACT4XP_CONFIG_FILE` is a mandatory webpack CLI argument: the name of a shared general react4xp config file.
-
-- `EXTERNALS` is the main point of interest. By react4xp's default it looks like this:
-  ```json
-      {
-        "react": "React",
-        "react-dom": "ReactDOM",
-        "react-dom/server": "ReactDOMServer"
-      }
-  ```
-  ...where the objects are import source names in JS and the values are their name in the global namespace after
-  importing (e.g. the familiar `import React from 'react'`).
 
 ### Output
 
