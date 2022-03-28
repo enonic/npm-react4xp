@@ -90,31 +90,41 @@ module.exports = (env :Environment = {}) => {
   let EXTERNALS = EXTERNALS_DEFAULT;
   //console.debug('EXTERNALS', toStr(EXTERNALS));
   const FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JSON);
-  const configJsonStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
-  if (configJsonStats.isFile()) {
-    const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
-    //console.debug('config', config);
-    if (config.externals) {
-      EXTERNALS = Object.assign(config.externals, EXTERNALS);
-    }
-  } // if FILE_NAME_R4X_CONFIG_JSON
-  //console.debug('EXTERNALS', toStr(EXTERNALS));
+  try {
+    const configJsonStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
+    if (configJsonStats.isFile()) {
+      const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
+      //console.debug('config', config);
+      if (config.externals) {
+        EXTERNALS = Object.assign(config.externals, EXTERNALS);
+      }
+    } // if FILE_NAME_R4X_CONFIG_JSON
+    //console.debug('EXTERNALS', toStr(EXTERNALS));
+  } catch (e) {
+    //console.debug('e', e);
+    console.info(`${FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON} not found.`)
+  }
 
   const FILE_PATH_ABSOLUTE_R4X_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_PROPERTIES);
-  const r4xPropertiesStats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
-  if (r4xPropertiesStats.isFile()) {
-    const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
-    //console.debug('properties', properties);
+  try {
+    const r4xPropertiesStats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
+    if (r4xPropertiesStats.isFile()) {
+      const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
+      //console.debug('properties', properties);
 
-    if (isSet(properties.buildEnv)) {
-      environmentObj.buildEnvString = cleanAnyDoublequotes('buildEnv', properties.buildEnv);
-    }
+      if (isSet(properties.buildEnv)) {
+        environmentObj.buildEnvString = cleanAnyDoublequotes('buildEnv', properties.buildEnv);
+      }
 
-    if (isSet(properties.verbose)) {
-      environmentObj.isVerbose = cleanAnyDoublequotes('verbose', properties.verbose) !== 'false';
-    }
-  } // if FILE_NAME_R4X_PROPERTIES
-  //console.debug('environmentObj', environmentObj);
+      if (isSet(properties.verbose)) {
+        environmentObj.isVerbose = cleanAnyDoublequotes('verbose', properties.verbose) !== 'false';
+      }
+    } // if FILE_NAME_R4X_PROPERTIES
+    //console.debug('environmentObj', environmentObj);
+  } catch (e) {
+    //console.debug('e', e);
+    console.info(`${FILE_PATH_ABSOLUTE_R4X_PROPERTIES} not found.`)
+  }
 
 
   if (isSet(env.BUILD_ENV)) {
