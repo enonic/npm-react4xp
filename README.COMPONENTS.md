@@ -19,27 +19,6 @@ Supplies a webpack setup that:
 This webpack setup is minimal by design. If you want to replace or modify it to inject your own react-compilation rules,
 plugins etc,, use `OVERRIDE_COMPONENT_WEBPACK` or `overrideComponentWebpack` (see below).
 
-## Usage
-
-**Not really intended for separate installation or use!** Part of
-the [react4xp NPM bundle](https://www.npmjs.com/package/react4xp). Better start with
-the [React4xp introduction](https://developer.enonic.com/templates/react4xp).
-
-## API
-
-The webpack config takes one or more CLI arguments. These are one the form of `--env X=Y`, where X is any of the _
-capital-letter_ keys below (X is the parameter name, Y is the value, usually a string - but if it's an object then Y is
-expected to be a valid _JSON string_)
-
-**The usual caveat about these parameters:** these are among a set of working default values that come
-from [react4xp-buildconstants](https://www.npmjs.com/package/react4xp-buildconstants), where all the parameters have the
-same name as below (and are better described!). The values can be changed as parameters to react4xp-build-components,
-but apart from the mandatory `REACT4XP_CONFIG_FILE`, **it's recommended to override these parameters in _
-react4xp-buildconstants_ instead**. Use the same-name input parameters there. That will affect the general config file
-instead of only this package's behavior, the rest is handled for you (as long as you use the gradle setup from the
-starter, see for example the gradle-basic-setup section in the README
-of [lib-react4xp](https://github.com/enonic/lib-react4xp)).
-
 ### react4xp.properties
 
 First, note that in the standard setup in [the react4xp starter](https://github.com/enonic/starter-react4xp) (or similar
@@ -93,21 +72,3 @@ with the capital-letter env keys below).
   asset uglification etc.
 
 - `verbose`: "true", or any other value/missing for false. Produces more output during build.
-
-### Mandatory env values
-
-- `REACT4XP_CONFIG_FILE`: root-project-relative path to a react4xp-project constant-values JSON file.
-  - This file follows the format of, and is usually produced in the project
-    by, [react4xp-buildconstants](https://www.npmjs.com/package/react4xp-buildconstants).
-  - The used values from it can be overriden by CLI env arguments: `SRC_R4X`, `BUILD_R4X`, `SRC_SITE`, `EXTERNALS`.
-- `ROOT`: absolute path to the root project
-
-### Optional env values
-
-These are the same as the camel-case properties under react4xp.properties above:
-
-- `OVERRIDE_COMPONENT_WEBPACK`: see `overrideComponentWebpack`
-- `ENTRY_DIRS`: see `entryDirs`
-- `CHUNK_DIRS`: see `chunkDirs`
-- `BUILD_ENV`: see `buildEnv`
-- `VERBOSE`: see `verbose`
