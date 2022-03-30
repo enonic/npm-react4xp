@@ -45,7 +45,7 @@ import * as FileManagerPlugin from 'filemanager-webpack-plugin';
 import {
   DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
   EXTERNALS_DEFAULT,
-  FILE_NAME_R4X_CONFIG_JSON
+  FILE_NAME_R4X_CONFIG_JS
 } from './constants.buildtime';
 
 import {EXTERNALS_CHUNKS_FILENAME} from './constants.runtime';
@@ -55,6 +55,7 @@ import {generateTempES6SourceAndGetFilename} from './externals/generateTempES6So
 import {cleanAnyDoublequotes} from './util/cleanAnyDoublequotes';
 import {isSet} from './util/isSet';
 import {makeVerboseLogger} from './util/makeVerboseLogger';
+//import {toStr} from './util/toStr';
 
 
 // TODO: Find a good pattern to control output name for chunks,
@@ -85,20 +86,20 @@ module.exports = (env :Environment = {}) => {
 
   let EXTERNALS = EXTERNALS_DEFAULT;
   //console.debug('EXTERNALS', toStr(EXTERNALS));
-  const FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JSON);
+  const FILE_PATH_ABSOLUTE_R4X_CONFIG_JS = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JS);
   try {
-    const configJsonStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
+    const configJsonStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
     if (configJsonStats.isFile()) {
-      const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
-      //console.debug('config', config);
+      const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
+      //console.debug('config', toStr(config));
       if (config.externals) {
         EXTERNALS = Object.assign(config.externals, EXTERNALS);
       }
-    } // if FILE_NAME_R4X_CONFIG_JSON
+    } // if FILE_NAME_R4X_CONFIG_JS
     //console.debug('EXTERNALS', toStr(EXTERNALS));
   } catch (e) {
     //console.debug('e', e);
-    console.info(`${FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON} not found.`)
+    console.info(`${FILE_PATH_ABSOLUTE_R4X_CONFIG_JS} not found.`)
   }
 
   if (isSet(env.BUILD_ENV)) {
