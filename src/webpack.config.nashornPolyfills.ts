@@ -13,12 +13,10 @@ import {
 import {
   DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
   DIR_PATH_RELATIVE_SRC_MAIN_RESOURCES,
-  FILE_NAME_R4X_NASHORN_POLYFILLS,
-  FILE_NAME_R4X_PROPERTIES
+  FILE_NAME_R4X_NASHORN_POLYFILLS
 } from './constants.buildtime';
 
 import {FILE_STEM_NASHORNPOLYFILLS_USERADDED} from './constants.runtime';
-import {getProperties} from './properties/getProperties';
 import {cleanAnyDoublequotes} from './util/cleanAnyDoublequotes';
 import {isSet} from './util/isSet';
 import {makeVerboseLogger} from './util/makeVerboseLogger';
@@ -37,27 +35,6 @@ module.exports = (env :Environment = {}) => {
     isVerbose: false
   };
   //console.debug('environmentObj', environmentObj);
-
-
-  const FILE_PATH_ABSOLUTE_R4X_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_PROPERTIES);
-  try {
-    const stats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
-    if (stats.isFile()) {
-      const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
-      //console.debug('nashornPolyfills/webpack.config.js properties', properties);
-      if (isSet(properties.buildEnv)) {
-        environmentObj.buildEnvString = cleanAnyDoublequotes('buildEnv', properties.buildEnv);
-      }
-      if (isSet(properties.verbose)) {
-        environmentObj.isVerbose = cleanAnyDoublequotes('verbose', properties.verbose) !== 'false';
-      }
-    } // if react4xp.properties
-    //console.debug('environmentObj', environmentObj);
-  } catch (e) {
-    //console.debug('e', e);
-    console.info(`${FILE_PATH_ABSOLUTE_R4X_PROPERTIES} not found, which is fine :)`)
-  }
-
 
   if (isSet(env.BUILD_ENV)) {
     environmentObj.buildEnvString = env.BUILD_ENV;
