@@ -14,7 +14,6 @@ export const EXTERNALS_DEFAULT = {
   'react-dom/server': 'ReactDOMServer',
 };
 
-export const FILE_NAME_R4X_CONFIG_JSON = 'react4xp.config.json';
+export const FILE_NAME_R4X_CONFIG_JS = 'react4xp.config.js';
 export const FILE_NAME_R4X_NASHORN_POLYFILLS = 'react4xpNashornPolyfills.es6';
-export const FILE_NAME_R4X_PROPERTIES = 'react4xp.properties';
 export const FILE_NAME_WEBPACK_CONFIG_R4X_JS = 'webpack.config.react4xp.js';
