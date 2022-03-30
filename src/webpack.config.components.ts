@@ -75,9 +75,9 @@ module.exports = (env :Environment = {}) => {
   let EXTERNALS = EXTERNALS_DEFAULT;
   //console.debug('EXTERNALS', EXTERNALS);
   const FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JSON);
-  console.debug('FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON', FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
-  try {
+  //console.debug('FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON', FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
 
+  try {
     const configJsonStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
     console.debug('configJsonStats', configJsonStats);
     if (configJsonStats.isFile()) {

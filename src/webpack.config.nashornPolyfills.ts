@@ -12,6 +12,8 @@ import {
 
 import {
   DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
+  DIR_PATH_RELATIVE_SRC_MAIN_RESOURCES,
+  FILE_NAME_R4X_NASHORN_POLYFILLS,
   FILE_NAME_R4X_PROPERTIES
 } from './constants.buildtime';
 
@@ -29,12 +31,9 @@ module.exports = (env :Environment = {}) => {
   }
 
   const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
-  //const FILE_PATH_ABSOLUTE_SRC_NASHORNPOLYFILLS_DEFAULT = join(__dirname, 'nashornPolyfills.es6');
-
 
   const environmentObj = {
     buildEnvString: 'production',
-    nashornPolyfillsSourceString: null,
     isVerbose: false
   };
   //console.debug('environmentObj', environmentObj);
@@ -49,9 +48,6 @@ module.exports = (env :Environment = {}) => {
       if (isSet(properties.buildEnv)) {
         environmentObj.buildEnvString = cleanAnyDoublequotes('buildEnv', properties.buildEnv);
       }
-      if (isSet(properties.nashornPolyfillsSource)) {
-        environmentObj.nashornPolyfillsSourceString = cleanAnyDoublequotes('nashornPolyfillsSource', properties.nashornPolyfillsSource);
-      }
       if (isSet(properties.verbose)) {
         environmentObj.isVerbose = cleanAnyDoublequotes('verbose', properties.verbose) !== 'false';
       }
@@ -59,15 +55,12 @@ module.exports = (env :Environment = {}) => {
     //console.debug('environmentObj', environmentObj);
   } catch (e) {
     //console.debug('e', e);
-    console.info(`${FILE_PATH_ABSOLUTE_R4X_PROPERTIES} not found.`)
+    console.info(`${FILE_PATH_ABSOLUTE_R4X_PROPERTIES} not found, which is fine :)`)
   }
 
 
   if (isSet(env.BUILD_ENV)) {
     environmentObj.buildEnvString = env.BUILD_ENV;
-  }
-  if (isSet(env.NASHORNPOLYFILLS_SOURCE)) {
-    environmentObj.nashornPolyfillsSourceString = env.NASHORNPOLYFILLS_SOURCE;
   }
   if (isSet(env.VERBOSE)) {
     environmentObj.isVerbose = env.VERBOSE !== 'false';
@@ -77,23 +70,24 @@ module.exports = (env :Environment = {}) => {
 
   const verboseLog = makeVerboseLogger(environmentObj.isVerbose);
 
-  if (
-    isSet(environmentObj.nashornPolyfillsSourceString) &&
-    !isAbsolute(environmentObj.nashornPolyfillsSourceString)
-  ) {
-    environmentObj.nashornPolyfillsSourceString = join(
-      DIR_PATH_ABSOLUTE_PROJECT,
-      environmentObj.nashornPolyfillsSourceString
-    );
-  }
-
-  verboseLog(
-    `Adding custom nashorn polyfills: compiling ${environmentObj.nashornPolyfillsSourceString} --> ${join(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, FILE_STEM_NASHORNPOLYFILLS_USERADDED)}`
+  const filePathAbsoluteR4xNashornPolyfills = join(
+    DIR_PATH_ABSOLUTE_PROJECT,
+    DIR_PATH_RELATIVE_SRC_MAIN_RESOURCES,
+    FILE_NAME_R4X_NASHORN_POLYFILLS
   );
+  //verboseLog(filePathAbsoluteR4xNashornPolyfills, 'filePathAbsoluteR4xNashornPolyfills');
 
   const entry = {}
-  if (isSet(environmentObj.nashornPolyfillsSourceString)) {
-    entry[FILE_STEM_NASHORNPOLYFILLS_USERADDED] = environmentObj.nashornPolyfillsSourceString
+  try {
+    const statsR4xNashornPolyfills = statSync(filePathAbsoluteR4xNashornPolyfills);
+    if (statsR4xNashornPolyfills.isFile()) {
+      verboseLog(
+        `Adding custom nashorn polyfills: compiling ${filePathAbsoluteR4xNashornPolyfills} --> ${join(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, FILE_STEM_NASHORNPOLYFILLS_USERADDED)}`
+      );
+      entry[FILE_STEM_NASHORNPOLYFILLS_USERADDED] = filePathAbsoluteR4xNashornPolyfills;
+    }
+  } catch (e) {
+    console.info(`${filePathAbsoluteR4xNashornPolyfills} not found, which is fine :)`)
   }
 
   const webpackConfigObjectNashornPolyfills = {
