@@ -3,11 +3,26 @@ file("react4xp.properties").withReader { reader ->
   project.ext.react4xp = new Properties()
   project.ext.react4xp.load(reader)
 }
-project.ext.react4xp.buildExternals = project.ext.react4xp.buildExternals != null && project.ext.react4xp.buildExternals.toBoolean()
+
+
+project.ext.BUILD_ENV='production';
+if (
+  project.hasProperty('dev')
+  || project.hasProperty('development')
+) {
+  project.ext.BUILD_ENV='development';
+}
+
 
 // Used in ./npmInstall.gradle
 if (project.hasProperty("link") || project.hasProperty("linked") || project.ext.react4xp.BUILD_ENV == "development") {
   project.ext.react4xp.NPMLINKED = true
+}
+
+
+project.ext.VERBOSE = 'false';
+if (gradle.startParameter.logLevel == LogLevel.INFO) {
+  project.ext.VERBOSE = 'true';
 }
 
 
@@ -17,7 +32,9 @@ task react4xpComponents(type: NpmTask) {
   args = [
     'explore', '@enonic/react4xp', '--',
     'npm', 'run', 'webpack:components', '--',
-    '--env', 'DIR_PATH_ABSOLUTE_PROJECT=' + project.projectDir
+    '--env', 'DIR_PATH_ABSOLUTE_PROJECT=' + project.projectDir,
+    '--env', 'BUILD_ENV=' + project.ext.BUILD_ENV,
+    '--env', 'VERBOSE=' + project.ext.VERBOSE
   ]
 }
 jar.dependsOn += "react4xpComponents"
@@ -29,13 +46,12 @@ task react4xpExternals(type: NpmTask) {
   args = [
     'explore', '@enonic/react4xp', '--',
     'npm', 'run', 'webpack:externals', '--',
-    '--env', 'DIR_PATH_ABSOLUTE_PROJECT=' + project.projectDir
+    '--env', 'DIR_PATH_ABSOLUTE_PROJECT=' + project.projectDir,
+    '--env', 'BUILD_ENV=' + project.ext.BUILD_ENV,
+    '--env', 'VERBOSE=' + project.ext.VERBOSE
   ]
 }
-// TODO The Java code in lib-react4xp doesn't handle when externals is missing!
-//if (project.ext.react4xp.buildExternals) {
-  jar.dependsOn += 'react4xpExternals'
-//}
+jar.dependsOn += 'react4xpExternals'
 
 
 task react4xpNashornPolyfills(type: NpmTask) {
@@ -44,7 +60,9 @@ task react4xpNashornPolyfills(type: NpmTask) {
   args = [
     'explore', '@enonic/react4xp', '--',
     'npm', 'run', 'webpack:nashornPolyfills', '--',
-    '--env', 'DIR_PATH_ABSOLUTE_PROJECT=' + project.projectDir
+    '--env', 'DIR_PATH_ABSOLUTE_PROJECT=' + project.projectDir,
+    '--env', 'BUILD_ENV=' + project.ext.BUILD_ENV,
+    '--env', 'VERBOSE=' + project.ext.VERBOSE
   ]
 }
 jar.dependsOn += 'react4xpNashornPolyfills'
