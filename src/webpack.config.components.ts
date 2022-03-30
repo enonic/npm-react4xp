@@ -100,10 +100,6 @@ module.exports = (env :Environment = {}) => {
       const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
       //console.debug('properties', properties);
 
-      if (isSet(properties.buildEnv)) {
-        environmentObj.buildEnvString = cleanAnyDoublequotes('buildEnvString', properties.buildEnv);
-      }
-
       if (isSet(properties.chunkDirs)) {
         environmentObj.chunkDirsCommaString = cleanAnyDoublequotes('chunkDirs', properties.chunkDirs);
       }
@@ -114,10 +110,6 @@ module.exports = (env :Environment = {}) => {
 
       if (isSet(properties.entryExtensions)) {
         environmentObj.entryExtCommaString = cleanAnyDoublequotes('entryExtCommaStringensions', properties.entryExtensions);
-      }
-
-      if (isSet(properties.verbose)) {
-        environmentObj.isVerbose = cleanAnyDoublequotes('isVerbose', properties.verbose) !== 'false';
       }
     }  // if react4xp.properties
     //console.debug('environmentObj', environmentObj);
