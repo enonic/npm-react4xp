@@ -31,7 +31,8 @@ import {
   DIR_PATH_RELATIVE_SRC_SITE,
   EXTERNALS_DEFAULT,
   FILE_NAME_R4X_CONFIG_JSON,
-  FILE_NAME_R4X_PROPERTIES
+  FILE_NAME_R4X_PROPERTIES,
+  FILE_NAME_WEBPACK_CONFIG_R4X_JS
 } from './constants.buildtime';
 
 import {
@@ -89,10 +90,9 @@ module.exports = (env :Environment = {}) => {
     //console.debug('EXTERNALS', EXTERNALS);
   } catch (e) {
     //console.debug('e', e);
-    console.info(`${FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON} not found.`)
+    console.info(`${FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON} not found, which is fine :)`)
   }
 
-  let overrideComponentWebpack :string;
   const FILE_PATH_ABSOLUTE_R4X_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_PROPERTIES);
   try {
     const stats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
@@ -116,11 +116,6 @@ module.exports = (env :Environment = {}) => {
         environmentObj.entryExtCommaString = cleanAnyDoublequotes('entryExtCommaStringensions', properties.entryExtensions);
       }
 
-      if (!isAbsolute(properties.overrideComponentWebpack)) {
-        properties.overrideComponentWebpack = join(DIR_PATH_ABSOLUTE_PROJECT, properties.overrideComponentWebpack);
-      }
-      overrideComponentWebpack = properties.overrideComponentWebpack;
-
       if (isSet(properties.verbose)) {
         environmentObj.isVerbose = cleanAnyDoublequotes('isVerbose', properties.verbose) !== 'false';
       }
@@ -128,7 +123,7 @@ module.exports = (env :Environment = {}) => {
     //console.debug('environmentObj', environmentObj);
   } catch (e) {
     //console.debug('e', e);
-    console.info(`${FILE_PATH_ABSOLUTE_R4X_PROPERTIES} not found.`)
+    console.info(`${FILE_PATH_ABSOLUTE_R4X_PROPERTIES} not found, which is fine :)`)
   }
 
 
@@ -162,23 +157,30 @@ module.exports = (env :Environment = {}) => {
 
   verboseLog(DIR_PATH_ABSOLUTE_PROJECT, "DIR_PATH_ABSOLUTE_PROJECT", 1);
 
-  // TODO: Probably more consistent if this too is a master config file property. Add to react4xp-buildconstants and import above from env.REACT4XP_CONFIG_FILE.
   let overrideCallback = (_, config) => config;
-  if (overrideComponentWebpack) {
 
-    // eslint-disable-next-line import/no-dynamic-require, global-require
-    const overridden = require(overrideComponentWebpack);
-    //console.debug('overridden', overridden); // function
+  const filePathAbsoluteWebpackOverride = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_WEBPACK_CONFIG_R4X_JS);
+  try {
+    const webpackConfigR4xStats = statSync(filePathAbsoluteWebpackOverride);
+    if (webpackConfigR4xStats.isFile()) {
 
-    if (typeof overridden === "object") {
-      overrideCallback = () => overridden;
-    } else if (typeof overridden === "function") {
-      overrideCallback = overridden;
-    } else {
-      throw Error(
-        `Optional overrideComponentWebpack (${overrideComponentWebpack}) doesn't seem to default-export an object or a (env, config) => config function. Should either export a webpack-config-style object directly, OR take an env object and a webpack-config-type object 'config' as arguments, then manipulate or replace config, then return it.`
-      );
-    }
+        // eslint-disable-next-line import/no-dynamic-require, global-require
+        const overridden = require(filePathAbsoluteWebpackOverride);
+        //console.debug('overridden', overridden); // function
+
+        if (typeof overridden === "object") {
+          overrideCallback = () => overridden;
+        } else if (typeof overridden === "function") {
+          overrideCallback = overridden;
+        } else {
+          throw Error(
+            `Optional overrideComponentWebpack (${filePathAbsoluteWebpackOverride}) doesn't seem to default-export an object or a (env, config) => config function. Should either export a webpack-config-style object directly, OR take an env object and a webpack-config-type object 'config' as arguments, then manipulate or replace config, then return it.`
+          );
+        }
+      }
+  } catch (e) {
+    //console.debug('e', e);
+    console.info(`${filePathAbsoluteWebpackOverride} not found, which is fine :)`)
   }
 
   // -------------------------------------  Okay, settings and context are parsed. Let's go:
