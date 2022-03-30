@@ -45,20 +45,16 @@ import * as FileManagerPlugin from 'filemanager-webpack-plugin';
 import {
   DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
   EXTERNALS_DEFAULT,
-  FILE_NAME_R4X_CONFIG_JSON,
-  FILE_NAME_R4X_PROPERTIES
+  FILE_NAME_R4X_CONFIG_JSON
 } from './constants.buildtime';
 
 import {EXTERNALS_CHUNKS_FILENAME} from './constants.runtime';
 
 import {generateTempES6SourceAndGetFilename} from './externals/generateTempES6SourceAndGetFilename';
 
-import {getProperties} from './properties/getProperties';
-
 import {cleanAnyDoublequotes} from './util/cleanAnyDoublequotes';
 import {isSet} from './util/isSet';
 import {makeVerboseLogger} from './util/makeVerboseLogger';
-import {toStr} from './util/toStr';
 
 
 // TODO: Find a good pattern to control output name for chunks,
@@ -104,28 +100,6 @@ module.exports = (env :Environment = {}) => {
     //console.debug('e', e);
     console.info(`${FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON} not found.`)
   }
-
-  const FILE_PATH_ABSOLUTE_R4X_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_PROPERTIES);
-  try {
-    const r4xPropertiesStats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
-    if (r4xPropertiesStats.isFile()) {
-      const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
-      //console.debug('properties', properties);
-
-      if (isSet(properties.buildEnv)) {
-        environmentObj.buildEnvString = cleanAnyDoublequotes('buildEnv', properties.buildEnv);
-      }
-
-      if (isSet(properties.verbose)) {
-        environmentObj.isVerbose = cleanAnyDoublequotes('verbose', properties.verbose) !== 'false';
-      }
-    } // if FILE_NAME_R4X_PROPERTIES
-    //console.debug('environmentObj', environmentObj);
-  } catch (e) {
-    //console.debug('e', e);
-    console.info(`${FILE_PATH_ABSOLUTE_R4X_PROPERTIES} not found.`)
-  }
-
 
   if (isSet(env.BUILD_ENV)) {
     environmentObj.buildEnvString = env.BUILD_ENV;
