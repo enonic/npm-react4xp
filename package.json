@@ -31,7 +31,6 @@
     "node-fetch": "^3.2.3",
     "npm-safe-install": "^1.1.0",
     "prop-types": "^15.7.2",
-    "properties-reader": "^2.2.0",
     "q-i": "^2.0.1",
     "rimraf": "^3.0.2",
     "stats-webpack-plugin": "^0.7.0"

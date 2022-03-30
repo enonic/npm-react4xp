@@ -30,8 +30,7 @@ import {
   DIR_PATH_RELATIVE_SRC_R4X,
   DIR_PATH_RELATIVE_SRC_SITE,
   EXTERNALS_DEFAULT,
-  FILE_NAME_R4X_CONFIG_JSON,
-  FILE_NAME_R4X_PROPERTIES,
+  FILE_NAME_R4X_CONFIG_JS,
   FILE_NAME_WEBPACK_CONFIG_R4X_JS
 } from './constants.buildtime';
 
@@ -44,8 +43,6 @@ import {
 import {getEntries} from './buildComponents/getEntries';
 import {makeExclusionsRegexpString} from './buildComponents/makeExclusionsRegexpString';
 import {normalizeDirList} from './buildComponents/normalizeDirList';
-
-import {getProperties} from './properties/getProperties';
 
 import {cleanAnyDoublequotes} from './util/cleanAnyDoublequotes';
 import {isSet} from './util/isSet';
@@ -64,73 +61,70 @@ module.exports = (env :Environment = {}) => {
 
   const environmentObj = {
     buildEnvString: 'production',
-    chunkDirsCommaString: null,
-    entryDirsCommaString: null,
-    entryExtCommaString: 'jsx,tsx,js,ts,es6,es',
+    chunkDirsStringArray: null,
+    entryDirsStringArray: null,
+    entryExtStringArray: ['jsx', 'tsx', 'ts', 'es6', 'es', 'js'],
     isVerbose: false
+  } as {
+    buildEnvString :string
+    chunkDirsStringArray :Array<string>
+    entryDirsStringArray :Array<string>
+    entryExtStringArray :Array<string>
+    isVerbose :boolean
   };
   //console.debug('environmentObj', environmentObj);
 
 
   let EXTERNALS = EXTERNALS_DEFAULT;
   //console.debug('EXTERNALS', EXTERNALS);
-  const FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JSON);
-  //console.debug('FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON', FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
+  const FILE_PATH_ABSOLUTE_R4X_CONFIG_JS = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JS);
+  //console.debug('FILE_PATH_ABSOLUTE_R4X_CONFIG_JS', FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
 
   try {
-    const configJsonStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
-    console.debug('configJsonStats', configJsonStats);
-    if (configJsonStats.isFile()) {
-      const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON);
-      //console.debug('config', config);
+    const configJsStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
+    //console.debug('configJsStats', configJsStats);
+    if (configJsStats.isFile()) {
+      const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS) as {
+        chunkDirs :Array<string>
+        entryDirs :Array<string>
+        entryExtensions :Array<string>
+        externals :object
+      };
+      //console.debug('config', toStr(config));
+      if (config.chunkDirs) {
+        environmentObj.chunkDirsStringArray = config.chunkDirs;
+      }
+      if (isSet(config.entryDirs)) {
+        environmentObj.entryDirsStringArray = config.entryDirs;
+      }
+      if (isSet(config.entryExtensions)) {
+        environmentObj.entryExtStringArray = config.entryExtensions
+          .map((ext) => ext.trim())
+          .map((ext) => ext.replace(/^\./, ""))
+          .filter((ext) => !!ext);;
+      }
       if (config.externals) {
         EXTERNALS = Object.assign(config.externals, EXTERNALS);
       }
-    } // if FILE_NAME_R4X_CONFIG_JSON
+    } // if FILE_NAME_R4X_CONFIG_JS
     //console.debug('EXTERNALS', EXTERNALS);
   } catch (e) {
     //console.debug('e', e);
-    console.info(`${FILE_PATH_ABSOLUTE_R4X_CONFIG_JSON} not found, which is fine :)`)
+    console.info(`${FILE_PATH_ABSOLUTE_R4X_CONFIG_JS} not found, which is fine :)`)
   }
-
-  const FILE_PATH_ABSOLUTE_R4X_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_PROPERTIES);
-  try {
-    const stats = statSync(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
-    if (stats.isFile()) {
-      const properties = getProperties(FILE_PATH_ABSOLUTE_R4X_PROPERTIES);
-      //console.debug('properties', properties);
-
-      if (isSet(properties.chunkDirs)) {
-        environmentObj.chunkDirsCommaString = cleanAnyDoublequotes('chunkDirs', properties.chunkDirs);
-      }
-
-      if (isSet(properties.entryDirs)) {
-        environmentObj.entryDirsCommaString = cleanAnyDoublequotes('entryDirs', properties.entryDirs);
-      }
-
-      if (isSet(properties.entryExtensions)) {
-        environmentObj.entryExtCommaString = cleanAnyDoublequotes('entryExtCommaStringensions', properties.entryExtensions);
-      }
-    }  // if react4xp.properties
-    //console.debug('environmentObj', environmentObj);
-  } catch (e) {
-    //console.debug('e', e);
-    console.info(`${FILE_PATH_ABSOLUTE_R4X_PROPERTIES} not found, which is fine :)`)
-  }
-
 
   if (isSet(env.BUILD_ENV)) {
     environmentObj.buildEnvString = env.BUILD_ENV;
   }
-  if (isSet(env.CHUNK_DIRS)) {
-    environmentObj.chunkDirsCommaString = env.CHUNK_DIRS;
+  /*if (isSet(env.CHUNK_DIRS)) {
+    environmentObj.chunkDirsStringArray = env.CHUNK_DIRS;
   }
   if (isSet(env.ENTRY_DIRS)) {
-    environmentObj.entryDirsCommaString = env.ENTRY_DIRS;
+    environmentObj.entryDirsStringArray = env.ENTRY_DIRS;
   }
   if (isSet(env.ENTRY_EXT)) {
-    environmentObj.entryExtCommaString = env.ENTRY_EXT;
-  }
+    environmentObj.entryExtStringArray = env.ENTRY_EXT;
+  }*/
   if (isSet(env.VERBOSE)) {
     environmentObj.isVerbose = env.VERBOSE !== 'false';
   }
@@ -149,7 +143,7 @@ module.exports = (env :Environment = {}) => {
 
   verboseLog(DIR_PATH_ABSOLUTE_PROJECT, "DIR_PATH_ABSOLUTE_PROJECT", 1);
 
-  let overrideCallback = (_, config) => config;
+  let overrideCallback = (_, config: object) => config;
 
   const filePathAbsoluteWebpackOverride = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_WEBPACK_CONFIG_R4X_JS);
   try {
@@ -180,7 +174,7 @@ module.exports = (env :Environment = {}) => {
   let symlinksUnderReact4xpRootObject = {} as SymlinksUnderR4xRoot;
 
   const chunkDirs = normalizeDirList(
-    environmentObj.chunkDirsCommaString,
+    environmentObj.chunkDirsStringArray.join(','),
     "chunkDir",
     DIR_PATH_ABSOLUTE_SRC_R4X,
     symlinksUnderReact4xpRootObject,
@@ -188,16 +182,16 @@ module.exports = (env :Environment = {}) => {
   );
 
   const entryDirs = normalizeDirList(
-    environmentObj.entryDirsCommaString,
+    environmentObj.entryDirsStringArray.join(','),
     "entryDir",
     DIR_PATH_ABSOLUTE_SRC_R4X,
     symlinksUnderReact4xpRootObject,
     environmentObj.isVerbose
   );
 
-  verboseLog(environmentObj.chunkDirsCommaString, "\n\n---\nchunkDirsCommaString", 1);
+  verboseLog(environmentObj.chunkDirsStringArray, "\n\n---\nchunkDirsStringArray", 1);
   verboseLog(chunkDirs, "--> chunkDirs", 1);
-  verboseLog(environmentObj.entryDirsCommaString, "\n\n---\nentryDirsCommaString", 1);
+  verboseLog(environmentObj.entryDirsStringArray, "\n\n---\nentryDirsStringArray", 1);
   verboseLog(entryDirs, "--> entryDirs", 1);
   verboseLog("---\n");
 
@@ -220,7 +214,7 @@ module.exports = (env :Environment = {}) => {
     throw Error(
       `${
         duplicates.length
-      } directories in react4xp.properties are listed both as chunkDirs and entryDirs. Bad items are: '${duplicates.join(
+      } directories in ${FILE_PATH_ABSOLUTE_R4X_CONFIG_JS} are listed both as chunkDirs and entryDirs. Bad items are: '${duplicates.join(
         "', '"
       )}'`
     );
@@ -269,15 +263,6 @@ module.exports = (env :Environment = {}) => {
 
   // ------------------- Build the entry list:
 
-  // Normalize and clean the entry extensions list:
-  const entryExtCommaStringensions = environmentObj.entryExtCommaString
-    .trim()
-    .replace(/[´`'"]/g, "")
-    .split(",")
-    .map((ext) => ext.trim())
-    .map((ext) => ext.replace(/^\./, ""))
-    .filter((ext) => !!ext);
-
   // Build the entries
   const entrySets :Array<EntrySet> = [
     {
@@ -296,7 +281,7 @@ module.exports = (env :Environment = {}) => {
     },*/
     ...entryDirs.map((entryDir) => ({
       sourcePath: entryDir,
-      sourceExtensions: entryExtCommaStringensions,
+      sourceExtensions: environmentObj.entryExtStringArray,
     })),
   ];
 
@@ -349,7 +334,7 @@ module.exports = (env :Environment = {}) => {
     throw Error(
       `react4xp-build-components can't continue - no entries were found (entries=${JSON.stringify(
         entries
-      )}). Tip: the combination of entryDirs and entryExtCommaStringensions in react4xp.properties was resolved to the entrySets above. Check the content of those directories, with those file extensions. Add entry source files, adjust react4xp.properties, or run the build with isVerbose=true in react4xp.properties for more info.`
+      )}). Tip: the combination of entryDirs and entryExtStringArrayensions in react4xp.properties was resolved to the entrySets above. Check the content of those directories, with those file extensions. Add entry source files, adjust react4xp.properties, or run the build with isVerbose=true in react4xp.properties for more info.`
     );
   }
 
