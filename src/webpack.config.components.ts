@@ -61,8 +61,8 @@ module.exports = (env :Environment = {}) => {
 
   const environmentObj = {
     buildEnvString: 'production',
-    chunkDirsStringArray: null,
-    entryDirsStringArray: null,
+    chunkDirsStringArray: [],
+    entryDirsStringArray: [],
     entryExtStringArray: ['jsx', 'tsx', 'ts', 'es6', 'es', 'js'],
     isVerbose: false
   } as {
@@ -141,11 +141,12 @@ module.exports = (env :Environment = {}) => {
 
   const verboseLog = makeVerboseLogger(environmentObj.isVerbose);
 
-  verboseLog(DIR_PATH_ABSOLUTE_PROJECT, "DIR_PATH_ABSOLUTE_PROJECT", 1);
+  verboseLog(DIR_PATH_ABSOLUTE_PROJECT, 'DIR_PATH_ABSOLUTE_PROJECT');
 
   let overrideCallback = (_, config: object) => config;
 
   const filePathAbsoluteWebpackOverride = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_WEBPACK_CONFIG_R4X_JS);
+  verboseLog(filePathAbsoluteWebpackOverride, 'filePathAbsoluteWebpackOverride');
   try {
     const webpackConfigR4xStats = statSync(filePathAbsoluteWebpackOverride);
     if (webpackConfigR4xStats.isFile()) {
@@ -284,6 +285,7 @@ module.exports = (env :Environment = {}) => {
       sourceExtensions: environmentObj.entryExtStringArray,
     })),
   ];
+  verboseLog(entrySets, "\n\n---\entrySets", 1);
 
   //console.debug('entrySets', toStr(entrySets));
   //console.debug('ENTRIES_FILENAME', ENTRIES_FILENAME); // entries.json
@@ -435,13 +437,17 @@ module.exports = (env :Environment = {}) => {
       rules: [
         {
           // Babel for building static assets. Excluding node_modules BUT ALLOWING node_modules/@enonic/react-components
-          test: /\.((jsx?)|(es6))$/,
+          test: /\.((j|t)sx?|es6)$/,  // js, ts, jsx, tsx, es6
           exclude: /(?=.*[\\/]node_modules[\\/](?!@enonic[\\/]react-components))^(\w+)$/,
           use: {
             loader: "babel-loader",
             options: {
               compact: !DEVMODE,
-              presets: ["@babel/preset-react", "@babel/preset-env"],
+              presets: [
+                '@babel/preset-typescript',
+                "@babel/preset-react",
+                "@babel/preset-env"
+              ],
               plugins: [
                 "@babel/plugin-transform-arrow-functions",
                 "@babel/plugin-proposal-object-rest-spread",
