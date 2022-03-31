@@ -92,5 +92,5 @@
     "webpack:externals": "npx webpack --config dist/webpack.config.externals.js",
     "webpack:nashornPolyfills": "npx webpack --config dist/webpack.config.nashornPolyfills.js"
   },
-  "version": "3.0.6"
+  "version": "3.0.7"
 }
