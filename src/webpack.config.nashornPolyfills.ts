@@ -11,15 +11,17 @@ import {
 } from 'path';
 
 import {
-  DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
+  DIR_PATH_RELATIVE_BUILD_LIB_R4X,
   DIR_PATH_RELATIVE_SRC_MAIN_RESOURCES,
   FILE_NAME_R4X_NASHORN_POLYFILLS
 } from './constants.buildtime';
 
-import {FILE_STEM_NASHORNPOLYFILLS_USERADDED} from './constants.runtime';
 import {cleanAnyDoublequotes} from './util/cleanAnyDoublequotes';
 import {isSet} from './util/isSet';
 import {makeVerboseLogger} from './util/makeVerboseLogger';
+
+
+const FILE_STEM_NASHORNPOLYFILLS_USERADDED = 'nashornPolyfills.userAdded';
 
 
 module.exports = (env :Environment = {}) => {
@@ -28,7 +30,7 @@ module.exports = (env :Environment = {}) => {
     throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
   }
 
-  const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
+  const DIR_PATH_ABSOLUTE_BUILD_LIB_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_LIB_R4X);
 
   const environmentObj = {
     buildEnvString: 'production',
@@ -59,7 +61,7 @@ module.exports = (env :Environment = {}) => {
     const statsR4xNashornPolyfills = statSync(filePathAbsoluteR4xNashornPolyfills);
     if (statsR4xNashornPolyfills.isFile()) {
       verboseLog(
-        `Adding custom nashorn polyfills: compiling ${filePathAbsoluteR4xNashornPolyfills} --> ${join(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, FILE_STEM_NASHORNPOLYFILLS_USERADDED)}`
+        `Adding custom nashorn polyfills: compiling ${filePathAbsoluteR4xNashornPolyfills} --> ${join(DIR_PATH_ABSOLUTE_BUILD_LIB_R4X, FILE_STEM_NASHORNPOLYFILLS_USERADDED)}`
       );
       entry[FILE_STEM_NASHORNPOLYFILLS_USERADDED] = filePathAbsoluteR4xNashornPolyfills;
     }
@@ -108,7 +110,7 @@ module.exports = (env :Environment = {}) => {
   	},
 
     output: {
-      path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
+      path: DIR_PATH_ABSOLUTE_BUILD_LIB_R4X,
 
       filename: '[name].js', // No need for contenthash as this is serverside
 
