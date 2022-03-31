@@ -1,10 +1,9 @@
 //──────────────────────────────────────────────────────────────────────────────
 // A template version of this, with upated properties and explanations,
 //  can always be found in the react4xp NPM package:
-//   node_modules/react4xp/examples/react4xp.config.js after installing,
+//   node_modules/react4xp/examples/react4xp.config.js (after installing)
 //  or:
-//   https://github.com/enonic/enonic-react4xp/blob/master/examples/
-//    react4xp.config.js
+//   https://github.com/enonic/enonic-react4xp/blob/master/examples/react4xp.config.js
 //──────────────────────────────────────────────────────────────────────────────
 
 module.exports = {
@@ -76,6 +75,6 @@ module.exports = {
 
   /*externals: {
     lodash: '_'
-  } // externals*/
+  }*/
 
 }; // module.exports
