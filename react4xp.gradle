@@ -1,16 +1,14 @@
-project.ext.react4xp = {}
-file("react4xp.properties").withReader { reader ->
-  project.ext.react4xp = new Properties()
-  project.ext.react4xp.load(reader)
-}
+project.ext.react4xp = [
+  BUILD_ENV: 'production',
+  VERBOSE: 'false'
+]
 
 
-project.ext.BUILD_ENV='production';
 if (
   project.hasProperty('dev')
   || project.hasProperty('development')
 ) {
-  project.ext.BUILD_ENV='development';
+  project.ext.react4xp.BUILD_ENV='development';
 }
 
 
@@ -20,9 +18,8 @@ if (project.hasProperty("link") || project.hasProperty("linked") || project.ext.
 }
 
 
-project.ext.VERBOSE = 'false';
 if (gradle.startParameter.logLevel == LogLevel.INFO) {
-  project.ext.VERBOSE = 'true';
+  project.ext.react4xp.VERBOSE = 'true';
 }
 
 
@@ -33,8 +30,8 @@ task react4xpComponents(type: NpmTask) {
     'explore', '@enonic/react4xp', '--',
     'npm', 'run', 'webpack:components', '--',
     '--env', 'DIR_PATH_ABSOLUTE_PROJECT=' + project.projectDir,
-    '--env', 'BUILD_ENV=' + project.ext.BUILD_ENV,
-    '--env', 'VERBOSE=' + project.ext.VERBOSE
+    '--env', 'BUILD_ENV=' + project.ext.react4xp.BUILD_ENV,
+    '--env', 'VERBOSE=' + project.ext.react4xp.VERBOSE
   ]
 }
 jar.dependsOn += "react4xpComponents"
@@ -47,8 +44,8 @@ task react4xpExternals(type: NpmTask) {
     'explore', '@enonic/react4xp', '--',
     'npm', 'run', 'webpack:externals', '--',
     '--env', 'DIR_PATH_ABSOLUTE_PROJECT=' + project.projectDir,
-    '--env', 'BUILD_ENV=' + project.ext.BUILD_ENV,
-    '--env', 'VERBOSE=' + project.ext.VERBOSE
+    '--env', 'BUILD_ENV=' + project.ext.react4xp.BUILD_ENV,
+    '--env', 'VERBOSE=' + project.ext.react4xp.VERBOSE
   ]
 }
 jar.dependsOn += 'react4xpExternals'
@@ -61,8 +58,8 @@ task react4xpNashornPolyfills(type: NpmTask) {
     'explore', '@enonic/react4xp', '--',
     'npm', 'run', 'webpack:nashornPolyfills', '--',
     '--env', 'DIR_PATH_ABSOLUTE_PROJECT=' + project.projectDir,
-    '--env', 'BUILD_ENV=' + project.ext.BUILD_ENV,
-    '--env', 'VERBOSE=' + project.ext.VERBOSE
+    '--env', 'BUILD_ENV=' + project.ext.react4xp.BUILD_ENV,
+    '--env', 'VERBOSE=' + project.ext.react4xp.VERBOSE
   ]
 }
 jar.dependsOn += 'react4xpNashornPolyfills'
