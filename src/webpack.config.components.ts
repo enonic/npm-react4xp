@@ -437,7 +437,7 @@ module.exports = (env :Environment = {}) => {
       rules: [
         {
           // Babel for building static assets. Excluding node_modules BUT ALLOWING node_modules/@enonic/react-components
-          test: /\.((j|t)sx?|es6)$/,  // js, ts, jsx, tsx, es6
+          test: /\.((j|t)sx?|es6?)$/,  // js, ts, jsx, tsx, es, es6
           exclude: /(?=.*[\\/]node_modules[\\/](?!@enonic[\\/]react-components))^(\w+)$/,
           use: {
             loader: "babel-loader",
