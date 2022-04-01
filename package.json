@@ -48,6 +48,7 @@
   "files": [
     "app.cfg",
     "dist/**/*.js",
+    "examples/*",
     "src/**/*.ts",
     "LICENSE",
     "npmInstall.gradle",
@@ -92,5 +93,5 @@
     "webpack:externals": "npx webpack --config dist/webpack.config.externals.js",
     "webpack:nashornPolyfills": "npx webpack --config dist/webpack.config.nashornPolyfills.js"
   },
-  "version": "3.0.7"
+  "version": "3.0.8"
 }
