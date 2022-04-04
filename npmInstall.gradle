@@ -14,7 +14,17 @@ if (project.ext.react4xp.NPMLINKED == true) {
       println "react4xp build mode is set to '${project.ext.react4xp.BUILD_ENV}':\nOVERRIDING VANILLA npmInstall IN FAVOR OF node-safe-install (nsi) for retaining 'npm link' symlinks. For easy (POSIX) symlinking to npm-react4xp, stand in this projects root directory and run getlinks.sh with a relative link to a local npm-react4xp directory."
     }
 
-    script = file("node_modules/npm-safe-install/out/cli.js")   // npm-safe-install comes with react4xp@^0.2.0
+    def buildSystemNsiPath = 'node_modules/@enonic/react4xp/node_modules/npm-safe-install/out/cli.js';
+    def buildSystemNsi = new File(buildSystemNsiPath);
+    if (buildSystemNsi.exists()) {
+      script = file(buildSystemNsiPath)
+    }
+
+    def localNsiPath = 'node_modules/npm-safe-install/out/cli.js';
+    def localNsi = new File(localNsiPath);
+    if (localNsi.exists()) {
+      script = file(localNsiPath)
+    }
 
     doLast {
       def marker = new File(markerName)
