@@ -454,8 +454,9 @@ module.exports = (env :Environment = {}) => {
                 "@babel/preset-env"
               ],
               plugins: [
-                "@babel/plugin-transform-arrow-functions",
-                "@babel/plugin-proposal-object-rest-spread",
+                '@babel/plugin-proposal-object-rest-spread',
+                '@babel/plugin-transform-arrow-functions',
+                '@babel/plugin-transform-typeof-symbol',
               ],
             },
           },

@@ -41,6 +41,7 @@ import {
 
 import * as Chunks2json from 'chunks-2-json-webpack-plugin';
 import * as FileManagerPlugin from 'filemanager-webpack-plugin';
+//import * as CoreWebPlugin from '@mrhenry/core-web';
 
 import {
   DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
@@ -138,6 +139,17 @@ module.exports = (env :Environment = {}) => {
             }
           }
         }),
+        //@ts-ignore
+        /*new CoreWebPlugin({
+          browsers: {
+            chrome: "63",
+            firefox: "57",
+            edge: "18",
+            opera: "57",
+            safari: "12",
+            ie: "11",
+          }
+        }),*/
         new Chunks2json({
           outputDir: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
           filename: EXTERNALS_CHUNKS_FILENAME,
@@ -162,14 +174,30 @@ module.exports = (env :Environment = {}) => {
           use: {
             loader: 'babel-loader',
             options: {
+              babelrc: false,
+              comments: environmentObj.buildEnvString !== 'production',
               compact: environmentObj.buildEnvString === 'production',
+              minified: environmentObj.buildEnvString === 'production',
               plugins: [
-                '@babel/plugin-transform-arrow-functions',
                 '@babel/plugin-proposal-object-rest-spread',
+                '@babel/plugin-transform-arrow-functions',
+                '@babel/plugin-transform-typeof-symbol',
+                //'@mrhenry/babel-plugin-core-web', // Did nothing
+                //'@mrhenry/core-web'  // Also did nothing
+                /*["@mrhenry/core-web", { // Again nothing!
+                  browsers: {
+                    chrome: "63",
+                    firefox: "57",
+                    edge: "18",
+                    opera: "57",
+                    safari: "12",
+                    ie: "11",
+                  }
+                }]*/
               ],
               presets: [
                 '@babel/preset-typescript',
-                //'@babel/preset-react', // Not certain we need this
+                '@babel/preset-react',
                 '@babel/preset-env'
               ]
             },
@@ -177,6 +205,10 @@ module.exports = (env :Environment = {}) => {
         },
       ],
     }, // module
+
+    optimization: {
+      minimize: environmentObj.buildEnvString === 'production'
+    },
 
     output: {
       path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, // <-- Sets the base url for plugins and other target dirs.
@@ -191,6 +223,10 @@ module.exports = (env :Environment = {}) => {
         module: false,
       },
     }, // output
+
+    performance: {
+  		hints: false
+  	},
 
     plugins,
 

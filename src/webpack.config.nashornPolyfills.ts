@@ -102,7 +102,8 @@ module.exports = (env :Environment = {}) => {
               plugins: [
                 '@babel/plugin-proposal-object-rest-spread',
                 '@babel/plugin-transform-arrow-functions',
-                '@babel/plugin-transform-block-scoping' // transpile 'const' and 'let to 'var'
+                '@babel/plugin-transform-block-scoping', // transpile 'const' and 'let to 'var'
+                '@babel/plugin-transform-typeof-symbol',
               ],
             },
           },
