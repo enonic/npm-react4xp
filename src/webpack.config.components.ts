@@ -56,6 +56,9 @@ module.exports = (env :Environment = {}) => {
     throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
   }
 
+  const DIR_PATH_ABSOLUTE_BUILD_SYSTEM = resolve(__dirname, '..');
+  //console.debug('DIR_PATH_ABSOLUTE_BUILD_SYSTEM', DIR_PATH_ABSOLUTE_BUILD_SYSTEM);
+
   const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
 
 
@@ -425,6 +428,8 @@ module.exports = (env :Environment = {}) => {
   // ------------------------------------------
 
   const config = {
+    context: DIR_PATH_ABSOLUTE_PROJECT, // Used as default for resolve.roots
+
     devtool: DEVMODE ? "source-map" : false,
 
     entry: entries,
@@ -520,9 +525,33 @@ module.exports = (env :Environment = {}) => {
     ], // plugins
 
     resolve: {
-      extensions: [".es6", ".js", ".jsx"],
-      modules: [resolve(DIR_PATH_ABSOLUTE_PROJECT, 'node_modules')]
-    }
+      extensions: ['.ts', '.tsx', '.es6', '.es', '.jsx', '.js', '.json'],
+      modules: [
+        // Tell webpack what directories should be searched when resolving
+        // modules.
+        // Absolute and relative paths can both be used, but be aware that they
+        // will behave a bit differently.
+        // A relative path will be scanned similarly to how Node scans for
+        // node_modules, by looking through the current directory as well as its
+        // ancestors (i.e. ./node_modules, ../node_modules, and on).
+        // With an absolute path, it will only search in the given directory.
+
+        // To resolve node_modules installed under the app
+        resolve(DIR_PATH_ABSOLUTE_PROJECT, 'node_modules'),
+
+        // To resolve node_modules installed under the build system
+        resolve(DIR_PATH_ABSOLUTE_BUILD_SYSTEM, 'node_modules'),
+        //'node_modules'
+      ],
+      /*roots: [ // Works, but maybe modules is more specific
+        // A list of directories where requests of server-relative URLs
+        // (starting with '/') are resolved, defaults to context configuration
+        // option. On non-Windows systems these requests are resolved as an
+        // absolute path first.
+        DIR_PATH_ABSOLUTE_PROJECT, // same as context
+        DIR_PATH_ABSOLUTE_BUILD_SYSTEM
+      ],*/
+    } // resolve
   };
 
   const outputConfig = overrideCallback(env, config);
