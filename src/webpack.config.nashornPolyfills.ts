@@ -182,7 +182,16 @@ module.exports = (env :Environment = {}) => {
         DIR_PATH_ABSOLUTE_PROJECT, // same as context
         DIR_PATH_ABSOLUTE_BUILD_SYSTEM
       ],*/
-    } // resolve
+    }, // resolve
+
+    stats: {
+      colors: true,
+      hash: false,
+    	modules: false,
+    	moduleTrace: false,
+    	timings: false,
+    	version: false
+    }, // stats
 
   }; // webpackConfigObjectNashornPolyfills
   //console.debug('webpackConfigObjectNashornPolyfills', webpackConfigObjectNashornPolyfills);
