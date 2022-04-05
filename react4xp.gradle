@@ -43,7 +43,7 @@ task react4xpComponents(type: NpmTask) {
   )
   outputs.dir 'build/resources/main'
 }
-jar.dependsOn += "react4xpComponents"
+jar.dependsOn += 'react4xpComponents'
 
 
 task react4xpExternals(type: NpmTask) {
@@ -76,3 +76,35 @@ task react4xpNashornPolyfills(type: NpmTask) {
   outputs.dir 'build/resources/main/lib/enonic/react4xp'
 }
 jar.dependsOn += 'react4xpNashornPolyfills'
+
+
+StartParameter startParameter = project.gradle.startParameter;
+[
+  deploy,
+  build,
+  check,
+  test,
+  compileTestJava,
+  processTestResources,
+  assemble,
+  jar,
+  classes,
+  compileJava,
+  processResources,
+  npmInstall,
+  npmSetup,
+  nodeSetup,
+  unpackWebJars,
+  clean
+].each { task ->
+
+  // This will make sure that various tasks are not run on when starting continuous build.
+  // However once a task is triggered by file change, it will still execute it's dependencies ;(
+  task.onlyIf { !startParameter.isContinuous() }
+
+  // This should skip a task even if it's "executed"
+  task.doFirst {
+    if (startParameter.isContinuous()) { throw new StopExecutionException() }
+  }
+
+}
