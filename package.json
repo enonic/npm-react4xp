@@ -26,7 +26,7 @@
     "es6-set-and-map": "^1.0.5",
     "fetch-timeout": "^0.0.2",
     "filemanager-webpack-plugin": "^6.1.7",
-    "glob": "^7.1.7",
+    "glob": "^8.0.1",
     "mocha": "^9.2.2",
     "node-fetch": "^3.2.3",
     "npm-safe-install": "^1.1.0",
