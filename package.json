@@ -70,7 +70,7 @@
     "@babel/plugin-proposal-class-properties": "^7",
     "react": "*",
     "react-dom": "*",
-    "webpack": "^5",
+    "webpack": "^5.56",
     "webpack-cli": "^4"
   },
   "repository": {
@@ -92,5 +92,5 @@
     "webpack:externals": "npx webpack --config dist/webpack.config.externals.js",
     "webpack:nashornPolyfills": "npx webpack --config dist/webpack.config.nashornPolyfills.js"
   },
-  "version": "3.0.15"
+  "version": "3.0.16"
 }
