@@ -1,8 +1,5 @@
 {
   "author": "Espen Norderud",
-  "bin": {
-    "react4xp-buildconstants": "bin/buildConstants.js"
-  },
   "bugs": {
     "url": "https://github.com/enonic/lib-react4xp/issues"
   },
@@ -95,5 +92,5 @@
     "webpack:externals": "npx webpack --config dist/webpack.config.externals.js",
     "webpack:nashornPolyfills": "npx webpack --config dist/webpack.config.nashornPolyfills.js"
   },
-  "version": "3.0.14"
+  "version": "3.0.15"
 }
