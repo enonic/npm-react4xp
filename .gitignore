@@ -23,3 +23,5 @@ test/nashornPolyfills/output
 build
 
 tmp
+.idea
+.yarnclean
