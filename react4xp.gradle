@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 project.ext.react4xp = [
   BUILD_ENV: 'production',
   VERBOSE: 'false'
@@ -22,13 +24,17 @@ if (gradle.startParameter.logLevel == LogLevel.INFO) {
   project.ext.react4xp.VERBOSE = 'true';
 }
 
+String npm = 'npm'
+if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    npm = 'npm.cmd'
+}
 
 task react4xpComponents(type: NpmTask) {
   group 'React4xp'
   description 'Compile the parent projects react components'
   args = [
     'explore', '@enonic/react4xp', '--',
-    'npm', 'run', 'webpack:components', '--',
+    npm, 'run', 'webpack:components', '--',
     '--env', 'DIR_PATH_ABSOLUTE_PROJECT=' + project.projectDir,
     '--env', 'BUILD_ENV=' + project.ext.react4xp.BUILD_ENV,
     '--env', 'VERBOSE=' + project.ext.react4xp.VERBOSE
@@ -51,7 +57,7 @@ task react4xpExternals(type: NpmTask) {
   description 'Compile the externals (react and react-dom)'
   args = [
     'explore', '@enonic/react4xp', '--',
-    'npm', 'run', 'webpack:externals', '--',
+    npm, 'run', 'webpack:externals', '--',
     '--env', 'DIR_PATH_ABSOLUTE_PROJECT=' + project.projectDir,
     '--env', 'BUILD_ENV=' + project.ext.react4xp.BUILD_ENV,
     '--env', 'VERBOSE=' + project.ext.react4xp.VERBOSE
@@ -67,7 +73,7 @@ task react4xpNashornPolyfills(type: NpmTask) {
   description 'Run the imported react4xp webpack scripts that compile the components and externals (as well as nashorn polyfills if needed)'
   args = [
     'explore', '@enonic/react4xp', '--',
-    'npm', 'run', 'webpack:nashornPolyfills', '--',
+    npm, 'run', 'webpack:nashornPolyfills', '--',
     '--env', 'DIR_PATH_ABSOLUTE_PROJECT=' + project.projectDir,
     '--env', 'BUILD_ENV=' + project.ext.react4xp.BUILD_ENV,
     '--env', 'VERBOSE=' + project.ext.react4xp.VERBOSE
