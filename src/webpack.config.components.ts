@@ -353,18 +353,41 @@ module.exports = (env :Environment = {}) => {
     detectedTargetDirs,
     verboseLog
   );
+
+  const allFilesUnderNodeModulesExceptFilesUnderEnonicReactComponents = /[\\/]node_modules[\\/](?!@enonic[\\/]react-components)./;
+  const anyFilesUnderEnonicReactComponents = /[\\/]node_modules[\\/]@enonic[\\/]react-components/;
+
+  // https://webpack.js.org/plugins/split-chunks-plugin/#splitchunkschunks
+  // splitChunks.chunks
+  // This indicates which chunks will be selected for optimization.
+  // When a string is provided, valid values are all, async, and initial.
+  // Providing all can be particularly powerful, because it means that chunks
+  // can be shared even between async and non-async chunks.
+  //
+  // https://webpack.js.org/plugins/split-chunks-plugin/#splitchunkscachegroupscachegroupenforce
+  // splitChunks.cacheGroups.{cacheGroup}.enforce
+  // Tells webpack to ignore splitChunks.minSize, splitChunks.minChunks,
+  // splitChunks.maxAsyncRequests and splitChunks.maxInitialRequests
+  // options and always create chunks for this cache group.
+  //
+  // https://webpack.js.org/plugins/split-chunks-plugin/#splitchunkscachegroupscachegrouppriority
+  // splitChunks.cacheGroups.{cacheGroup}.priority
+  // A module can belong to multiple cache groups.
+  // The optimization will prefer the cache group with a higher priority.
+  // The default groups have a negative priority to allow custom groups to take
+  // higher priority (default value is 0 for custom groups).
   const cacheGroups = {
     vendors: {
       name: "vendors",
       enforce: true,
-      test: "[\\\\/]node_modules[\\\\/]((?!(react4xp-regions)).)[\\\\/]?",
+      test: allFilesUnderNodeModulesExceptFilesUnderEnonicReactComponents,
       chunks: "all",
       priority: 100,
     },
     templates: {
       name: "templates",
       enforce: true,
-      test: "[\\\\/]node_modules[\\\\/]react4xp-regions[\\\\/]?",
+      test: anyFilesUnderEnonicReactComponents,
       chunks: "all",
       priority: 99,
     },
@@ -443,7 +466,20 @@ module.exports = (env :Environment = {}) => {
         {
           // Babel for building static assets. Excluding node_modules BUT ALLOWING node_modules/@enonic/react-components
           test: /\.((j|t)sx?|es6?)$/,  // js, ts, jsx, tsx, es, es6
-          exclude: /(?=.*[\\/]node_modules[\\/](?!@enonic[\\/]react-components))^(\w+)$/,
+
+          // I don't think we can exclude much, everything must be able to run:
+          // * server-side (Nashorn/Graal-JS) and
+          // * client-side (Browsers).
+          //exclude: allFilesUnderNodeModulesExceptFilesUnderEnonicReactComponents,
+
+          // It takes time to transpile, if you know they don't need
+          // transpilation to run in Enonic XP (Nashorn/Graal-JS) you may list
+          // them here:
+          exclude: [
+    				/node_modules[\\/]core-js/, // will cause errors if they are transpiled by Babel
+    				/node_modules[\\/]webpack[\\/]buildin/ // will cause errors if they are transpiled by Babel
+    			],
+
           use: {
             loader: "babel-loader",
             options: {

@@ -83,11 +83,20 @@ module.exports = (env :Environment = {}) => {
       rules: [
         {
           test: /\.es6$/,
+
+          // I don't think we can exclude much, everything must be able to run:
+          // * server-side (Nashorn/Graal-JS) and
+          // * client-side (Browsers).
           //exclude: /node_modules/,
-          exclude: [ // It takes time to transpile, if you know they don't need transpilation to run in Enonic you may list them here:
+
+          // It takes time to transpile, if you know they don't need
+          // transpilation to run in Enonic XP (Nashorn/Graal-JS) you may list
+          // them here:
+          exclude: [
     				/node_modules[\\/]core-js/, // will cause errors if they are transpiled by Babel
     				/node_modules[\\/]webpack[\\/]buildin/ // will cause errors if they are transpiled by Babel
     			],
+
           use: {
             loader: 'babel-loader',
             options: {
