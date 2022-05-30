@@ -1,11 +1,3 @@
-// TODO: New general comment explanation!
-
-/*
-There is a file 'react4xp.properties' which exists at the Enonic XP application project.projectdir.
-
-The 'react4xp.properties' file may define where an overrideComponentWebpack file exists.
-The 'overrideComponentWebpack' file is only used when building components.
-*/
 import type {Environment} from './index.d';
 import type {
   EntrySet,
@@ -209,7 +201,7 @@ module.exports = (env :Environment = {}) => {
     console.warn(
       `Warning: ${
         symlinksUnderReact4xpRootArray.length
-      } chunkDir(s) / entryDir(s) in react4xp.properties are symlinks that lead inside the folder structure below the React4xp root (${DIR_PATH_ABSOLUTE_SRC_R4X}). This could cause a mess in React4xp's entry/chunk structure, so I hope you know what you're doing. These are: '${
+      } chunkDir(s) / entryDir(s) in react4xp.config.js are symlinks that lead inside the folder structure below the React4xp root (${DIR_PATH_ABSOLUTE_SRC_R4X}). This could cause a mess in React4xp's entry/chunk structure, so I hope you know what you're doing. These are: '${
         symlinksUnderReact4xpRootArray.join("', '")}'`
     );
   }
@@ -247,7 +239,7 @@ module.exports = (env :Environment = {}) => {
     throw Error(
       `${
         badChunkDirs.length
-      } chunkDir(s) in react4xp.properties are illegal or too general. For chunkDirs, avoid 'src/main/resources/site' in general, and direct references to its parent directories. Bad items are: '${badChunkDirs.join(
+      } chunkDir(s) in react4xp.config.js are illegal or too general. For chunkDirs, avoid 'src/main/resources/site' in general, and direct references to its parent directories. Bad items are: '${badChunkDirs.join(
         "', '"
       )}'`
     );
@@ -259,7 +251,7 @@ module.exports = (env :Environment = {}) => {
     throw Error(
       `${
         badEntryDirs.length
-      } entryDir(s) in react4xp.properties are too general. For entryDirs, avoid direct references to the XP folder 'src/main/resources/' or its direct parent directories. Bad items are: '${badEntryDirs.join(
+      } entryDir(s) in react4xp.config.js are too general. For entryDirs, avoid direct references to the XP folder 'src/main/resources/' or its direct parent directories. Bad items are: '${badEntryDirs.join(
         "', '"
       )}'`
     );
@@ -314,7 +306,7 @@ module.exports = (env :Environment = {}) => {
       }): ${JSON.stringify(entrySets, null, 2)}`
     );
     throw Error(
-      `react4xp-build-components can't continue. The sub-package react4xp-build-entriesandchunks seems to have produced malformed 'entries' data, using the entrysets above. Run the build with isVerbose=true in react4xp.properties for more info. Expected an object, but got ${
+      `react4xp-build-components can't continue. The sub-package react4xp-build-entriesandchunks seems to have produced malformed 'entries' data, using the entrysets above. Run the build with -i for more info. Expected an object, but got ${
         Array.isArray(entries)
           ? `array[${entries.length}]`
           : typeof entries +
@@ -339,7 +331,7 @@ module.exports = (env :Environment = {}) => {
     throw Error(
       `react4xp-build-components can't continue - no entries were found (entries=${JSON.stringify(
         entries
-      )}). Tip: the combination of entryDirs and entryExtStringArrayensions in react4xp.properties was resolved to the entrySets above. Check the content of those directories, with those file extensions. Add entry source files, adjust react4xp.properties, or run the build with isVerbose=true in react4xp.properties for more info.`
+      )}). Tip: the combination of entryDirs and entryExtStringArrayensions in react4xp.config.js was resolved to the entrySets above. Check the content of those directories, with those file extensions. Add entry source files, adjust react4xp.config.js, or run the build with -i for more info.`
     );
   }
 

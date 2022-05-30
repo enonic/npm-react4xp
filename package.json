@@ -52,7 +52,6 @@
     "LICENSE",
     "npmInstall.gradle",
     "react4xp.gradle",
-    "react4xp.properties",
     "README*.md",
     "updaters.gradle"
   ],

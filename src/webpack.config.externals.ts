@@ -180,8 +180,10 @@ module.exports = (env :Environment = {}) => {
           // transpilation to run in Enonic XP (Nashorn/Graal-JS) you may list
           // them here:
           exclude: [
-    				/node_modules[\\/]core-js/, // will cause errors if they are transpiled by Babel
-    				/node_modules[\\/]webpack[\\/]buildin/ // will cause errors if they are transpiled by Babel
+    				/[\\/]node_modules[\\/]core-js/, // will cause errors if they are transpiled by Babel
+            // /[\\/]node_modules[\\/]react[\\/]/, // TODO Perhaps react don't need to be transpiled
+            // /[\\/]node_modules[\\/]react-dom[\\/]/, // TODO Perhaps react-dom don't need to be transpiled
+    				/[\\/]node_modules[\\/]webpack[\\/]buildin/ // will cause errors if they are transpiled by Babel
     			],
 
           use: {

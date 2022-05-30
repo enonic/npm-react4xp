@@ -57,9 +57,9 @@ export const normalizeDirList = (
                 console.warn(
                   `${
                     VERBOSE ? "-------->" : "Warning:"
-                  } skipping ${singularLabel} '${orig}' from react4xp.properties${
+                  } skipping ${singularLabel} '${orig}' from react4xp.config.js${
                     !VERBOSE
-                      ? " - it probably just doesn't exist. If you're sure it exists, there may be another problem - run the build again with verbose option in react4xp.properties for full error dump"
+                      ? " - it probably just doesn't exist. If you're sure it exists, there may be another problem - run the build again with verbose option (-i) for full error dump"
                       : ""
                   }.`
                 );
@@ -82,7 +82,7 @@ export const normalizeDirList = (
                   throw Error(
                     `${singularLabel.replace(/^\w/, (c) =>
                       c.toUpperCase()
-                    )} '${orig}' from react4xp.properties leads by resolved symlink(s) to '${dir}', which was not found.`
+                    )} '${orig}' from react4xp.config.js leads by resolved symlink(s) to '${dir}', which was not found.`
                   );
                 }
               }
@@ -90,7 +90,7 @@ export const normalizeDirList = (
               lstat = lstatSync(realDir);
               if (!lstat.isDirectory()) {
                 throw Error(
-                  `Can't add ${singularLabel} '${orig}' from react4xp.properties - ${realDir} was found but is not a directory.`
+                  `Can't add ${singularLabel} '${orig}' from react4xp.config.js - ${realDir} was found but is not a directory.`
                 );
               }
 
