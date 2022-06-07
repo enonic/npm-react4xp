@@ -7,7 +7,9 @@ import type {
 import {sync} from 'glob';
 import {
   join,
-  parse
+  parse,
+  normalize,
+  sep
 } from 'path';
 import {normalizePath} from './normalizePath';
 
@@ -30,14 +32,17 @@ export function buildEntriesToSubfolder(
   // where values are found files under directory [sourcePath] with any one of the fileExtensions in [extensions],
   // and the values are the corresponding filenames (full path under react4xp subfolder)
   // - which also is the access path (jsxPath) of each component in react4xp.
+
+  // path - join normalizes paths. So windows "/" become "\"
+  // glob - sync does not accept "\" as path seperators... only "/"
   return extensions.reduce(
     (accumulator, extension) =>
       Object.assign(
         accumulator,
-        sync(join(sourcePath, `**/*.${extension}`))
+        sync(normalizePath(join(sourcePath, `**/*.${extension}`)))
           .reduce((obj, entry) => {
-            const normalizedEntry = normalizePath(entry);
-            const parsedEl = parse(normalizedEntry);
+            const parsedEl = parse(entry);
+
             if (parsedEl && parsedEl.dir.startsWith(sourcePath)) {
               const subdir = parsedEl.dir
                 .substring(sourcePath.length)
@@ -48,10 +53,10 @@ export function buildEntriesToSubfolder(
                 .filter((a) => (a || "").trim())
                 .join("/");
 
-              verboseLog(`${name} -> ${normalizedEntry}`, "\tEntry");
+              verboseLog(`${name} -> ${entry}`, "\tEntry");
 
               // eslint-disable-next-line no-param-reassign
-              obj[name] = normalizedEntry;
+              obj[name] = entry;
             }
             return obj;
           }, {})
