@@ -94,7 +94,6 @@ StartParameter startParameter = project.gradle.startParameter;
   npmInstall,
   npmSetup,
   nodeSetup,
-  unpackWebJars,
   clean
 ].each { task ->
 
