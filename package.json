@@ -32,7 +32,7 @@
     "npm-safe-install": "^1",
     "prop-types": "^15",
     "q-i": "^2",
-    "rimraf": "^3",
+    "rimraf": "^4",
     "stats-webpack-plugin": "^0.7.0"
   },
   "description": "Build tools for React4xp",
