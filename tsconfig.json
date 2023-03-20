@@ -1,20 +1,24 @@
 {
-  "compilerOptions": {
-    "baseUrl": "./",
-    "esModuleInterop": true,
-    "module": "commonjs",
-		"moduleResolution": "node",
-    "outDir": "dist",
-    "paths": {
-			"@enonic/js-utils/*": ["./node_modules/@enonic/js-utils/src/*"]
-		},
-    "rootDir": "src",
-    "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "types": [
-      "node"
-    ]
-  }
+	"compilerOptions": {
+		"baseUrl": "./",
+		"esModuleInterop": true,
+		"module": "commonjs",
+			"moduleResolution": "node",
+		"outDir": "dist",
+		"paths": {
+				"@enonic/js-utils/*": ["./node_modules/@enonic/js-utils/src/*"]
+			},
+		"rootDir": "src",
+		"target": "es2015",
+		"typeRoots": [
+			"node_modules/@types"
+		],
+		"types": [
+			"node"
+		]
+	},
+	"exclude": [
+		"tsup.config.*.ts",
+		"src/executor.ts"
+	]
 }
