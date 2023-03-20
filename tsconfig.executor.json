@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"types": [
+			"node"
+		]
+	},
+	"include": [
+		// "tsup.config.*.ts",
+		"src/executor.ts"
+	]
+}

@@ -24,6 +24,8 @@
     "core-js": "^3",
     "deep-freeze": "^0.0.1",
     "es6-set-and-map": "^1",
+    "esbuild": "^0.17.12",
+    "esbuild-plugin-manifest": "^0.5.0",
     "filemanager-webpack-plugin": "^8",
     "glob": "^9",
     "mocha": "^10",
@@ -33,10 +35,12 @@
     "q-i": "^2",
     "rimraf": "^4",
     "stats-webpack-plugin": "^0.7.0",
+    "tsup": "^6.7.0",
     "webpack-stats-plugin": "^1.1.1"
   },
   "description": "Build tools for React4xp",
   "devDependencies": {
+    "@types/node": "^18.15.3",
     "path-exists-cli": "^2",
     "react": ">=17.0.2",
     "react-dom": ">=17.0.2",
@@ -53,6 +57,8 @@
     "npmInstall.gradle",
     "react4xp.gradle",
     "README*.md",
+    "tsconfig.*.json",
+    "tsup.config.*.ts",
     "updaters.gradle"
   ],
   "homepage": "https://github.com/enonic/enonic-react4xp#readme",
@@ -85,8 +91,10 @@
     "pretest": "yarn build",
     "test": "yarn test:components && yarn test:nashornPolyfills",
     "test:components": "npx webpack --config dist/webpack.config.components.js --env DIR_PATH_ABSOLUTE_PROJECT=$PWD/test/components && npx mocha test/components/test.spec.mjs",
+    "test:executor": "yarn tsup:executor --env.DIR_PATH_ABSOLUTE_PROJECT $PWD/test/components",
     "test:nashornPolyfills": "webpack --config dist/webpack.config.nashornPolyfills.js --env DIR_PATH_ABSOLUTE_PROJECT=$PWD/test/nashornPolyfills && npx mocha test/nashornPolyfills/test.spec.mjs",
     "tsc": "npx tsc",
+    "tsup:executor": "npx tsup --config tsup.config.executor.ts",
     "webpack:components": "npx webpack --config dist/webpack.config.components.js",
     "webpack:externals": "npx webpack --config dist/webpack.config.externals.js",
     "webpack:nashornPolyfills": "npx webpack --config dist/webpack.config.nashornPolyfills.js"

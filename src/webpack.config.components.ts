@@ -5,7 +5,6 @@ import type {
 } from './buildComponents/index.d';
 
 
-import {parse as parsePropertiesFile} from 'properties';
 import { StatsWriterPlugin } from 'webpack-stats-plugin';
 
 import {
@@ -16,7 +15,7 @@ import {
   sep
 } from 'path';
 
-import {readFileSync, statSync} from 'fs';
+import {statSync} from 'fs';
 
 import {
   DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
@@ -41,37 +40,9 @@ import {camelize} from './util/camelize';
 import {cleanAnyDoublequotes} from './util/cleanAnyDoublequotes';
 import {isSet} from './util/isSet';
 import {makeVerboseLogger} from './util/makeVerboseLogger';
-import {ucFirst} from './util/ucFirst';
+import getAppName from './util/getAppName';
 //import {toStr} from './util/toStr';
-
-
-function getAppName(filePathAbsoluteGradleProperties) {
-  try {
-    const gradePropertiesStats = statSync(filePathAbsoluteGradleProperties);
-    if (!gradePropertiesStats.isFile()) {
-      throw new Error(`Not a file: ${filePathAbsoluteGradleProperties}!`);
-    }
-  } catch (e) {
-    console.error(e);
-    throw new Error(`Something went wrong while trying to read:${filePathAbsoluteGradleProperties}!`);
-  }
-
-  const gradlePropertiesString = readFileSync(filePathAbsoluteGradleProperties, {encoding: 'utf8'});
-
-  let gradlePropertiesObject: {
-    appName: string
-  };
-  try {
-    gradlePropertiesObject = parsePropertiesFile(gradlePropertiesString);
-  } catch (e) {
-    console.error(e);
-    throw new Error(`Something went wrong when trying to read appName from ${filePathAbsoluteGradleProperties}!`);
-  }
-  if (!gradlePropertiesObject.appName) {
-    throw new Error(`Something went wrong when trying to read appName from ${filePathAbsoluteGradleProperties}!`);
-  }
-  return ucFirst(camelize(gradlePropertiesObject.appName, /\./g));
-}
+import {ucFirst} from './util/ucFirst';
 
 
 module.exports = (env: Environment = {}) => {
@@ -101,8 +72,7 @@ module.exports = (env: Environment = {}) => {
   };
   //console.debug('environmentObj', environmentObj);
 
-  const FILE_PATH_ABSOLUTE_GRADLE_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, 'gradle.properties');
-  let appName = getAppName(FILE_PATH_ABSOLUTE_GRADLE_PROPERTIES);
+  const appName = ucFirst(camelize(getAppName(DIR_PATH_ABSOLUTE_PROJECT), /\./g));
 
   let EXTERNALS = EXTERNALS_DEFAULT;
   //console.debug('EXTERNALS', EXTERNALS);
