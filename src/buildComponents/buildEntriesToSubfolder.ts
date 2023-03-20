@@ -4,7 +4,7 @@ import type {
 } from './index.d';
 
 
-import {sync} from 'glob';
+import {globSync} from 'glob';
 import {
   join,
   parse,
@@ -39,7 +39,7 @@ export function buildEntriesToSubfolder(
     (accumulator, extension) =>
       Object.assign(
         accumulator,
-        sync(normalizePath(join(sourcePath, `**/*.${extension}`)))
+        globSync(normalizePath(join(sourcePath, `**/*.${extension}`)))
           .reduce((obj, entry) => {
             const parsedEl = parse(entry);
 

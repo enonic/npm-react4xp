@@ -5,7 +5,8 @@ import type {
 } from './buildComponents/index.d';
 
 
-import * as StatsPlugin from 'stats-webpack-plugin';
+import {parse as parsePropertiesFile} from 'properties';
+import { StatsWriterPlugin } from 'webpack-stats-plugin';
 
 import {
   isAbsolute,
@@ -15,7 +16,7 @@ import {
   sep
 } from 'path';
 
-import {statSync} from 'fs';
+import {readFileSync, statSync} from 'fs';
 
 import {
   DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
@@ -36,13 +37,44 @@ import {getEntries} from './buildComponents/getEntries';
 import {makeExclusionsRegexpString} from './buildComponents/makeExclusionsRegexpString';
 import {normalizeDirList} from './buildComponents/normalizeDirList';
 
+import {camelize} from './util/camelize';
 import {cleanAnyDoublequotes} from './util/cleanAnyDoublequotes';
 import {isSet} from './util/isSet';
 import {makeVerboseLogger} from './util/makeVerboseLogger';
+import {ucFirst} from './util/ucFirst';
 //import {toStr} from './util/toStr';
 
 
-module.exports = (env :Environment = {}) => {
+function getAppName(filePathAbsoluteGradleProperties) {
+  try {
+    const gradePropertiesStats = statSync(filePathAbsoluteGradleProperties);
+    if (!gradePropertiesStats.isFile()) {
+      throw new Error(`Not a file: ${filePathAbsoluteGradleProperties}!`);
+    }
+  } catch (e) {
+    console.error(e);
+    throw new Error(`Something went wrong while trying to read:${filePathAbsoluteGradleProperties}!`);
+  }
+
+  const gradlePropertiesString = readFileSync(filePathAbsoluteGradleProperties, {encoding: 'utf8'});
+
+  let gradlePropertiesObject: {
+    appName: string
+  };
+  try {
+    gradlePropertiesObject = parsePropertiesFile(gradlePropertiesString);
+  } catch (e) {
+    console.error(e);
+    throw new Error(`Something went wrong when trying to read appName from ${filePathAbsoluteGradleProperties}!`);
+  }
+  if (!gradlePropertiesObject.appName) {
+    throw new Error(`Something went wrong when trying to read appName from ${filePathAbsoluteGradleProperties}!`);
+  }
+  return ucFirst(camelize(gradlePropertiesObject.appName, /\./g));
+}
+
+
+module.exports = (env: Environment = {}) => {
   const DIR_PATH_ABSOLUTE_PROJECT = cleanAnyDoublequotes("DIR_PATH_ABSOLUTE_PROJECT", env.DIR_PATH_ABSOLUTE_PROJECT || process.cwd());
   if (!isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
     throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
@@ -61,14 +93,16 @@ module.exports = (env :Environment = {}) => {
     entryExtStringArray: ['jsx', 'tsx', 'ts', 'es6', 'es', 'js'],
     isVerbose: false
   } as {
-    buildEnvString :string
-    chunkDirsStringArray :Array<string>
-    entryDirsStringArray :Array<string>
-    entryExtStringArray :Array<string>
-    isVerbose :boolean
+    buildEnvString: string
+    chunkDirsStringArray: string[]
+    entryDirsStringArray: string[]
+    entryExtStringArray: string[]
+    isVerbose: boolean
   };
   //console.debug('environmentObj', environmentObj);
 
+  const FILE_PATH_ABSOLUTE_GRADLE_PROPERTIES = join(DIR_PATH_ABSOLUTE_PROJECT, 'gradle.properties');
+  let appName = getAppName(FILE_PATH_ABSOLUTE_GRADLE_PROPERTIES);
 
   let EXTERNALS = EXTERNALS_DEFAULT;
   //console.debug('EXTERNALS', EXTERNALS);
@@ -80,10 +114,10 @@ module.exports = (env :Environment = {}) => {
     //console.debug('configJsStats', configJsStats);
     if (configJsStats.isFile()) {
       const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS) as {
-        chunkDirs :Array<string>
-        entryDirs :Array<string>
-        entryExtensions :Array<string>
-        externals :object
+        chunkDirs: string[]
+        entryDirs: string[]
+        entryExtensions: string[]
+        externals: object
       };
       //console.debug('config', toStr(config));
       if (config.chunkDirs) {
@@ -260,7 +294,7 @@ module.exports = (env :Environment = {}) => {
   // ------------------- Build the entry list:
 
   // Build the entries
-  const entrySets :Array<EntrySet> = [
+  const entrySets: EntrySet[] = [
     {
       sourcePath: DIR_PATH_ABSOLUTE_SRC_SITE,
       sourceExtensions: ["jsx", "tsx"],
@@ -494,6 +528,7 @@ module.exports = (env :Environment = {}) => {
 
 
     optimization: {
+      // chunkIds: 'named', // TODO
       splitChunks: {
         name: false,
         cacheGroups,
@@ -504,7 +539,7 @@ module.exports = (env :Environment = {}) => {
       path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, // <-- Sets the base url for plugins and other target dirs. Note the use of {{assetUrl}} in index.html (or index.ejs).
       filename: '[name].[contenthash].js',
       library: {
-        name: [LIBRARY_NAME, "[name]"],
+        name: [`${appName}${LIBRARY_NAME}`,"[name]"],
         type: "var",
       },
       globalObject: "window",
@@ -520,37 +555,39 @@ module.exports = (env :Environment = {}) => {
     }, // output
 
     plugins: [
-      new StatsPlugin(COMPONENT_STATS_FILENAME, {
-        // Display the entry points with the corresponding bundles
-        entrypoints: true, // <-- THE IMPORTANT ONE, FOR DEPENDENCY TRACKING!
-        errors: true,
-        warnings: true,
+      new StatsWriterPlugin({
+        filename: COMPONENT_STATS_FILENAME,
+        stats: {
+          entrypoints: true, // <-- THE IMPORTANT ONE, FOR DEPENDENCY TRACKING!
+          errors: true,
+          warnings: true,
 
-        // Everything else switched off:
-        assets: false,
-        builtAt: false,
-        cached: false,
-        cachedAssets: false,
-        children: false,
-        chunks: false,
-        chunkGroups: false,
-        chunkModules: false,
-        chunkOrigins: false,
-        depth: false,
-        env: false,
-        errorDetails: false,
-        hash: false,
-        modules: false,
-        moduleTrace: false,
-        performance: false,
-        providedExports: false,
-        publicPath: false,
-        reasons: false,
-        source: false,
-        timings: false,
-        usedExports: false,
-        version: false,
-      }),
+          // Everything else switched off:
+          assets: false,
+          builtAt: false,
+          cached: false,
+          cachedAssets: false,
+          children: false,
+          chunks: false,
+          chunkGroups: false,
+          chunkModules: false,
+          chunkOrigins: false,
+          depth: false,
+          env: false,
+          errorDetails: false,
+          hash: false,
+          modules: false,
+          moduleTrace: false,
+          performance: false,
+          providedExports: false,
+          publicPath: false,
+          reasons: false,
+          source: false,
+          timings: false,
+          usedExports: false,
+          version: false,
+        }
+      })
     ], // plugins
 
     resolve: {

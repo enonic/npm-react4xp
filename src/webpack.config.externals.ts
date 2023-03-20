@@ -39,8 +39,8 @@ import {
   resolve
 } from 'path';
 
-import * as Chunks2json from 'chunks-2-json-webpack-plugin';
-import * as FileManagerPlugin from 'filemanager-webpack-plugin';
+import Chunks2json from 'chunks-2-json-webpack-plugin';
+import FileManagerPlugin from 'filemanager-webpack-plugin';
 //import * as CoreWebPlugin from '@mrhenry/core-web';
 
 import {
