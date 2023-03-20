@@ -2,8 +2,11 @@ import manifestPlugin from 'esbuild-plugin-manifest';
 import { isAbsolute, join } from 'path';
 // import { print } from 'q-i';
 import { defineConfig, type Options } from 'tsup';
-import getAppName from './src/util/getAppName';
 import { LIBRARY_NAME } from './src/constants.runtime';
+import getAppName from './src/util/getAppName';
+import { camelize } from './src/util/camelize';
+import { ucFirst } from './src/util/ucFirst';
+
 
 interface MyOptions extends Options {
 	env?: {
@@ -35,24 +38,30 @@ export default defineConfig((options: MyOptions) => {
 	// print(options, { maxItems: Infinity });
 
 	return {
+		globalName: `${ucFirst(camelize(appName, /\./g))}${LIBRARY_NAME}Client`,
 		entry: {
-			'executor': 'src/executor.ts'
+			'client': 'src/client.ts'
 		},
 		esbuildPlugins: [
 			manifestPlugin({
 				extensionless: 'input',
-				filename: 'executor.manifest.json',
+				filename: 'client.manifest.json',
 				generate: (entries) => {
 					return {
-						'executor.js': entries['executor']
+						'client.js': entries['client']
 					};
 				},
 				shortNames: true
 			})
 		],
+		external: [
+			'react',
+			'react-dom',
+		],
+		format: 'iife',
 		platform: 'browser',
 		outDir: join(DIR_PATH_ABSOLUTE_PROJECT, 'build/resources/main/assets/react4xp/'),
 		target: 'es2015',
-		tsconfig: 'tsconfig.executor.json'
+		tsconfig: 'tsconfig.client.json'
 	};
 });
