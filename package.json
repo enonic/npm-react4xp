@@ -29,9 +29,11 @@
     "mocha": "^10",
     "npm-safe-install": "^1",
     "prop-types": "^15",
+    "properties": "^1.2.1",
     "q-i": "^2",
     "rimraf": "^4",
-    "stats-webpack-plugin": "^0.7.0"
+    "stats-webpack-plugin": "^0.7.0",
+    "webpack-stats-plugin": "^1.1.1"
   },
   "description": "Build tools for React4xp",
   "devDependencies": {
@@ -89,5 +91,5 @@
     "webpack:externals": "npx webpack --config dist/webpack.config.externals.js",
     "webpack:nashornPolyfills": "npx webpack --config dist/webpack.config.nashornPolyfills.js"
   },
-  "version": "3.1.2"
+  "version": "3.2.0-SNAPSHOT"
 }

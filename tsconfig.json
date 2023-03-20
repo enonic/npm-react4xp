@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
+    "esModuleInterop": true,
     "module": "commonjs",
 		"moduleResolution": "node",
     "outDir": "dist",
@@ -8,7 +9,7 @@
 			"@enonic/js-utils/*": ["./node_modules/@enonic/js-utils/src/*"]
 		},
     "rootDir": "src",
-    "target": "es3",
+    "target": "es2015",
     "typeRoots": [
       "node_modules/@types"
     ],
