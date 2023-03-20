@@ -50,7 +50,7 @@ for (let index = 0; index < inlineJsonElements.length; index++) {
 		console.debug('jsxPath', jsxPath);
 		console.debug('props', props);*/
 		//@ts-ignore
-		React4xp.CLIENT[command](
+		window[`${prefix}${process.env.LIBRARY_NAME}Client`][command](
 			window[`${prefix}${process.env.LIBRARY_NAME}`][jsxPath], id, props, isPage, hasRegions, devMode
 		);
 	}
