@@ -5,7 +5,6 @@
 		]
 	},
 	"include": [
-		// "tsup.config.client.ts",
 		"src/client.ts"
 	]
 }
