@@ -112,6 +112,7 @@ module.exports = (env :Environment = {}) => {
   if (isSet(env.VERBOSE)) {
     environmentObj.isVerbose = env.VERBOSE !== 'false';
   }
+  const DEVMODE = environmentObj.buildEnvString !== 'production';
   //console.debug('environmentObj', environmentObj);
 
 
@@ -160,7 +161,7 @@ module.exports = (env :Environment = {}) => {
   return {
     context: DIR_PATH_ABSOLUTE_PROJECT, // Used as default for resolve.roots
 
-    devtool: environmentObj.buildEnvString === 'production' ? undefined : 'source-map',
+    devtool: DEVMODE ? 'source-map' : undefined,
 
     entry,
 
@@ -190,9 +191,9 @@ module.exports = (env :Environment = {}) => {
             loader: 'babel-loader',
             options: {
               babelrc: false,
-              comments: environmentObj.buildEnvString !== 'production',
-              compact: environmentObj.buildEnvString === 'production',
-              minified: environmentObj.buildEnvString === 'production',
+              comments: DEVMODE,
+              compact: !DEVMODE,
+              minified: !DEVMODE,
               plugins: [
                 '@babel/plugin-proposal-object-rest-spread',
                 '@babel/plugin-transform-arrow-functions',
@@ -222,12 +223,12 @@ module.exports = (env :Environment = {}) => {
     }, // module
 
     optimization: {
-      minimize: environmentObj.buildEnvString === 'production'
+      minimize: !DEVMODE
     },
 
     output: {
       path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, // <-- Sets the base url for plugins and other target dirs.
-      filename: '[name].[contenthash].js',
+      filename: DEVMODE ? '[name].js' : '[name].[contenthash].js',
       environment: {
         arrowFunction: false,
         bigIntLiteral: false,
