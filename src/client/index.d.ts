@@ -4,6 +4,8 @@ export interface Props {
 			components: Array<{
 				descriptor: string
 				path: string
+				text?: string
+				type: string
 			}>
 		}
 	}
