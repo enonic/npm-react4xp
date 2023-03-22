@@ -507,7 +507,7 @@ module.exports = (env: Environment = {}) => {
 
     output: {
       path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, // <-- Sets the base url for plugins and other target dirs. Note the use of {{assetUrl}} in index.html (or index.ejs).
-      filename: '[name].[contenthash].js',
+      filename: DEVMODE ? '[name].js' : '[name].[contenthash].js',
       library: {
         name: [`${appName}${LIBRARY_NAME}`,"[name]"],
         type: "var",
