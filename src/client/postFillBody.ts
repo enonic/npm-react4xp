@@ -6,24 +6,24 @@ import type {
 
 
 export const postFillBody = (
-  componentPath :string,
-  htmlBody :string,
-  region :Region,
-  regionName :string,
-  regionsBuffer :RegionsBuffer,
-  regionsRemaining :RegionsRemaining
+	componentPath: string,
+	htmlBody: string,
+	region: Region,
+	regionName: string,
+	regionsBuffer: RegionsBuffer,
+	regionsRemaining: RegionsRemaining
 ) => {
-  if (htmlBody) {
-    // TODO: Error if no body?
-    const compTag = `<!--# COMPONENT ${componentPath} -->`.replace(/\//g, "/");
+	if (htmlBody) {
+		// TODO: Error if no body?
+		const compTag = `<!--# COMPONENT ${componentPath} -->`.replace(/\//g, "/");
 
-    regionsBuffer[regionName] = regionsBuffer[regionName].replace(
-      new RegExp(compTag),
-      htmlBody
-    );
+		regionsBuffer[regionName] = regionsBuffer[regionName].replace(
+			new RegExp(compTag),
+			htmlBody
+		);
 
-    if (regionsRemaining[regionName] === 0) {
-      region.innerHTML = regionsBuffer[regionName];
-    }
-  }
+		if (regionsRemaining[regionName] === 0) {
+			region.innerHTML = regionsBuffer[regionName];
+		}
+	}
 };

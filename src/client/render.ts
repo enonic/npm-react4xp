@@ -27,13 +27,22 @@ export function render(
 ) {
 	const container = getContainer(targetId);
 	const renderable = getRenderable(component, props);
-	if (isFunction(ReactDOM.createRoot)) {
-		ReactDOM.createRoot(container).render(renderable); // React 18
-	} else {
-		ReactDOM.render(renderable, container); // React 17
+
+	async function render() {
+		if (isFunction(ReactDOM.createRoot)) {
+			ReactDOM.createRoot(container).render(renderable); // React 18
+		} else {
+			ReactDOM.render(renderable, container); // React 17
+		}
 	}
 
 	if (hasRegions) {
+		// Or postfill will run before the DOM is populated
+		ReactDOM.flushSync(() => {
+			render();
+		});
 		postFillRegions(props, isDevMode);
+	} else {
+		render();
 	}
 }
