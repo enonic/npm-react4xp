@@ -86,7 +86,7 @@
   },
   "scripts": {
     "build": "npx tsc",
-    "clean": "rm -r *.log *.tgz bin build dist test/components/build test/constants/build test/constants/output test/nashornPolyfills/output 2>/dev/null; true",
+    "clean": "rimraf bin build dist test/components/build test/constants/build test/constants/output test/nashornPolyfills/output ",
     "lint": "eslint src/**/*.es6 src/**/*.js",
     "prebuild": "yarn clean",
     "prepack": "yarn build",
