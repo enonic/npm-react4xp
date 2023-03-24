@@ -1575,7 +1575,7 @@ arrify@^1.0.1:
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-1.0.1.tgz#898508da2226f380df904728456849c1501a4b0d"
   integrity sha512-3CYzex9M9FGQjCGMGyi6/31c8GJbgb0qGyrx5HWxPd0aCwh4cB2YjMb2Xf9UuoogrMrlO9cTqnB5rI5GHZTcUA==
 
-assertion-error@^1.1.0:
+assertion-error@^1.0.1, assertion-error@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/assertion-error/-/assertion-error-1.1.0.tgz#e60b6b0e8f301bd97e5375215bda406c85118c0b"
   integrity sha512-jgsaNduz+ndvGyFt3uSuWqvy4lCnIJiovtouQN5JZHOKCS2QuhEdbcQHFhVksz2N2U9hXJo8odG7ETyWlEeuDw==
@@ -1732,6 +1732,13 @@ caniuse-lite@^1.0.30001449:
   version "1.0.30001469"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001469.tgz#3dd505430c8522fdc9f94b4a19518e330f5c945a"
   integrity sha512-Rcp7221ScNqQPP3W+lVOYDyjdR6dC+neEQCttoNr5bAyz54AboB4iwpnWgyi8P4YUsPybVzT4LgWiBbI3drL4g==
+
+chai-files@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/chai-files/-/chai-files-1.4.0.tgz#0e25610fadc551b1eae79c2f4ee79faf2f842296"
+  integrity sha512-tPTx7H2kpR+wILWHRx8RxpXcRUdc2uH8su505C9R3p5GA+eYbZBXuxWC0RZbyElYi7X7Fp/V/S2PQjkakrT1mQ==
+  dependencies:
+    assertion-error "^1.0.1"
 
 chai@^4:
   version "4.3.7"
