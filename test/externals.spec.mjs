@@ -5,7 +5,7 @@ import manifest from './components/build/resources/main/assets/react4xp/chunks.e
 	type: 'json',
 };
 
-const DIR_NAME = join(process.env.PWD, 'test/components');
+const DIR_NAME = join(process.cwd(), 'test/components');
 const DIR_R4X = join(DIR_NAME, 'build/resources/main/assets/react4xp');
 const FILE_PATH_MANIFEST = join(DIR_R4X, 'chunks.externals.json')
 const FILE_PATH_JS = join(DIR_R4X, manifest['externals']['js'][0])

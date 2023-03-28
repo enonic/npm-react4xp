@@ -5,9 +5,9 @@ import {join} from 'path';
 import { getEntries } from '../../dist/buildComponents/getEntries.js';
 //import { normalizePath } from '../../dist/buildComponents/normalizePath.js';
 
-//console.debug(process.env.PWD);
+//console.debug(process.cwd());
 
-const DIR_NAME = join(process.env.PWD, 'test', 'components'); // eslint-disable-line no-undef
+const DIR_NAME = join(process.cwd(), 'test', 'components'); // eslint-disable-line no-undef
 console.log('DIR_NAME:', JSON.stringify(DIR_NAME, null, 2));
 
 const SRC_MAIN_RESOURCES = join(DIR_NAME, 'src', 'main', 'resources');
