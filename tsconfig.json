@@ -1,26 +1,41 @@
 {
+	// This file should only be used for types in the Code Editor!
+	// Which is why noEmit is set to true
 	"compilerOptions": {
 		"baseUrl": "./",
+		// "allowUmdGlobalAccess": true,
+		// "allowSyntheticDefaultImports": true, // Does this affect swc-loader?
 		"esModuleInterop": true,
+		"jsx": "react-jsx",
 		"module": "commonjs",
-			"moduleResolution": "node",
-		"outDir": "dist",
+		"moduleResolution": "node",
+		"noEmit": true,
+		// "outDir": "/dev/null",
 		"paths": {
-				"@enonic/js-utils/*": ["./node_modules/@enonic/js-utils/src/*"]
-			},
-		"rootDir": "src",
-		"target": "es2015",
-		"typeRoots": [
-			"node_modules/@types"
+			"@enonic/js-utils/*": ["./node_modules/@enonic/js-utils/src/*"]
+		},
+		"rootDir": "./",
+		"rootDirs": [
+			"./",
+			"./src"
 		],
+		"skipLibCheck": true,
+		"target": "es2015",
+		// "typeRoots": [
+		// 	"node_modules/@types"
+		// ],
 		"types": [
 			"node",
-			"react"
+			"react",
+			"react-dom"
 		]
 	},
-	"exclude": [
-		"tsup.config.*.ts",
-		"src/client*",
-		"src/executor.ts",
-	]
+	"include": [
+		"./*.ts",
+		"./src/**/*.ts",
+		"./src/**/*.tsx"
+	],
+	// "exclude": [
+	// 	"node_modules"
+	// ]
 }

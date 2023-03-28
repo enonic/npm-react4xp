@@ -1,0 +1,32 @@
+{
+	// This file is used when building src/webpack* etc into dist/
+	// It is
+	"compilerOptions": {
+		"allowSyntheticDefaultImports": true,
+		"baseUrl": "./",
+		"esModuleInterop": true,
+
+		// CommonJS if target is ES3 or ES5,,ES6/ES2015 otherwise.
+		"module": "commonjs", // webpack-cli understands CJS not ESM
+
+		"moduleResolution": "node",
+
+		"outDir": "dist",
+		"paths": {
+			"@enonic/js-utils/*": ["./node_modules/@enonic/js-utils/src/*"]
+		},
+		"rootDir": "./src",
+		"target": "ES2015",
+		// "typeRoots": [
+		// 	"./node_modules/@types"
+		// ],
+		"types": [
+			"node"
+		]
+	},
+	"exclude": [
+		"./tsup.config.*.ts",
+		"./src/client*",
+		"./src/executor.ts",
+	]
+}

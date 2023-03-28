@@ -18,6 +18,7 @@
     "@babel/preset-react": "^7",
     "@babel/preset-typescript": "^7",
     "@babel/register": "^7",
+    "@swc/core": "^1.3.42",
     "babel-loader": "^9",
     "chai": "^4",
     "chunks-2-json-webpack-plugin": "^1",
@@ -35,6 +36,7 @@
     "q-i": "^2",
     "rimraf": "^4",
     "stats-webpack-plugin": "^0.7.0",
+    "swc-loader": "^0.2.3",
     "tsup": "^6.7.0",
     "webpack-stats-plugin": "^1.1.1"
   },
@@ -42,10 +44,11 @@
   "devDependencies": {
     "@types/node": "^18.15.3",
     "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
     "html-element": "^2.3.1",
     "path-exists-cli": "^2",
-    "react": ">=17.0.2",
-    "react-dom": ">=17.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "typescript": "^5",
     "webpack": "^5",
     "webpack-cli": "^5"
@@ -85,23 +88,23 @@
     "url": "git+ssh://git@github.com:enonic/enonic-react4xp.git"
   },
   "scripts": {
-    "build": "npx tsc",
-    "clean": "rimraf bin build dist test/components/build test/constants/build test/constants/output test/nashornPolyfills/output ",
+    "build": "npx tsc -p tsconfig.dist.json",
+    "clean": "rimraf *.log *.tgz bin build dist test/components/build test/constants/build test/constants/output test/nashornPolyfills/output",
     "lint": "eslint src/**/*.es6 src/**/*.js",
     "prebuild": "yarn clean",
     "prepack": "yarn build",
     "pretest": "yarn build",
     "test": "yarn test:client && yarn test:components && yarn test:executor && yarn test:nashornPolyfills",
-    "test:client": "yarn tsup:client --env.DIR_PATH_ABSOLUTE_PROJECT $PWD/test/components && npx mocha test/client.spec.mjs",
-    "test:components": "npx webpack --config dist/webpack.config.components.js --env DIR_PATH_ABSOLUTE_PROJECT=$PWD/test/components && npx mocha test/components/test.spec.mjs",
+    "test:client": "yarn tsup:client --env.DIR_PATH_ABSOLUTE_PROJECT $PWD/test/components && npx mocha test/client.spec.mjs --env.BUILD_ENV development",
+    "test:components": "yarn webpack:components --env DIR_PATH_ABSOLUTE_PROJECT=$PWD/test/components && npx mocha test/components/test.spec.mjs",
+    "test:externals": "yarn webpack:externals --env DIR_PATH_ABSOLUTE_PROJECT=$PWD/test/components && npx mocha test/externals.spec.mjs",
     "test:executor": "yarn tsup:executor --env.DIR_PATH_ABSOLUTE_PROJECT $PWD/test/components && npx mocha test/executor.spec.mjs",
-    "test:nashornPolyfills": "webpack --config dist/webpack.config.nashornPolyfills.js --env DIR_PATH_ABSOLUTE_PROJECT=$PWD/test/nashornPolyfills && npx mocha test/nashornPolyfills/test.spec.mjs",
-    "tsc": "npx tsc",
+    "test:nashornPolyfills": "yarn webpack:nashornPolyfills --env DIR_PATH_ABSOLUTE_PROJECT=$PWD/test/nashornPolyfills && npx mocha test/nashornPolyfills/test.spec.mjs",
     "tsup:client": "npx tsup --config tsup.config.client.ts",
     "tsup:executor": "npx tsup --config tsup.config.executor.ts",
-    "webpack:components": "npx webpack --config dist/webpack.config.components.js",
-    "webpack:externals": "npx webpack --config dist/webpack.config.externals.js",
-    "webpack:nashornPolyfills": "npx webpack --config dist/webpack.config.nashornPolyfills.js"
+    "webpack:components": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" webpack --config dist/webpack.config.components.js",
+    "webpack:externals": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" webpack --config dist/webpack.config.externals.js",
+    "webpack:nashornPolyfills": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" webpack --config dist/webpack.config.nashornPolyfills.js"
   },
   "version": "4.0.0-B1"
 }

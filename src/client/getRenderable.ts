@@ -6,18 +6,18 @@ import type {
 } from './index.d';
 
 
-function isComponentFunction(value :unknown) :value is ComponentFunction {
+function isComponentFunction(value: unknown): value is ComponentFunction {
 	return typeof value === 'function'
 }
 
-function isComponentObject(component :unknown) :component is ComponentObject {
+function isComponentObject(component: unknown): component is ComponentObject {
 	return typeof component === 'object'
 }
 
 
 export const getRenderable = (
-	component :Component,
-	props :Props
+	component: Component,
+	props: Props
 ) =>
 	isComponentFunction(component)
 		? component(props)

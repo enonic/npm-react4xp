@@ -5,6 +5,7 @@ import { defineConfig, type Options } from 'tsup';
 import getAppName from './src/util/getAppName';
 import { LIBRARY_NAME } from './src/constants.runtime';
 
+
 interface MyOptions extends Options {
 	env?: {
 		APP_NAME?: string
@@ -12,6 +13,7 @@ interface MyOptions extends Options {
 		LIBRARY_NAME?: string
 	}
 }
+
 
 export default defineConfig((options: MyOptions) => {
 	// print(options, { maxItems: Infinity });

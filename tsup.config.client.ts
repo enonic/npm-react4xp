@@ -11,15 +11,19 @@ import { ucFirst } from './src/util/ucFirst';
 interface MyOptions extends Options {
 	env?: {
 		APP_NAME?: string
+		BUILD_ENV?: 'development'|'production'
 		DIR_PATH_ABSOLUTE_PROJECT?: string
 		LIBRARY_NAME?: string
 	}
 }
 
+
 export default defineConfig((options: MyOptions) => {
+	// print(process.env, { maxItems: Infinity });
 	// print(options, { maxItems: Infinity });
 	const {
 		env: {
+			BUILD_ENV = 'production',
 			DIR_PATH_ABSOLUTE_PROJECT
 		} = {}
 	} = options;
@@ -42,6 +46,14 @@ export default defineConfig((options: MyOptions) => {
 		entry: {
 			'client': 'src/client.ts'
 		},
+		esbuildOptions(options, context) {
+			// Let's see if this works, it does but: Dynamic require of "react-dom/client" is not supported
+			// options.external = [
+			// 	'react',
+			// 	'react-dom',
+			// 	'react-dom/client',
+			// ]
+		},
 		esbuildPlugins: [
 			manifestPlugin({
 				extensionless: 'input',
@@ -54,10 +66,16 @@ export default defineConfig((options: MyOptions) => {
 				shortNames: true
 			})
 		],
-		external: [
-			'react',
-			'react-dom',
-		],
+		// For some reason external doesn't work! Neither on the cmdline.
+		// The only thing that works is to comment out the imports in render.ts and hydrate.ts???
+		// external: [
+		// 	/^react.*$/i
+		// ],
+		// external: [
+		// 	'react',
+		// 	'react-dom',
+		// 	'react-dom/client',
+		// ],
 		format: 'iife',
 		platform: 'browser',
 		outDir: join(DIR_PATH_ABSOLUTE_PROJECT, 'build/resources/main/assets/react4xp/'),
