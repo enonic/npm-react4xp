@@ -14,8 +14,7 @@
 
   Which dependencies are inserted into the external library,
   depends on an `env.EXTERNALS` parameter (EXTERNALS can also be supplied through a
-  JSON config file referenced with an `env.REACT4XP_CONFIG_FILE` - see for example
-  [react4xp-buildconstants](https://www.npmjs.com/package/react4xp-buildconstants), although you can roll your own).
+  JSON config file referenced with an `env.REACT4XP_CONFIG_FILE`
   This `EXTERNALS` parameter must be an object on the webpack
   externals format `{ "libraryname": "ReferenceInCode", ... }`,
   e.g. `{ "react-dom": "ReactDOM" }`. These libraries of course have to be supplied
@@ -34,9 +33,9 @@ import type {Environment} from './index.d';
 import {statSync} from 'fs';
 
 import {
-  isAbsolute,
-  join,
-  resolve
+	isAbsolute,
+	join,
+	resolve
 } from 'path';
 
 import Chunks2json from 'chunks-2-json-webpack-plugin';
@@ -44,9 +43,9 @@ import FileManagerPlugin from 'filemanager-webpack-plugin';
 //import * as CoreWebPlugin from '@mrhenry/core-web';
 
 import {
-  DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
-  EXTERNALS_DEFAULT,
-  FILE_NAME_R4X_CONFIG_JS
+	DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
+	EXTERNALS_DEFAULT,
+	FILE_NAME_R4X_CONFIG_JS
 } from './constants.buildtime';
 
 import {EXTERNALS_CHUNKS_FILENAME} from './constants.runtime';
@@ -64,225 +63,254 @@ import {makeVerboseLogger} from './util/makeVerboseLogger';
 // TODO: Allowing build path (where BUILD_R4X today must be absolute)
 // to instead be relative to project/calling context
 
-module.exports = (env :Environment = {}) => {
-  //console.debug('env', toStr(env));
+module.exports = (env: Environment = {}) => {
+	//console.debug('env', toStr(env));
 
-  const DIR_PATH_ABSOLUTE_PROJECT = cleanAnyDoublequotes('DIR_PATH_ABSOLUTE_PROJECT', env.DIR_PATH_ABSOLUTE_PROJECT || process.cwd());
-  if (!isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
-    throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
-  }
+	const DIR_PATH_ABSOLUTE_PROJECT = cleanAnyDoublequotes('DIR_PATH_ABSOLUTE_PROJECT', env.DIR_PATH_ABSOLUTE_PROJECT || process.cwd());
+	if (!isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
+		throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
+	}
 
-  const DIR_PATH_ABSOLUTE_BUILD_SYSTEM = resolve(__dirname, '..');
-  //console.debug('DIR_PATH_ABSOLUTE_BUILD_SYSTEM', DIR_PATH_ABSOLUTE_BUILD_SYSTEM);
+	const DIR_PATH_ABSOLUTE_BUILD_SYSTEM = resolve(__dirname, '..');
+	//console.debug('DIR_PATH_ABSOLUTE_BUILD_SYSTEM', DIR_PATH_ABSOLUTE_BUILD_SYSTEM);
 
-  const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
+	const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
 
+	const LOADER = 'swc' as 'babel'|'swc';
 
-  const environmentObj = {
-    buildEnvString: 'production',
-    chunkDirsCommaString: null,
-    entryDirsCommaString: null,
-    entryExtCommaString: 'jsx,tsx,js,ts,es6,es',
-    isVerbose: false
-  };
-  //console.debug('environmentObj', environmentObj);
-
-
-  let EXTERNALS = EXTERNALS_DEFAULT;
-  //console.debug('EXTERNALS', toStr(EXTERNALS));
-  const FILE_PATH_ABSOLUTE_R4X_CONFIG_JS = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JS);
-  try {
-    const configJsonStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
-    if (configJsonStats.isFile()) {
-      const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
-      //console.debug('config', toStr(config));
-      if (config.externals) {
-        EXTERNALS = Object.assign(config.externals, EXTERNALS);
-      }
-    } // if FILE_NAME_R4X_CONFIG_JS
-    //console.debug('EXTERNALS', toStr(EXTERNALS));
-  } catch (e) {
-    //console.debug('e', e);
-    console.info(`${FILE_PATH_ABSOLUTE_R4X_CONFIG_JS} not found.`)
-  }
-
-  if (isSet(env.BUILD_ENV)) {
-    environmentObj.buildEnvString = env.BUILD_ENV;
-  }
-  if (isSet(env.VERBOSE)) {
-    environmentObj.isVerbose = env.VERBOSE !== 'false';
-  }
-  const DEVMODE = environmentObj.buildEnvString !== 'production';
-  //console.debug('environmentObj', environmentObj);
+	const environmentObj = {
+		buildEnvString: 'production',
+		chunkDirsCommaString: null,
+		entryDirsCommaString: null,
+		entryExtCommaString: 'jsx,tsx,js,ts,es6,es',
+		isVerbose: false
+	};
+	//console.debug('environmentObj', environmentObj);
 
 
-  const verboseLog = makeVerboseLogger(environmentObj.isVerbose);
-  verboseLog(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, 'DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X', 1);
+	let EXTERNALS = EXTERNALS_DEFAULT;
+	//console.debug('EXTERNALS', toStr(EXTERNALS));
+	const FILE_PATH_ABSOLUTE_R4X_CONFIG_JS = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JS);
+	try {
+		const configJsonStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
+		if (configJsonStats.isFile()) {
+		const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
+		//console.debug('config', toStr(config));
+		if (config.externals) {
+			EXTERNALS = Object.assign(config.externals, EXTERNALS);
+		}
+		} // if FILE_NAME_R4X_CONFIG_JS
+		//console.debug('EXTERNALS', toStr(EXTERNALS));
+	} catch (e) {
+		//console.debug('e', e);
+		console.info(`${FILE_PATH_ABSOLUTE_R4X_CONFIG_JS} not found.`)
+	}
 
-  const tempFileName = generateTempES6SourceAndGetFilename(
-    EXTERNALS,
-    join(__dirname, '_AUTOGENERATED_tmp_externals_.es6')
-  );
-  //console.debug('tempFileName', tempFileName);
+	if (isSet(env.BUILD_ENV)) {
+		environmentObj.buildEnvString = env.BUILD_ENV;
+	}
+	if (isSet(env.VERBOSE)) {
+		environmentObj.isVerbose = env.VERBOSE !== 'false';
+	}
+	const DEVMODE = environmentObj.buildEnvString !== 'production';
+	//console.debug('environmentObj', environmentObj);
 
-  const entry = tempFileName ? { externals: tempFileName } : {};
-  //console.debug('entry', entry);
 
-  const plugins = tempFileName
-    ? [
-        //@ts-ignore
-        new FileManagerPlugin({
-          events: {
-            onStart: {
-              mkdir: [
-                DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X // Chunks2json fails without this (when using npm explore)
-              ]
-            }
-          }
-        }),
-        //@ts-ignore
-        /*new CoreWebPlugin({
-          browsers: {
-            chrome: "63",
-            firefox: "57",
-            edge: "18",
-            opera: "57",
-            safari: "12",
-            ie: "11",
-          }
-        }),*/
-        new Chunks2json({
-          outputDir: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
-          filename: EXTERNALS_CHUNKS_FILENAME,
-        }),
-      ]
-    : undefined;
+	const verboseLog = makeVerboseLogger(environmentObj.isVerbose);
+	verboseLog(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, 'DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X', 1);
 
-  return {
-    context: DIR_PATH_ABSOLUTE_PROJECT, // Used as default for resolve.roots
+	const tempFileName = generateTempES6SourceAndGetFilename(
+		EXTERNALS,
+		join(__dirname, '_AUTOGENERATED_tmp_externals_.es6')
+	);
+	//console.debug('tempFileName', tempFileName);
 
-    devtool: DEVMODE ? 'source-map' : undefined,
+	const entry = tempFileName ? { externals: tempFileName } : {};
+	// console.debug('entry', entry);
 
-    entry,
+	const plugins = tempFileName
+		? [
+			//@ts-ignore
+			new FileManagerPlugin({
+				events: {
+					onStart: {
+						mkdir: [
+							DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X // Chunks2json fails without this (when using npm explore)
+						]
+					}
+				}
+			}),
+			//@ts-ignore
+			/*new CoreWebPlugin({
+			browsers: {
+				chrome: "63",
+				firefox: "57",
+				edge: "18",
+				opera: "57",
+				safari: "12",
+				ie: "11",
+			}
+			}),*/
+			new Chunks2json({
+				outputDir: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
+				filename: EXTERNALS_CHUNKS_FILENAME,
+			}),
+		]
+		: undefined;
 
-    mode: environmentObj.buildEnvString,
+	return {
+		context: DIR_PATH_ABSOLUTE_PROJECT, // Used as default for resolve.roots
 
-    module: {
-      rules: [
-        {
-          test: /\.((jt)sx?|(es6?))$/, // js, ts, jsx, tsx, es, es6
+		devtool: DEVMODE ? false : 'source-map',
 
-          // I don't think we can exclude much, everything must be able to run:
-          // * server-side (Nashorn/Graal-JS) and
-          // * client-side (Browsers).
-          //exclude: /node_modules/,
+		entry,
 
-          // It takes time to transpile, if you know they don't need
-          // transpilation to run in Enonic XP (Nashorn/Graal-JS) you may list
-          // them here:
-          exclude: [
-    				/[\\/]node_modules[\\/]core-js/, // will cause errors if they are transpiled by Babel
-            // /[\\/]node_modules[\\/]react[\\/]/, // TODO Perhaps react don't need to be transpiled
-            // /[\\/]node_modules[\\/]react-dom[\\/]/, // TODO Perhaps react-dom don't need to be transpiled
-    				/[\\/]node_modules[\\/]webpack[\\/]buildin/ // will cause errors if they are transpiled by Babel
-    			],
+		mode: environmentObj.buildEnvString,
 
-          use: {
-            loader: 'babel-loader',
-            options: {
-              babelrc: false,
-              comments: DEVMODE,
-              compact: !DEVMODE,
-              minified: !DEVMODE,
-              plugins: [
-                '@babel/plugin-proposal-object-rest-spread',
-                '@babel/plugin-transform-arrow-functions',
-                '@babel/plugin-transform-typeof-symbol',
-                //'@mrhenry/babel-plugin-core-web', // Did nothing
-                //'@mrhenry/core-web'  // Also did nothing
-                /*["@mrhenry/core-web", { // Again nothing!
-                  browsers: {
-                    chrome: "63",
-                    firefox: "57",
-                    edge: "18",
-                    opera: "57",
-                    safari: "12",
-                    ie: "11",
-                  }
-                }]*/
-              ],
-              presets: [
-                '@babel/preset-typescript',
-                '@babel/preset-react',
-                '@babel/preset-env'
-              ]
-            },
-          },
-        },
-      ],
-    }, // module
+		module: {
+			rules: [{
+				test: /\.((jt)sx?|(es6?))$/, // js, ts, jsx, tsx, es, es6
 
-    optimization: {
-      minimize: !DEVMODE
-    },
+				// I don't think we can exclude much, everything must be able to run:
+				// * server-side (Nashorn/Graal-JS) and
+				// * client-side (Browsers).
+				//exclude: /node_modules/,
 
-    output: {
-      path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, // <-- Sets the base url for plugins and other target dirs.
-      filename: DEVMODE ? '[name].js' : '[name].[contenthash].js',
-      environment: {
-        arrowFunction: false,
-        bigIntLiteral: false,
-        const: false,
-        destructuring: false,
-        dynamicImport: false,
-        forOf: false,
-        module: false,
-      },
-    }, // output
+				// It takes time to transpile, if you know they don't need
+				// transpilation to run in Enonic XP (Nashorn/Graal-JS) you may list
+				// them here:
+				exclude: [
+					/[\\/]node_modules[\\/]core-js/, // will cause errors if they are transpiled by Babel
+					// /[\\/]node_modules[\\/]react[\\/]/, // TODO Perhaps react don't need to be transpiled
+					// /[\\/]node_modules[\\/]react-dom[\\/]/, // TODO Perhaps react-dom don't need to be transpiled
+					/[\\/]node_modules[\\/]webpack[\\/]buildin/ // will cause errors if they are transpiled by Babel
+				],
 
-    performance: {
-  		hints: false
-  	},
+				use: [LOADER === 'babel' ? {
+					loader: 'babel-loader',
+					options: {
+						babelrc: false,
+						comments: DEVMODE,
+						compact: !DEVMODE,
+						minified: !DEVMODE,
+						plugins: [
+							'@babel/plugin-proposal-object-rest-spread',
+							'@babel/plugin-transform-arrow-functions',
+							'@babel/plugin-transform-typeof-symbol',
+							//'@mrhenry/babel-plugin-core-web', // Did nothing
+							//'@mrhenry/core-web'  // Also did nothing
+							/*["@mrhenry/core-web", { // Again nothing!
+							browsers: {
+								chrome: "63",
+								firefox: "57",
+								edge: "18",
+								opera: "57",
+								safari: "12",
+								ie: "11",
+							}
+							}]*/
+						],
+						presets: [
+							'@babel/preset-typescript',
+							'@babel/preset-react',
+							// '@babel/preset-env'
+							[
+								"@babel/preset-env", {
+									// https://webpack.js.org/guides/tree-shaking/#conclusion
+									// Ensure no compilers transform your ES2015 module syntax into CommonJS modules (this is the default behavior of the popular Babel preset @babel/preset-env - see the documentation for more details).
+									// https://babeljs.io/docs/babel-preset-env#modules
+									// Enable transformation of ES module syntax to another module type. Note that cjs is just an alias for commonjs.
+									// Setting this to false will preserve ES modules. Use this only if you intend to ship native ES Modules to browsers. If you are using a bundler with Babel, the default modules: "auto" is always preferred.
+									modules: false,
+								}
+							]
+						]
+					},
+				} : {
+					loader: "swc-loader",
+					options: {
+						jsc: {
+							parser: {
+								dynamicImport: false,
+								jsx: true,
+								syntax: 'typescript',
+								tsx: true
+							},
+							// target: 'es2015'
+						},
+						minify: !DEVMODE,
+						// module: {
+						// 	type: 'commonjs'
+						// },
+						sourceMaps: !DEVMODE,
+					},
+				}], // use
+			}], // rules
+		}, // module
 
-    plugins,
+		optimization: {
+			minimize: !DEVMODE,
+			usedExports: !DEVMODE, // Disable slow tree-shaking in dev mode
+		},
 
-    resolve: {
-      extensions: ['.ts', '.tsx', '.es6', '.es', '.jsx', '.js', '.json'],
-      modules: [
-        // Tell webpack what directories should be searched when resolving
-        // modules.
-        // Absolute and relative paths can both be used, but be aware that they
-        // will behave a bit differently.
-        // A relative path will be scanned similarly to how Node scans for
-        // node_modules, by looking through the current directory as well as its
-        // ancestors (i.e. ./node_modules, ../node_modules, and on).
-        // With an absolute path, it will only search in the given directory.
+		output: {
+			path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, // <-- Sets the base url for plugins and other target dirs.
+			// TODO filename: DEVMODE ? '[name].js' : '[name].[contenthash].js',
+			filename: '[name].[contenthash].js',
+			environment: {
+				arrowFunction: false,
+				bigIntLiteral: false,
+				const: false,
+				destructuring: false,
+				dynamicImport: false,
+				forOf: false,
+				module: false,
+			},
+		}, // output
 
-        // To resolve node_modules installed under the app
-        resolve(DIR_PATH_ABSOLUTE_PROJECT, 'node_modules'),
+		performance: {
+			hints: false
+		},
 
-        // To resolve node_modules installed under the build system
-        resolve(DIR_PATH_ABSOLUTE_BUILD_SYSTEM, 'node_modules'),
-        //'node_modules'
-      ],
-      /*roots: [ // Works, but maybe modules is more specific
-        // A list of directories where requests of server-relative URLs
-        // (starting with '/') are resolved, defaults to context configuration
-        // option. On non-Windows systems these requests are resolved as an
-        // absolute path first.
-        DIR_PATH_ABSOLUTE_PROJECT, // same as context
-        DIR_PATH_ABSOLUTE_BUILD_SYSTEM
-      ],*/
-    }, // resolve
+		plugins,
 
-    stats: {
-      colors: true,
-      hash: false,
-    	modules: false,
-    	moduleTrace: false,
-    	timings: false,
-    	version: false
-    }, // stats
+		resolve: {
+			extensions: ['.ts', '.tsx', '.es6', '.es', '.jsx', '.js', '.json'],
+			modules: [
+				// Tell webpack what directories should be searched when resolving
+				// modules.
+				// Absolute and relative paths can both be used, but be aware that they
+				// will behave a bit differently.
+				// A relative path will be scanned similarly to how Node scans for
+				// node_modules, by looking through the current directory as well as its
+				// ancestors (i.e. ./node_modules, ../node_modules, and on).
+				// With an absolute path, it will only search in the given directory.
 
-  };
-};
+				// To resolve node_modules installed under the app
+				resolve(DIR_PATH_ABSOLUTE_PROJECT, 'node_modules'),
+
+				// To resolve node_modules installed under the build system
+				resolve(DIR_PATH_ABSOLUTE_BUILD_SYSTEM, 'node_modules'),
+				//'node_modules'
+			],
+			/*roots: [ // Works, but maybe modules is more specific
+				// A list of directories where requests of server-relative URLs
+				// (starting with '/') are resolved, defaults to context configuration
+				// option. On non-Windows systems these requests are resolved as an
+				// absolute path first.
+				DIR_PATH_ABSOLUTE_PROJECT, // same as context
+				DIR_PATH_ABSOLUTE_BUILD_SYSTEM
+			],*/
+		}, // resolve
+
+		stats: {
+			colors: true,
+			hash: false,
+			modules: false,
+			moduleTrace: false,
+			timings: false,
+			version: false
+		}, // stats
+
+	}; // return
+}; // module.exports
