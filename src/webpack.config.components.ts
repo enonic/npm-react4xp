@@ -318,7 +318,7 @@ module.exports = (env: Environment = {}) => {
 		throw Error(
 		`react4xp-build-components can't continue. The sub-package react4xp-build-entriesandchunks seems to have produced malformed 'entries' data, using the entrysets above. Run the build with -i for more info. Expected an object, but got ${
 			Array.isArray(entries)
-			? `array[${entries.length}]`
+			? `array[${(entries as unknown[]).length}]`
 			: typeof entries +
 				(entries && typeof entries === "object"
 				? ` with keys: ${JSON.stringify(Object.keys(entries))}`
