@@ -24,10 +24,6 @@ export function buildEntriesToSubfolder(
 
 	const sourcePath = normalizePath(entrySet.sourcePath);
 	const extensions = entrySet.sourceExtensions;
-	let targetPath = (entrySet.targetSubDir || "").trim();
-	if (targetPath.startsWith("/")) {
-		targetPath = targetPath.substring(1);
-	}
 
 	// Builds and returns an object [entries]
 	// where values are found files under directory [sourcePath] with any one of the fileExtensions in [extensions],
@@ -47,7 +43,7 @@ export function buildEntriesToSubfolder(
 						(obj, match) => {
 							const parsedEl = parse(match);
 							const subdir = parsedEl.dir.split(sep);
-							const name = [targetPath, ...subdir, parsedEl.name].join("/");
+							const name = [entrySet.targetSubDir, ...subdir, parsedEl.name].filter(Boolean).join("/");
 
 							const entry = resolve(sourcePath, match);
 							verboseLog(`${name} -> ${entry}`, "\tEntry");
