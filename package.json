@@ -64,7 +64,7 @@
     "npmInstall.gradle",
     "react4xp.gradle",
     "README*.md",
-    "tsconfig.*.json",
+    "tsconfig*.json",
     "tsup.config.*.ts",
     "updaters.gradle"
   ],
@@ -94,7 +94,7 @@
     "clean": "rimraf bin build dist test/components/build test/constants/build test/constants/output test/nashornPolyfills/output",
     "lint": "eslint src/**/*.es6 src/**/*.js",
     "prebuild": "yarn clean",
-    "prepack": "yarn build",
+    "prepack": "yarn test",
     "pretest": "yarn build",
     "test": "yarn test:client && yarn test:components && yarn test:executor && yarn test:nashornPolyfills",
     "test:client": "cross-env yarn tsup:client --env.DIR_PATH_ABSOLUTE_PROJECT $PWD/test/components && npx mocha test/client.spec.mjs --env.BUILD_ENV development",
@@ -108,5 +108,5 @@
     "webpack:externals": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" webpack --config dist/webpack.config.externals.js",
     "webpack:nashornPolyfills": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" webpack --config dist/webpack.config.nashornPolyfills.js"
   },
-  "version": "4.0.0-B1"
+  "version": "4.0.0-B2"
 }
