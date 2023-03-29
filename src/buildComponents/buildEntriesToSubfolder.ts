@@ -36,24 +36,29 @@ export function buildEntriesToSubfolder(
 
 	// path - join normalizes paths. So windows "/" become "\"
 	// glob - sync does not accept "\" as path seperators... only "/"
+	const initialValueOuter: Record<string,string> = {};
+	const initialValueInner: Record<string,string> = {};
 	return extensions.reduce(
 		(accumulator, extension) =>
 			Object.assign(
 				accumulator,
 				globSync(`**/*.${extension}`, {cwd: sourcePath})
-					.reduce((obj, match) => {
-						const parsedEl = parse(match);
-						const subdir = parsedEl.dir.split(sep);
-						const name = [targetPath, ...subdir, parsedEl.name].join("/");
+					.reduce(
+						(obj, match) => {
+							const parsedEl = parse(match);
+							const subdir = parsedEl.dir.split(sep);
+							const name = [targetPath, ...subdir, parsedEl.name].join("/");
 
-						const entry = resolve(sourcePath, match);
-						verboseLog(`${name} -> ${entry}`, "\tEntry");
+							const entry = resolve(sourcePath, match);
+							verboseLog(`${name} -> ${entry}`, "\tEntry");
 
-						// eslint-disable-next-line no-param-reassign
-						obj[name] = entry;
-						return obj;
-					}, {})
+							// eslint-disable-next-line no-param-reassign
+							obj[name] = entry;
+							return obj;
+						},
+						initialValueInner
+					)
 			),
-		{}
+			initialValueOuter
 	);
 }

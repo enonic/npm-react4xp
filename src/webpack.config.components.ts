@@ -11,6 +11,7 @@ import {
 	isAbsolute,
 	join,
 	parse,
+	relative,
 	resolve,
 	sep
 } from 'path';
@@ -53,6 +54,9 @@ module.exports = (env: Environment = {}) => {
 
 	const DIR_PATH_ABSOLUTE_BUILD_SYSTEM = resolve(__dirname, '..');
 	//console.debug('DIR_PATH_ABSOLUTE_BUILD_SYSTEM', DIR_PATH_ABSOLUTE_BUILD_SYSTEM);
+
+	// const DIR_PATH_RELATIVE_PROJECT = relative(DIR_PATH_ABSOLUTE_BUILD_SYSTEM, DIR_PATH_ABSOLUTE_PROJECT);
+	// console.debug('DIR_PATH_RELATIVE_PROJECT', DIR_PATH_RELATIVE_PROJECT);
 
 	const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
 
@@ -296,7 +300,7 @@ module.exports = (env: Environment = {}) => {
 		ENTRIES_FILENAME,
 		verboseLog
 	);
-	//console.debug('entries', entries);
+	// console.debug('entries', entries);
 
 	// ------------------------------------------- Entries are generated. Error reporting and isVerbose output:
 
