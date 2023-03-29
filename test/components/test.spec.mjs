@@ -13,24 +13,30 @@ console.log('DIR_NAME:', JSON.stringify(DIR_NAME, null, 2));
 const SRC_MAIN_RESOURCES = join(DIR_NAME, 'src', 'main', 'resources');
 
 describe('components', ()=>{
-  describe('getEntries', ()=> {
-    it('handles site parts', ()=>{
-        expect(
-          getEntries(
-            [{
-              sourcePath: join(SRC_MAIN_RESOURCES, 'site'),
-              sourceExtensions: ['jsx', 'tsx'],
-              targetSubDir: 'site',
-            }],
-            join(DIR_NAME, 'build', 'resources', 'main', 'site'),
-            'entries.json',
-            ()=>{}
-          )
-        ).to.deep.equal({
-          'site/parts/client/client': join(SRC_MAIN_RESOURCES,'site/parts/client/client.jsx'),
-          'site/parts/example/example': join(SRC_MAIN_RESOURCES,'site/parts/example/example.jsx')
-        });
-    });
+	describe('getEntries', ()=> {
+		it('handles site parts', ()=>{
+			expect(
+				getEntries(
+					[{
+						sourcePath: join(SRC_MAIN_RESOURCES, 'site'),
+						sourceExtensions: ['jsx', 'tsx'],
+						targetSubDir: 'site',
+					},{
+						sourcePath: join(SRC_MAIN_RESOURCES, 'react4xp/_entries'),
+						sourceExtensions: ['jsx', 'tsx'],
+					}],
+					join(DIR_NAME, 'build', 'resources', 'main', 'site'),
+					'entries.json',
+					()=>{}
+				)
+			).to.deep.equal(
+				{
+					"thisIsAnEntry": join(SRC_MAIN_RESOURCES,'react4xp/_entries/thisIsAnEntry.jsx'),
+					'site/parts/client/client': join(SRC_MAIN_RESOURCES,'site/parts/client/client.jsx'),
+					'site/parts/example/example': join(SRC_MAIN_RESOURCES,'site/parts/example/example.jsx')
+				}
+			);
+		});
         //const OUTPUT_PATH = join(DIR_NAME, 'dummy-build', 'react4xp');
         //console.log("OUTPUT_PATH:", JSON.stringify(OUTPUT_PATH, null, 2));
 

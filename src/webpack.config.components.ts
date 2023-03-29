@@ -1,7 +1,7 @@
 import type {Environment} from './index.d';
 import type {
-  EntrySet,
-  SymlinksUnderR4xRoot
+	EntrySet,
+	SymlinksUnderR4xRoot
 } from './buildComponents/index.d';
 
 
@@ -42,7 +42,7 @@ import {cleanAnyDoublequotes} from './util/cleanAnyDoublequotes';
 import {isSet} from './util/isSet';
 import {makeVerboseLogger} from './util/makeVerboseLogger';
 import getAppName from './util/getAppName';
-//import {toStr} from './util/toStr';
+// import {toStr} from './util/toStr';
 import {ucFirst} from './util/ucFirst';
 
 
@@ -292,8 +292,8 @@ module.exports = (env: Environment = {}) => {
 	];
 	verboseLog(entrySets, "\n\n---\entrySets", 1);
 
-	//console.debug('entrySets', toStr(entrySets));
-	//console.debug('ENTRIES_FILENAME', ENTRIES_FILENAME); // entries.json
+	// console.debug('entrySets', toStr(entrySets));
+	// console.debug('ENTRIES_FILENAME', ENTRIES_FILENAME); // entries.json
 	const entries = getEntries(
 		entrySets,
 		DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
