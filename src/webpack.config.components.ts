@@ -11,7 +11,6 @@ import {
 	isAbsolute,
 	join,
 	parse,
-	relative,
 	resolve,
 	sep
 } from 'path';
@@ -549,7 +548,29 @@ module.exports = (env: Environment = {}) => {
 			removeAvailableModules: !DEVMODE,
 			removeEmptyChunks: !DEVMODE,
 			sideEffects: !DEVMODE,
-			splitChunks: DEVMODE ? false : {
+
+			// The Build Performance documentation goes both ways regarding splitChunks.
+			// We have discovered that runtime performance is really bad without splitChunks,
+			// so we have decided to keep it in dev mode, even though build time might suffer a little.
+
+			// https://webpack.js.org/guides/build-performance/#smaller--faster
+			// Use the SplitChunksPlugin in Multi-Page Applications.
+
+			// https://webpack.js.org/guides/build-performance/#avoid-production-specific-tooling
+			// AggressiveSplittingPlugin
+
+			// https://webpack.js.org/guides/build-performance/#avoid-extra-optimization-steps
+			// These optimizations are performant for smaller codebases, but can be costly in larger ones
+
+			// https://webpack.js.org/guides/code-splitting/
+			// if used correctly, can have a major impact on load time
+
+			// https://webpack.js.org/plugins/split-chunks-plugin/
+
+			splitChunks: {
+				// https://webpack.js.org/plugins/split-chunks-plugin/#splitchunksname
+				// Providing false will keep the same name of the chunks so it doesn't change names unnecessarily.
+				// It is the recommended value for production builds.
 				name: false,
 				cacheGroups,
 			},
@@ -558,6 +579,13 @@ module.exports = (env: Environment = {}) => {
 
 		output: {
 			path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, // <-- Sets the base url for plugins and other target dirs. Note the use of {{assetUrl}} in index.html (or index.ejs).
+
+			// https://webpack.js.org/guides/build-performance/#output-without-path-info
+			// this puts garbage collection pressure on projects that bundle thousands of modules
+			// https://webpack.js.org/configuration/output/#outputpathinfo
+			// defaults to true in development and false in production mode
+			pathinfo: false, // We probably don't need this even in development mode?
+
 			filename: DEVMODE ? '[name].js' : '[name].[contenthash].js',
 			library: {
 				name: [`${appName}${LIBRARY_NAME}`,"[name]"],
