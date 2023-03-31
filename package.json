@@ -91,22 +91,23 @@
   },
   "scripts": {
     "build": "npx tsc -p tsconfig.dist.json",
+    "build:react4xp": "npm run tsup:client && npm run webpack:components && npm run tsup:executor && npm run webpack:externals && npm run webpack:nashornPolyfills",
     "clean": "rimraf bin build dist test/components/build test/constants/build test/constants/output test/nashornPolyfills/output",
     "lint": "eslint src/**/*.es6 src/**/*.js",
     "prebuild": "yarn clean",
     "prepack": "yarn test",
     "pretest": "yarn build",
     "test": "yarn test:client && yarn test:components && yarn test:executor && yarn test:nashornPolyfills",
-    "test:client": "cross-env yarn tsup:client --env.DIR_PATH_ABSOLUTE_PROJECT $PWD/test/components && npx mocha test/client.spec.mjs --env.BUILD_ENV development",
-    "test:components": "cross-env-shell yarn webpack:components --env DIR_PATH_ABSOLUTE_PROJECT=$INIT_CWD/test/components && npx mocha test/components/test.spec.mjs",
-    "test:externals": "cross-env-shell yarn webpack:externals --env DIR_PATH_ABSOLUTE_PROJECT=$INIT_CWD/test/components && npx mocha test/externals.spec.mjs",
-    "test:executor": "cross-env-shell yarn tsup:executor --env.DIR_PATH_ABSOLUTE_PROJECT $INIT_CWD/test/components && npx mocha test/executor.spec.mjs",
-    "test:nashornPolyfills": "cross-env-shell yarn webpack:nashornPolyfills --env DIR_PATH_ABSOLUTE_PROJECT=$INIT_CWD/test/nashornPolyfills && npx mocha test/nashornPolyfills/test.spec.mjs",
-    "tsup:client": "npx tsup --config tsup.config.client.ts",
-    "tsup:executor": "npx tsup --config tsup.config.executor.ts",
+    "test:client": "cross-env-shell DIR_PATH_ABSOLUTE_PROJECT=$INIT_CWD/test/components NODE_ENV=development yarn tsup:client && npx mocha test/client.spec.mjs",
+    "test:components": "cross-env-shell DIR_PATH_ABSOLUTE_PROJECT=$INIT_CWD/test/components yarn webpack:components && npx mocha test/components/test.spec.mjs",
+    "test:externals": "cross-env-shell DIR_PATH_ABSOLUTE_PROJECT=$INIT_CWD/test/components yarn webpack:externals && npx mocha test/externals.spec.mjs",
+    "test:executor": "cross-env-shell DIR_PATH_ABSOLUTE_PROJECT=$INIT_CWD/test/components yarn tsup:executor && npx mocha test/executor.spec.mjs",
+    "test:nashornPolyfills": "cross-env-shell DIR_PATH_ABSOLUTE_PROJECT=$INIT_CWD/test/nashornPolyfills yarn webpack:nashornPolyfills && npx mocha test/nashornPolyfills/test.spec.mjs",
+    "tsup:client": "npx tsup --config tsup.config.client.ts --env.DIR_PATH_ABSOLUTE_PROJECT $DIR_PATH_ABSOLUTE_PROJECT",
+    "tsup:executor": "npx tsup --config tsup.config.executor.ts --env.DIR_PATH_ABSOLUTE_PROJECT $DIR_PATH_ABSOLUTE_PROJECT",
     "webpack:components": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" webpack --config dist/webpack.config.components.js",
     "webpack:externals": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" webpack --config dist/webpack.config.externals.js",
     "webpack:nashornPolyfills": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" webpack --config dist/webpack.config.nashornPolyfills.js"
   },
-  "version": "4.0.0-B2"
+  "version": "4.0.0-SNAPSHOT"
 }
