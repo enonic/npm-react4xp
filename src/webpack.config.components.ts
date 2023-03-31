@@ -37,45 +37,43 @@ import {makeExclusionsRegexpString} from './buildComponents/makeExclusionsRegexp
 import {normalizeDirList} from './buildComponents/normalizeDirList';
 
 import {camelize} from './util/camelize';
-import {cleanAnyDoublequotes} from './util/cleanAnyDoublequotes';
 import {isSet} from './util/isSet';
 import {makeVerboseLogger} from './util/makeVerboseLogger';
 import getAppName from './util/getAppName';
 // import {toStr} from './util/toStr';
+import logLevelFromGradle, {
+	GRADLE_LOG_LEVEL,
+	WEBPACK_STATS_LOG_LEVEL
+} from './util/logLevelFromGradle';
 import {ucFirst} from './util/ucFirst';
 
 
 module.exports = (env: Environment = {}) => {
-	const DIR_PATH_ABSOLUTE_PROJECT = cleanAnyDoublequotes("DIR_PATH_ABSOLUTE_PROJECT", env.DIR_PATH_ABSOLUTE_PROJECT || process.cwd());
+	const DIR_PATH_ABSOLUTE_PROJECT = process.env.DIR_PATH_ABSOLUTE_PROJECT;
 	if (!isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
-		throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
+		throw new Error(`$DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
 	}
 
 	const DIR_PATH_ABSOLUTE_BUILD_SYSTEM = resolve(__dirname, '..');
 	//console.debug('DIR_PATH_ABSOLUTE_BUILD_SYSTEM', DIR_PATH_ABSOLUTE_BUILD_SYSTEM);
 
-	// const DIR_PATH_RELATIVE_PROJECT = relative(DIR_PATH_ABSOLUTE_BUILD_SYSTEM, DIR_PATH_ABSOLUTE_PROJECT);
-	// console.debug('DIR_PATH_RELATIVE_PROJECT', DIR_PATH_RELATIVE_PROJECT);
-
 	const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
 
+	const WEBPACK_MODE = process.env.NODE_ENV || 'production';
+	const DEVMODE = WEBPACK_MODE !== "production";
+	const LOG_LEVEL = logLevelFromGradle(process.env.GRADLE_LOG_LEVEL as GRADLE_LOG_LEVEL);
 
 	const LOADER = 'swc' as 'babel'|'swc';
 
 	const environmentObj = {
-		buildEnvString: 'production',
 		chunkDirsStringArray: [],
 		entryDirsStringArray: [],
 		entryExtStringArray: ['jsx', 'tsx', 'ts', 'es6', 'es', 'js'],
-		isVerbose: false
 	} as {
-		buildEnvString: string
 		chunkDirsStringArray: string[]
 		entryDirsStringArray: string[]
 		entryExtStringArray: string[]
-		isVerbose: boolean
 	};
-	//console.debug('environmentObj', environmentObj);
 
 	const appName = ucFirst(camelize(getAppName(DIR_PATH_ABSOLUTE_PROJECT), /\./g));
 
@@ -117,9 +115,6 @@ module.exports = (env: Environment = {}) => {
 		console.info(`${FILE_PATH_ABSOLUTE_R4X_CONFIG_JS} not found, which is fine :)`)
 	}
 
-	if (isSet(env.BUILD_ENV)) {
-		environmentObj.buildEnvString = env.BUILD_ENV;
-	}
 	/*if (isSet(env.CHUNK_DIRS)) {
 		environmentObj.chunkDirsStringArray = env.CHUNK_DIRS;
 	}
@@ -129,9 +124,6 @@ module.exports = (env: Environment = {}) => {
 	if (isSet(env.ENTRY_EXT)) {
 		environmentObj.entryExtStringArray = env.ENTRY_EXT;
 	}*/
-	if (isSet(env.VERBOSE)) {
-		environmentObj.isVerbose = env.VERBOSE !== 'false';
-	}
 	//console.debug('environmentObj', environmentObj);
 
 
@@ -141,9 +133,12 @@ module.exports = (env: Environment = {}) => {
 	const DIR_PATH_ABSOLUTE_SRC_SITE = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_SRC_SITE);
 	//console.debug('DIR_PATH_ABSOLUTE_SRC_SITE', DIR_PATH_ABSOLUTE_SRC_SITE);
 
-	const DEVMODE = environmentObj.buildEnvString !== "production";
+	const VERBOSE = [
+		WEBPACK_STATS_LOG_LEVEL.LOG,
+		WEBPACK_STATS_LOG_LEVEL.VERBOSE
+	].includes(LOG_LEVEL);
 
-	const verboseLog = makeVerboseLogger(environmentObj.isVerbose);
+	const verboseLog = makeVerboseLogger(VERBOSE);
 
 	verboseLog(DIR_PATH_ABSOLUTE_PROJECT, 'DIR_PATH_ABSOLUTE_PROJECT');
 
@@ -183,7 +178,7 @@ module.exports = (env: Environment = {}) => {
 		"chunkDir",
 		DIR_PATH_ABSOLUTE_SRC_R4X,
 		symlinksUnderReact4xpRootObject,
-		environmentObj.isVerbose
+		VERBOSE
 	);
 
 	const entryDirs = normalizeDirList(
@@ -191,7 +186,7 @@ module.exports = (env: Environment = {}) => {
 		"entryDir",
 		DIR_PATH_ABSOLUTE_SRC_R4X,
 		symlinksUnderReact4xpRootObject,
-		environmentObj.isVerbose
+		VERBOSE
 	);
 
 	verboseLog(environmentObj.chunkDirsStringArray, "\n\n---\nchunkDirsStringArray", 1);
@@ -460,7 +455,7 @@ module.exports = (env: Environment = {}) => {
 
 		externals: EXTERNALS,
 
-		mode: environmentObj.buildEnvString,
+		mode: WEBPACK_MODE,
 
 		module: {
 			rules: [{
@@ -673,6 +668,7 @@ module.exports = (env: Environment = {}) => {
 		stats: {
 			colors: true,
 			hash: false,
+			logging: LOG_LEVEL,
 			modules: false,
 			moduleTrace: false,
 			timings: false,

@@ -52,9 +52,11 @@ import {EXTERNALS_CHUNKS_FILENAME} from './constants.runtime';
 
 import {generateTempES6SourceAndGetFilename} from './externals/generateTempES6SourceAndGetFilename';
 
-import {cleanAnyDoublequotes} from './util/cleanAnyDoublequotes';
-import {isSet} from './util/isSet';
 import {makeVerboseLogger} from './util/makeVerboseLogger';
+import logLevelFromGradle, {
+	GRADLE_LOG_LEVEL,
+	WEBPACK_STATS_LOG_LEVEL
+} from './util/logLevelFromGradle';
 //import {toStr} from './util/toStr';
 
 
@@ -66,7 +68,7 @@ import {makeVerboseLogger} from './util/makeVerboseLogger';
 module.exports = (env: Environment = {}) => {
 	//console.debug('env', toStr(env));
 
-	const DIR_PATH_ABSOLUTE_PROJECT = cleanAnyDoublequotes('DIR_PATH_ABSOLUTE_PROJECT', env.DIR_PATH_ABSOLUTE_PROJECT || process.cwd());
+	const DIR_PATH_ABSOLUTE_PROJECT = process.env.DIR_PATH_ABSOLUTE_PROJECT;
 	if (!isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
 		throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
 	}
@@ -76,14 +78,16 @@ module.exports = (env: Environment = {}) => {
 
 	const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
 
+	const WEBPACK_MODE = process.env.NODE_ENV || 'production';
+	const DEVMODE = WEBPACK_MODE !== "production";
+	const LOG_LEVEL = logLevelFromGradle(process.env.GRADLE_LOG_LEVEL as GRADLE_LOG_LEVEL);
+
 	const LOADER = 'swc' as 'babel'|'swc';
 
 	const environmentObj = {
-		buildEnvString: 'production',
 		chunkDirsCommaString: null,
 		entryDirsCommaString: null,
 		entryExtCommaString: 'jsx,tsx,js,ts,es6,es',
-		isVerbose: false
 	};
 	//console.debug('environmentObj', environmentObj);
 
@@ -106,17 +110,10 @@ module.exports = (env: Environment = {}) => {
 		console.info(`${FILE_PATH_ABSOLUTE_R4X_CONFIG_JS} not found.`)
 	}
 
-	if (isSet(env.BUILD_ENV)) {
-		environmentObj.buildEnvString = env.BUILD_ENV;
-	}
-	if (isSet(env.VERBOSE)) {
-		environmentObj.isVerbose = env.VERBOSE !== 'false';
-	}
-	const DEVMODE = environmentObj.buildEnvString !== 'production';
-	//console.debug('environmentObj', environmentObj);
-
-
-	const verboseLog = makeVerboseLogger(environmentObj.isVerbose);
+	const verboseLog = makeVerboseLogger([
+		WEBPACK_STATS_LOG_LEVEL.LOG,
+		WEBPACK_STATS_LOG_LEVEL.VERBOSE
+	].includes(LOG_LEVEL));
 	verboseLog(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, 'DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X', 1);
 
 	const tempFileName = generateTempES6SourceAndGetFilename(
@@ -165,7 +162,7 @@ module.exports = (env: Environment = {}) => {
 
 		entry,
 
-		mode: environmentObj.buildEnvString,
+		mode: WEBPACK_MODE,
 
 		module: {
 			rules: [{
@@ -305,6 +302,7 @@ module.exports = (env: Environment = {}) => {
 		stats: {
 			colors: true,
 			hash: false,
+			logging: LOG_LEVEL,
 			modules: false,
 			moduleTrace: false,
 			timings: false,
