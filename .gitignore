@@ -25,3 +25,4 @@ build
 tmp
 .idea
 .yarnclean
+.DS_Store
