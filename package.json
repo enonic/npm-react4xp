@@ -106,5 +106,5 @@
     "webpack:externals": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" webpack --config dist/webpack.config.externals.js",
     "webpack:nashornPolyfills": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" webpack --config dist/webpack.config.nashornPolyfills.js"
   },
-  "version": "4.0.0-SNAPSHOT"
+  "version": "4.0.0-B3"
 }
