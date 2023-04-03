@@ -17,30 +17,30 @@ import {
 } from './constants.buildtime';
 
 import {makeVerboseLogger} from './util/makeVerboseLogger';
-import logLevelFromGradle, {
-	GRADLE_LOG_LEVEL,
+import webpackLogLevel, {
+	R4X_BUILD_LOG_LEVEL,
 	WEBPACK_STATS_LOG_LEVEL
-} from './util/logLevelFromGradle';
+} from './util/webpackLogLevel';
 
 
 const FILE_STEM_NASHORNPOLYFILLS_USERADDED = 'nashornPolyfills.userAdded';
 
 
 module.exports = (env: Environment = {}) => {
-	const DIR_PATH_ABSOLUTE_PROJECT = process.env.DIR_PATH_ABSOLUTE_PROJECT;
+	const R4X_DIR_PATH_ABSOLUTE_PROJECT = process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
 
-	if (!isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
-		throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
+	if (!isAbsolute(R4X_DIR_PATH_ABSOLUTE_PROJECT)) {
+		throw new Error(`System environment variable R4X_DIR_PATH_ABSOLUTE_PROJECT:${R4X_DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
 	}
 
 	const DIR_PATH_ABSOLUTE_BUILD_SYSTEM = resolve(__dirname, '..');
 	//console.debug('DIR_PATH_ABSOLUTE_BUILD_SYSTEM', DIR_PATH_ABSOLUTE_BUILD_SYSTEM);
 
-	const DIR_PATH_ABSOLUTE_BUILD_LIB_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_LIB_R4X);
+	const DIR_PATH_ABSOLUTE_BUILD_LIB_R4X = join(R4X_DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_LIB_R4X);
 
 	const WEBPACK_MODE = process.env.NODE_ENV || 'production';
 	const DEVMODE = WEBPACK_MODE !== "production";
-	const LOG_LEVEL = logLevelFromGradle(process.env.GRADLE_LOG_LEVEL as GRADLE_LOG_LEVEL);
+	const LOG_LEVEL = webpackLogLevel(process.env.R4X_BUILD_LOG_LEVEL as R4X_BUILD_LOG_LEVEL);
 
 	const verboseLog = makeVerboseLogger([
 		WEBPACK_STATS_LOG_LEVEL.LOG,
@@ -48,7 +48,7 @@ module.exports = (env: Environment = {}) => {
 	].includes(LOG_LEVEL));
 
 	const filePathAbsoluteR4xNashornPolyfills = join(
-		DIR_PATH_ABSOLUTE_PROJECT,
+		R4X_DIR_PATH_ABSOLUTE_PROJECT,
 		DIR_PATH_RELATIVE_SRC_MAIN_RESOURCES,
 		FILE_NAME_R4X_NASHORN_POLYFILLS
 	);
@@ -68,7 +68,7 @@ module.exports = (env: Environment = {}) => {
 	}
 
 	const webpackConfigObjectNashornPolyfills = {
-		context: DIR_PATH_ABSOLUTE_PROJECT, // Used as default for resolve.roots
+		context: R4X_DIR_PATH_ABSOLUTE_PROJECT, // Used as default for resolve.roots
 
 		entry,
 
@@ -173,7 +173,7 @@ module.exports = (env: Environment = {}) => {
 			// With an absolute path, it will only search in the given directory.
 
 			// To resolve node_modules installed under the app
-			resolve(DIR_PATH_ABSOLUTE_PROJECT, 'node_modules'),
+			resolve(R4X_DIR_PATH_ABSOLUTE_PROJECT, 'node_modules'),
 
 			// To resolve node_modules installed under the build system
 			resolve(DIR_PATH_ABSOLUTE_BUILD_SYSTEM, 'node_modules'),
@@ -184,7 +184,7 @@ module.exports = (env: Environment = {}) => {
 			// (starting with '/') are resolved, defaults to context configuration
 			// option. On non-Windows systems these requests are resolved as an
 			// absolute path first.
-			DIR_PATH_ABSOLUTE_PROJECT, // same as context
+			R4X_DIR_PATH_ABSOLUTE_PROJECT, // same as context
 			DIR_PATH_ABSOLUTE_BUILD_SYSTEM
 		],*/
 		}, // resolve

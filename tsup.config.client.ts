@@ -3,7 +3,6 @@ import { isAbsolute, join } from 'path';
 // import { print } from 'q-i';
 import { defineConfig, type Options } from 'tsup';
 import { LIBRARY_NAME } from './src/constants.runtime';
-import getAppName from './src/util/getAppName';
 import { camelize } from './src/util/camelize';
 import { ucFirst } from './src/util/ucFirst';
 
@@ -11,8 +10,7 @@ import { ucFirst } from './src/util/ucFirst';
 interface MyOptions extends Options {
 	env?: {
 		APP_NAME?: string
-		BUILD_ENV?: 'development'|'production'
-		DIR_PATH_ABSOLUTE_PROJECT?: string
+		R4X_DIR_PATH_ABSOLUTE_PROJECT?: string
 		LIBRARY_NAME?: string
 	}
 }
@@ -21,17 +19,15 @@ interface MyOptions extends Options {
 export default defineConfig((options: MyOptions) => {
 	// print(process.env, { maxItems: Infinity });
 	// print(options, { maxItems: Infinity });
-	const {
-		env: {
-			BUILD_ENV = 'production',
-			DIR_PATH_ABSOLUTE_PROJECT
-		} = {}
-	} = options;
-	if (!DIR_PATH_ABSOLUTE_PROJECT || !isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
-		throw new Error(`env.DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
+	const R4X_DIR_PATH_ABSOLUTE_PROJECT = process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
+	if (!R4X_DIR_PATH_ABSOLUTE_PROJECT || !isAbsolute(R4X_DIR_PATH_ABSOLUTE_PROJECT)) {
+		throw new Error(`env.R4X_DIR_PATH_ABSOLUTE_PROJECT:${R4X_DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
 	}
 
-	const appName = getAppName(DIR_PATH_ABSOLUTE_PROJECT);
+	const appName = process.env.R4X_APP_NAME;
+	if (!appName) {
+		throw new Error(`System environment variable $R4X_APP_NAME is required!`);
+	}
 	// print(appName);
 	// print(LIBRARY_NAME);
 	if (!options.env) {
@@ -78,7 +74,7 @@ export default defineConfig((options: MyOptions) => {
 		// ],
 		format: 'iife',
 		platform: 'browser',
-		outDir: join(DIR_PATH_ABSOLUTE_PROJECT, 'build/resources/main/assets/react4xp/'),
+		outDir: join(R4X_DIR_PATH_ABSOLUTE_PROJECT, 'build/resources/main/assets/react4xp/'),
 		target: 'es2015',
 		tsconfig: 'tsconfig.client.json'
 	};

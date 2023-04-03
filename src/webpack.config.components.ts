@@ -39,29 +39,32 @@ import {normalizeDirList} from './buildComponents/normalizeDirList';
 import {camelize} from './util/camelize';
 import {isSet} from './util/isSet';
 import {makeVerboseLogger} from './util/makeVerboseLogger';
-import getAppName from './util/getAppName';
 // import {toStr} from './util/toStr';
-import logLevelFromGradle, {
-	GRADLE_LOG_LEVEL,
+import webpackLogLevel, {
+	R4X_BUILD_LOG_LEVEL,
 	WEBPACK_STATS_LOG_LEVEL
-} from './util/logLevelFromGradle';
+} from './util/webpackLogLevel';
 import {ucFirst} from './util/ucFirst';
 
 
 module.exports = (env: Environment = {}) => {
-	const DIR_PATH_ABSOLUTE_PROJECT = process.env.DIR_PATH_ABSOLUTE_PROJECT;
-	if (!isAbsolute(DIR_PATH_ABSOLUTE_PROJECT)) {
-		throw new Error(`$DIR_PATH_ABSOLUTE_PROJECT:${DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
+	const R4X_DIR_PATH_ABSOLUTE_PROJECT = process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
+	if (!isAbsolute(R4X_DIR_PATH_ABSOLUTE_PROJECT)) {
+		throw new Error(`System environment variable $R4X_DIR_PATH_ABSOLUTE_PROJECT:${R4X_DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
+	}
+
+	if (!process.env.R4X_APP_NAME) {
+		throw new Error(`System environment variable $R4X_APP_NAME is required!`);
 	}
 
 	const DIR_PATH_ABSOLUTE_BUILD_SYSTEM = resolve(__dirname, '..');
 	//console.debug('DIR_PATH_ABSOLUTE_BUILD_SYSTEM', DIR_PATH_ABSOLUTE_BUILD_SYSTEM);
 
-	const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
+	const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(R4X_DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
 
 	const WEBPACK_MODE = process.env.NODE_ENV || 'production';
 	const DEVMODE = WEBPACK_MODE !== "production";
-	const LOG_LEVEL = logLevelFromGradle(process.env.GRADLE_LOG_LEVEL as GRADLE_LOG_LEVEL);
+	const LOG_LEVEL = webpackLogLevel(process.env.R4X_BUILD_LOG_LEVEL as R4X_BUILD_LOG_LEVEL);
 
 	const LOADER = 'swc' as 'babel'|'swc';
 
@@ -75,11 +78,11 @@ module.exports = (env: Environment = {}) => {
 		entryExtStringArray: string[]
 	};
 
-	const appName = ucFirst(camelize(getAppName(DIR_PATH_ABSOLUTE_PROJECT), /\./g));
+	const appName = ucFirst(camelize(process.env.R4X_APP_NAME, /\./g));
 
 	let EXTERNALS = EXTERNALS_DEFAULT;
 	//console.debug('EXTERNALS', EXTERNALS);
-	const FILE_PATH_ABSOLUTE_R4X_CONFIG_JS = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JS);
+	const FILE_PATH_ABSOLUTE_R4X_CONFIG_JS = join(R4X_DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JS);
 	//console.debug('FILE_PATH_ABSOLUTE_R4X_CONFIG_JS', FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
 
 	try {
@@ -127,10 +130,10 @@ module.exports = (env: Environment = {}) => {
 	//console.debug('environmentObj', environmentObj);
 
 
-	const DIR_PATH_ABSOLUTE_SRC_R4X = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_SRC_R4X);
+	const DIR_PATH_ABSOLUTE_SRC_R4X = join(R4X_DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_SRC_R4X);
 	//console.debug('DIR_PATH_ABSOLUTE_SRC_R4X', DIR_PATH_ABSOLUTE_SRC_R4X);
 
-	const DIR_PATH_ABSOLUTE_SRC_SITE = join(DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_SRC_SITE);
+	const DIR_PATH_ABSOLUTE_SRC_SITE = join(R4X_DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_SRC_SITE);
 	//console.debug('DIR_PATH_ABSOLUTE_SRC_SITE', DIR_PATH_ABSOLUTE_SRC_SITE);
 
 	const VERBOSE = [
@@ -140,11 +143,11 @@ module.exports = (env: Environment = {}) => {
 
 	const verboseLog = makeVerboseLogger(VERBOSE);
 
-	verboseLog(DIR_PATH_ABSOLUTE_PROJECT, 'DIR_PATH_ABSOLUTE_PROJECT');
+	verboseLog(R4X_DIR_PATH_ABSOLUTE_PROJECT, 'R4X_DIR_PATH_ABSOLUTE_PROJECT');
 
 	let overrideCallback = (_, config: object) => config;
 
-	const filePathAbsoluteWebpackOverride = join(DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_WEBPACK_CONFIG_R4X_JS);
+	const filePathAbsoluteWebpackOverride = join(R4X_DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_WEBPACK_CONFIG_R4X_JS);
 	verboseLog(filePathAbsoluteWebpackOverride, 'filePathAbsoluteWebpackOverride');
 	try {
 		const webpackConfigR4xStats = statSync(filePathAbsoluteWebpackOverride);
@@ -272,7 +275,7 @@ module.exports = (env: Environment = {}) => {
 		},
 		/*{
 		sourcePath: join(
-			DIR_PATH_ABSOLUTE_PROJECT || process.cwd(),
+			R4X_DIR_PATH_ABSOLUTE_PROJECT || process.cwd(),
 			"node_modules",
 			"react4xp-regions",
 			"entries"
@@ -447,7 +450,7 @@ module.exports = (env: Environment = {}) => {
 	// ------------------------------------------
 
 	const config = {
-		context: DIR_PATH_ABSOLUTE_PROJECT, // Used as default for resolve.roots
+		context: R4X_DIR_PATH_ABSOLUTE_PROJECT, // Used as default for resolve.roots
 
 		devtool: DEVMODE ? false : 'source-map',
 
@@ -649,7 +652,7 @@ module.exports = (env: Environment = {}) => {
 				// given directory.
 
 				// To resolve node_modules installed under the app
-				resolve(DIR_PATH_ABSOLUTE_PROJECT, 'node_modules'),
+				resolve(R4X_DIR_PATH_ABSOLUTE_PROJECT, 'node_modules'),
 
 				// To resolve node_modules installed under the build system
 				resolve(DIR_PATH_ABSOLUTE_BUILD_SYSTEM, 'node_modules'),
@@ -660,7 +663,7 @@ module.exports = (env: Environment = {}) => {
 			// (starting with '/') are resolved, defaults to context configuration
 			// option. On non-Windows systems these requests are resolved as an
 			// absolute path first.
-			DIR_PATH_ABSOLUTE_PROJECT, // same as context
+			R4X_DIR_PATH_ABSOLUTE_PROJECT, // same as context
 			DIR_PATH_ABSOLUTE_BUILD_SYSTEM
 			],*/
 		}, // resolve
