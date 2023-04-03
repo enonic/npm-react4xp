@@ -61,12 +61,9 @@
     "examples/*",
     "src/**/*.ts",
     "LICENSE",
-    "npmInstall.gradle",
-    "react4xp.gradle",
     "README*.md",
     "tsconfig*.json",
-    "tsup.config.*.ts",
-    "updaters.gradle"
+    "tsup.config.*.ts"
   ],
   "homepage": "https://github.com/enonic/enonic-react4xp#readme",
   "keywords": [
