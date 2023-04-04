@@ -1,6 +1,10 @@
 module.exports = {
 	chunkDirs: [
-		'AChunkDirInsideReact4xpDir',
-		'../AChunkDirOutsideReact4xpDir'
+		'aChunkDirInsideReact4xpDir',
+		'../aChunkDirOutsideReact4xpDir'
 	],
+	entryDirs: [
+		'anEntryDirInsideR4xDir',
+		'../anEntryDirOutsideR4xDir'
+	]
 }

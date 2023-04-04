@@ -69,7 +69,10 @@ describe('components', ()=>{
 						sourceExtensions: ['jsx', 'tsx'],
 						targetSubDir: 'site',
 					},{
-						sourcePath: join(SRC_MAIN_RESOURCES, 'react4xp/_entries'),
+						sourcePath: join(SRC_MAIN_RESOURCES, 'react4xp/anEntryDirInsideR4xDir'),
+						sourceExtensions: ['jsx', 'tsx'],
+					},,{
+						sourcePath: join(SRC_MAIN_RESOURCES, 'anEntryDirOutsideR4xDir'),
 						sourceExtensions: ['jsx', 'tsx'],
 					}],
 					join(DIR_NAME, 'build', 'resources', 'main', 'site'),
@@ -78,7 +81,8 @@ describe('components', ()=>{
 				)
 			).to.deep.equal(
 				{
-					"thisIsAnEntry": join(SRC_MAIN_RESOURCES,'react4xp/_entries/thisIsAnEntry.jsx'),
+					'anEntryInAnEntryDirInsideR4xDir': join(SRC_MAIN_RESOURCES,'react4xp/anEntryDirInsideR4xDir/anEntryInAnEntryDirInsideR4xDir.jsx'),
+					'anEntryInAnEntryDirOutsideR4xDir': join(SRC_MAIN_RESOURCES,'anEntryDirOutsideR4xDir/anEntryInAnEntryDirOutsideR4xDir.tsx'),
 					'site/parts/jsExample/jsExample': join(SRC_MAIN_RESOURCES,'site/parts/jsExample/jsExample.jsx'),
 					'site/parts/tsExample/tsExample': join(SRC_MAIN_RESOURCES,'site/parts/tsExample/tsExample.tsx')
 				}
