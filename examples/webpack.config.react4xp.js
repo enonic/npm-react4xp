@@ -10,8 +10,17 @@
 
 module.exports = function(env, config) {
 
-    // Makes symlinks under node_modules work, e.g. 'npm link' and possibly PNPM etc:
-    config.resolve.symlinks = true;
+	// Comment in and customize the lines below to improve incremental builds in
+	// development mode. (see https://webpack.js.org/configuration/cache/)
+	//
+	// if (process.env.NODE_ENV === 'development') {
+	// 	config.cache = {
+	// 		type: 'filesystem'
+	// 	}
+	// }
 
-    return config;
+	// Makes symlinks under node_modules work, e.g. 'npm link' and possibly PNPM etc:
+	config.resolve.symlinks = true;
+
+	return config;
 };
