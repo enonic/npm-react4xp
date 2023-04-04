@@ -545,6 +545,9 @@ module.exports = (env: Environment = {}) => {
 			moduleIds: DEVMODE ? 'named' : 'deterministic',
 			removeAvailableModules: !DEVMODE,
 			removeEmptyChunks: !DEVMODE,
+
+			runtimeChunk: 'single', // Fix #216 webpack module cache is entry-local
+
 			sideEffects: !DEVMODE,
 
 			// The Build Performance documentation goes both ways regarding splitChunks.
