@@ -96,7 +96,7 @@
     "pretest": "yarn build",
     "test": "yarn test:client && yarn test:components && yarn test:executor && yarn test:nashornPolyfills",
     "test:client": "cross-env-shell R4X_APP_NAME=com.enonic.app.whatever R4X_DIR_PATH_ABSOLUTE_PROJECT=$INIT_CWD/test/components NODE_ENV=development yarn tsup:client && npx mocha test/client.spec.mjs",
-    "test:components": "cross-env-shell NODE_ENV=development R4X_APP_NAME=com.enonic.app.whatever R4X_DIR_PATH_ABSOLUTE_PROJECT=$INIT_CWD/test/components yarn webpack:components && npx mocha test/components.spec.mjs",
+    "test:components": "cross-env-shell NODE_ENV=development R4X_APP_NAME=com.enonic.app.whatever R4X_BUILD_LOG_LEVEL=LIFECYCLE R4X_DIR_PATH_ABSOLUTE_PROJECT=$INIT_CWD/test/components yarn webpack:components && npx mocha test/components.spec.mjs",
     "test:externals": "cross-env-shell R4X_DIR_PATH_ABSOLUTE_PROJECT=$INIT_CWD/test/components yarn webpack:externals && npx mocha test/externals.spec.mjs",
     "test:executor": "cross-env-shell R4X_APP_NAME=com.enonic.app.whatever R4X_DIR_PATH_ABSOLUTE_PROJECT=$INIT_CWD/test/components yarn tsup:executor && npx mocha test/executor.spec.mjs",
     "test:nashornPolyfills": "cross-env-shell R4X_DIR_PATH_ABSOLUTE_PROJECT=$INIT_CWD/test/nashornPolyfills yarn webpack:nashornPolyfills && npx mocha test/nashornPolyfills/test.spec.mjs",

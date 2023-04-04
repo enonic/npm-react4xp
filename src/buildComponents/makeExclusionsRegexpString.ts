@@ -8,8 +8,10 @@ export const makeExclusionsRegexpString = (
   currentDir: string,
   otherDirs: string[],
   verboseLog: VerboseLog
-) =>
-	otherDirs
+) => {
+	verboseLog(currentDir, 'makeExclusionsRegexpString currentDir');
+	verboseLog(otherDirs, 'makeExclusionsRegexpString otherDirs');
+	const returnValue = otherDirs
 		.filter((dir) => dir !== currentDir && dir.startsWith(currentDir))
 		.map((dir) => dir.slice(currentDir.length))
 		.map((d) => {
@@ -26,3 +28,6 @@ export const makeExclusionsRegexpString = (
 		// TODO: escape characters in folder names that actually are regexp characters
 		.join("|")
 		.trim();
+	verboseLog(returnValue, 'makeExclusionsRegexpString returnValue');
+	return returnValue;
+}
