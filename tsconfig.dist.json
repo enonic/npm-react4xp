@@ -28,5 +28,6 @@
 		"./tsup.config.*.ts",
 		"./src/client*",
 		"./src/executor.ts",
+		"./test/**/*.*"
 	]
 }

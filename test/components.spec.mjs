@@ -1,8 +1,9 @@
 import { expect } from 'chai';
-import deepFreeze from 'deep-freeze';
+// import deepFreeze from 'deep-freeze';
+import { existsSync } from 'fs';
 import {join} from 'path';
 
-import { getEntries } from '../../dist/buildComponents/getEntries.js';
+import { getEntries } from '../dist/buildComponents/getEntries.js';
 //import { normalizePath } from '../../dist/buildComponents/normalizePath.js';
 
 //console.debug(process.cwd());
@@ -11,9 +12,53 @@ const DIR_NAME = join(process.cwd(), 'test', 'components'); // eslint-disable-li
 console.log('DIR_NAME:', JSON.stringify(DIR_NAME, null, 2));
 
 const SRC_MAIN_RESOURCES = join(DIR_NAME, 'src', 'main', 'resources');
+const DIR_R4X = join(DIR_NAME, 'build/resources/main/assets/react4xp');
+
 
 describe('components', ()=>{
+
 	describe('getEntries', ()=> {
+
+		it('makes a entries.json file', () => {
+			const exists = existsSync(join(DIR_R4X, 'entries.json'));
+			expect(exists).to.be.true;
+		});
+
+		it('makes a stats.components.json file', () => {
+			const exists = existsSync(join(DIR_R4X, 'stats.components.json'));
+			expect(exists).to.be.true;
+		});
+
+		it('makes a runtime.js file', () => {
+			const exists = existsSync(join(DIR_R4X, 'runtime.js'));
+			expect(exists).to.be.true;
+		});
+
+		it('makes a react4xp.js file', () => {
+			const exists = existsSync(join(DIR_R4X, 'react4xp.js'));
+			expect(exists).to.be.true;
+		});
+
+		it('makes a AChunkDirInsideReact4xpDir.js file', () => {
+			const exists = existsSync(join(DIR_R4X, 'AChunkDirInsideReact4xpDir.js'));
+			expect(exists).to.be.true;
+		});
+
+		it('makes a AChunkDirOutsideReact4xpDir.js file', () => {
+			const exists = existsSync(join(DIR_R4X, 'AChunkDirOutsideReact4xpDir.js'));
+			expect(exists).to.be.true;
+		});
+
+		it('makes a site/parts/jsExample/jsExample.js file', () => {
+			const exists = existsSync(join(DIR_R4X, 'site/parts/jsExample/jsExample.js'));
+			expect(exists).to.be.true;
+		});
+
+		it('makes a site/parts/tsExample/tsExample.js file', () => {
+			const exists = existsSync(join(DIR_R4X, 'site/parts/tsExample/tsExample.js'));
+			expect(exists).to.be.true;
+		});
+
 		it('handles site parts', ()=>{
 			expect(
 				getEntries(
@@ -32,8 +77,8 @@ describe('components', ()=>{
 			).to.deep.equal(
 				{
 					"thisIsAnEntry": join(SRC_MAIN_RESOURCES,'react4xp/_entries/thisIsAnEntry.jsx'),
-					'site/parts/client/client': join(SRC_MAIN_RESOURCES,'site/parts/client/client.jsx'),
-					'site/parts/example/example': join(SRC_MAIN_RESOURCES,'site/parts/example/example.jsx')
+					'site/parts/jsExample/jsExample': join(SRC_MAIN_RESOURCES,'site/parts/jsExample/jsExample.jsx'),
+					'site/parts/tsExample/tsExample': join(SRC_MAIN_RESOURCES,'site/parts/tsExample/tsExample.tsx')
 				}
 			);
 		});

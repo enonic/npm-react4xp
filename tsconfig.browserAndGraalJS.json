@@ -14,6 +14,7 @@
 		// "outDir": "build/resources/main",
 		// "paths": {
 		// 	"@enonic/js-utils/*": ["./node_modules/@enonic/js-utils/src/*"]
+		// 	"/*": ["../../src/main/resources/*"], // So one can import local files using absolute path (same as Enonic does during runtime).
 		// },
 		// "rootDir": "./src",
 		"target": "ES2015",
