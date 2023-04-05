@@ -9,7 +9,7 @@ module.exports = function(env, config) {
   // Testing random expectations
   if (
     config.plugins[0].output !== "stats.components.json" ||
-    config.externals["react-dom/server"] !== "ReactDOMServer" ||
+    config.globals["react-dom/server"] !== "ReactDOMServer" ||
     config.devtool !== false
   ) {
     console.log("---------------------- UNEXPECTED DATA:");
@@ -22,8 +22,8 @@ module.exports = function(env, config) {
       )}`
     );
     console.error(
-      `config.externals['react-dom/server']: ${JSON.stringify(
-        config.externals["react-dom/server"],
+      `config.globals['react-dom/server']: ${JSON.stringify(
+        config.globals["react-dom/server"],
         null,
         2
       )}`

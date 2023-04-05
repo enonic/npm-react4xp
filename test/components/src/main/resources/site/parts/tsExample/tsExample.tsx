@@ -1,15 +1,25 @@
 import React from 'react';
 import Button from '../../../react4xp/shared/Button';
 import Header from '../../../react4xp/shared/Header';
-import AComponentInAChunkDirInsideReact4xpDir from '../../../react4xp/AChunkDirInsideReact4xpDir/AComponentInAChunkDirInsideReact4xpDir';
-import AComponentInAChunkDirOutsideReact4xpDir from '../../../AChunkDirOutsideReact4xpDir/AComponentInAChunkDirOutsideReact4xpDir';
+import AComponentInAChunkDirInsideReact4xpDir from '../../../react4xp/aChunkDirInsideReact4xpDir/AComponentInAChunkDirInsideReact4xpDir';
+import AComponentInAChunkDirOutsideReact4xpDir from '../../../aChunkDirOutsideReact4xpDir/AComponentInAChunkDirOutsideReact4xpDir';
+import AnEntryInAnEntryDirInsideR4xDir from '../../../react4xp/anEntryDirInsideR4xDir/anEntryInAnEntryDirInsideR4xDir'
+import AnEntryInAnEntryDirOutsideR4xDir from '../../../anEntryDirOutsideR4xDir/anEntryInAnEntryDirOutsideR4xDir'
+import lodashArray from 'lodash/array';
+
+// import _ from 'lodash'; // File node_modules/lodash/lodash.js is no a module. ts(2306)
+const _ = require('lodash');
 
 
 function TsExample() {
+	_.camelCase('Foo Bar');
+	lodashArray.concat([1], 2, [3], [[4]]);
 	return (
 		<>
 			<AComponentInAChunkDirInsideReact4xpDir/>
 			<AComponentInAChunkDirOutsideReact4xpDir/>
+			<AnEntryInAnEntryDirInsideR4xDir/>
+			<AnEntryInAnEntryDirOutsideR4xDir/>
 			<Button/>
 			<Header/>
 		</>

@@ -1,5 +1,5 @@
 {
-	// This file is used when builing React4XP components, externals and nashornPolyfills
+	// This file is used when builing React4XP components, globals and nashornPolyfills
 	"compilerOptions": {
 		// "allowSyntheticDefaultImports": true,
 		// "baseUrl": "./",

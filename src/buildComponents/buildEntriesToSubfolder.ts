@@ -43,7 +43,7 @@ export function buildEntriesToSubfolder(
 						(obj, match) => {
 							const parsedEl = parse(match);
 							const subdir = parsedEl.dir.split(sep);
-							const name = [entrySet.targetSubDir, ...subdir, parsedEl.name].filter(Boolean).join("/");
+							const name = ['_entries', entrySet.targetSubDir, ...subdir, parsedEl.name].filter(Boolean).join("/");
 
 							const entry = resolve(sourcePath, match);
 							verboseLog(`${name} -> ${entry}`, "\tEntry");
