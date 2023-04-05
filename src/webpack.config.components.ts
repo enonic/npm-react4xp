@@ -46,6 +46,7 @@ import webpackLogLevel, {
 	WEBPACK_STATS_LOG_LEVEL
 } from './util/webpackLogLevel';
 import {ucFirst} from './util/ucFirst';
+import {regexpEscape} from './util/regexpEscape';
 
 
 module.exports = (env: Environment = {}) => {
@@ -419,7 +420,7 @@ module.exports = (env: Environment = {}) => {
 			detectedTargetDirs,
 			verboseLog
 		);
-		const test = `${chunkDir}${
+		const test = `${regexpEscape(chunkDir)}${
 			// https://www.regular-expressions.info/lookaround.html
 			// Negative lookahead is indispensable if you want to match something not followed by something else.
 			//
@@ -465,7 +466,7 @@ module.exports = (env: Environment = {}) => {
 		name: "react4xp",
 		// chunks: "all",// splitChunks.cacheGroups.{cacheGroup}.chunks doesn't exist!
 		priority: 1,
-		test: `${DIR_PATH_ABSOLUTE_SRC_R4X}${
+		test: `${regexpEscape(DIR_PATH_ABSOLUTE_SRC_R4X)}${
 			react4xpExclusions
 				// https://www.regular-expressions.info/lookaround.html
 				// Negative lookahead is indispensable if you want to match something not followed by something else.
