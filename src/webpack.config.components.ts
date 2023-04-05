@@ -45,6 +45,7 @@ import webpackLogLevel, {
 	WEBPACK_STATS_LOG_LEVEL
 } from './util/webpackLogLevel';
 import {ucFirst} from './util/ucFirst';
+import {regexpEscape} from './util/regexpEscape';
 
 
 module.exports = (env: Environment = {}) => {
@@ -395,9 +396,9 @@ module.exports = (env: Environment = {}) => {
 			enforce: true,
 			chunks: "all",
 			priority: 1,
-			test: `${DIR_PATH_ABSOLUTE_SRC_R4X}${
+			test: `${regexpEscape(DIR_PATH_ABSOLUTE_SRC_R4X)}${
 				react4xpExclusions
-				? `[\\\\/]((?!(${react4xpExclusions})).)[\\\\/]?`
+				? `[\\\\\/]((?!(${react4xpExclusions})[\\\\\/]))`
 				: ""
 			}`,
 		},
@@ -423,8 +424,8 @@ module.exports = (env: Environment = {}) => {
 			detectedTargetDirs,
 			verboseLog
 		);
-		const test = `${chunkDir}${
-			chunkExclusions ? `[\\\\/]((?!(${chunkExclusions})).)[\\\\/]?` : ""
+		const test = `${regexpEscape(chunkDir)}${
+			chunkExclusions ? `[\\\\\/]((?!(${chunkExclusions})[\\\\\/]))` : ""
 		}`;
 
 		cacheGroups[name] = {

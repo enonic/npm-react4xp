@@ -2,6 +2,7 @@ import type {VerboseLog} from './index.d';
 
 
 import {sep} from 'path';
+import {regexpEscape} from '../util/regexpEscape';
 
 
 export const makeExclusionsRegexpString = (
@@ -25,7 +26,7 @@ export const makeExclusionsRegexpString = (
 			verboseLog(`\tExcluding '${dir}' relative to '${currentDir}'`);
 			return dir;
 		})
-		// TODO: escape characters in folder names that actually are regexp characters
+		.map(d => regexpEscape(d))
 		.join("|")
 		.trim();
 	verboseLog(returnValue, 'makeExclusionsRegexpString returnValue');
