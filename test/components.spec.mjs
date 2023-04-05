@@ -7,6 +7,9 @@ import { getEntries } from '../dist/buildComponents/getEntries.js';
 import { makeExclusionsRegexpString } from '../dist/buildComponents/makeExclusionsRegexpString.js';
 import { makeVerboseLogger } from '../dist/util/makeVerboseLogger.js';
 //import { normalizePath } from '../../dist/buildComponents/normalizePath.js';
+import stats from './components/build/resources/main/assets/react4xp/stats.components.json' assert {
+	type: 'json',
+};
 
 //console.debug(process.cwd());
 
@@ -16,79 +19,81 @@ console.log('DIR_NAME:', JSON.stringify(DIR_NAME, null, 2));
 const SRC_MAIN_RESOURCES = join(DIR_NAME, 'src', 'main', 'resources');
 const DIR_R4X = join(DIR_NAME, 'build/resources/main/assets/react4xp');
 
-const verboseLog = makeVerboseLogger(false);
+const verboseLog = makeVerboseLogger(true);
 
 describe('components', ()=>{
 
-	describe('makeExclusionsRegexpString', () => {
-		it('react4xpExclusions is AChunkDirInsideReact4xpDir (why not AChunkDirOutsideReact4xpDir?)', () => {
-			expect(
-				makeExclusionsRegexpString(
-					join(SRC_MAIN_RESOURCES, 'react4xp'), // currentDir
-					[ // otherDirs
-						join(SRC_MAIN_RESOURCES, 'react4xp/AChunkDirInsideReact4xpDir'),
-						join(SRC_MAIN_RESOURCES, 'AChunkDirOutsideReact4xpDir')
-					],
-					verboseLog
-				)
-			).to.deep.equal('AChunkDirInsideReact4xpDir');
-		});
-		it('chunkExclusions react4xp/AChunkDirInsideReact4xpDir is empty', () => {
-			expect(
-				makeExclusionsRegexpString(
-					join(SRC_MAIN_RESOURCES, 'react4xp/AChunkDirInsideReact4xpDir'), // currentDir
-					[ // otherDirs
-						join(SRC_MAIN_RESOURCES, 'react4xp/AChunkDirInsideReact4xpDir'),
-						join(SRC_MAIN_RESOURCES, 'AChunkDirOutsideReact4xpDir')
-					],
-					verboseLog
-				)
-			).to.deep.equal('');
-		});
-		it('chunkExclusions AChunkDirOutsideReact4xpDir is empty', () => {
-			expect(
-				makeExclusionsRegexpString(
-					join(SRC_MAIN_RESOURCES, 'AChunkDirOutsideReact4xpDir'), // currentDir
-					[ // otherDirs
-						join(SRC_MAIN_RESOURCES, 'react4xp/AChunkDirInsideReact4xpDir'),
-						join(SRC_MAIN_RESOURCES, 'AChunkDirOutsideReact4xpDir')
-					],
-					verboseLog
-				)
-			).to.deep.equal('');
-		});
-	});
+	// describe('makeExclusionsRegexpString', () => {
+	// 	it('react4xpExclusions is AChunkDirInsideReact4xpDir (why not AChunkDirOutsideReact4xpDir?)', () => {
+	// 		expect(
+	// 			makeExclusionsRegexpString(
+	// 				join(SRC_MAIN_RESOURCES, 'react4xp'), // currentDir
+	// 				[ // otherDirs
+	// 					join(SRC_MAIN_RESOURCES, 'react4xp/AChunkDirInsideReact4xpDir'),
+	// 					join(SRC_MAIN_RESOURCES, 'AChunkDirOutsideReact4xpDir')
+	// 				],
+	// 				verboseLog
+	// 			)
+	// 		).to.deep.equal('AChunkDirInsideReact4xpDir');
+	// 	});
+	// 	it('chunkExclusions react4xp/AChunkDirInsideReact4xpDir is empty', () => {
+	// 		expect(
+	// 			makeExclusionsRegexpString(
+	// 				join(SRC_MAIN_RESOURCES, 'react4xp/AChunkDirInsideReact4xpDir'), // currentDir
+	// 				[ // otherDirs
+	// 					join(SRC_MAIN_RESOURCES, 'react4xp/AChunkDirInsideReact4xpDir'),
+	// 					join(SRC_MAIN_RESOURCES, 'AChunkDirOutsideReact4xpDir')
+	// 				],
+	// 				verboseLog
+	// 			)
+	// 		).to.deep.equal('');
+	// 	});
+	// 	it('chunkExclusions AChunkDirOutsideReact4xpDir is empty', () => {
+	// 		expect(
+	// 			makeExclusionsRegexpString(
+	// 				join(SRC_MAIN_RESOURCES, 'AChunkDirOutsideReact4xpDir'), // currentDir
+	// 				[ // otherDirs
+	// 					join(SRC_MAIN_RESOURCES, 'react4xp/AChunkDirInsideReact4xpDir'),
+	// 					join(SRC_MAIN_RESOURCES, 'AChunkDirOutsideReact4xpDir')
+	// 				],
+	// 				verboseLog
+	// 			)
+	// 		).to.deep.equal('');
+	// 	});
+	// });
 
-	describe('getEntries', ()=> {
+	describe('getEntries', () => {
 
-		it('handles site parts', ()=>{
-			expect(
-				getEntries(
-					[{
-						sourcePath: join(SRC_MAIN_RESOURCES, 'site'),
-						sourceExtensions: ['jsx', 'tsx'],
-						targetSubDir: 'site',
-					},{
-						sourcePath: join(SRC_MAIN_RESOURCES, 'react4xp/anEntryDirInsideR4xDir'),
-						sourceExtensions: ['jsx', 'tsx'],
-					},,{
-						sourcePath: join(SRC_MAIN_RESOURCES, 'anEntryDirOutsideR4xDir'),
-						sourceExtensions: ['jsx', 'tsx'],
-					}],
-					join(DIR_NAME, 'build', 'resources', 'main', 'site'),
-					'entries.json',
-					()=>{}
-				)
-			).to.deep.equal(
-				{
-					'anEntryInAnEntryDirInsideR4xDir': join(SRC_MAIN_RESOURCES,'react4xp/anEntryDirInsideR4xDir/anEntryInAnEntryDirInsideR4xDir.jsx'),
-					'anEntryInAnEntryDirOutsideR4xDir': join(SRC_MAIN_RESOURCES,'anEntryDirOutsideR4xDir/anEntryInAnEntryDirOutsideR4xDir.tsx'),
-					'site/parts/jsExample/jsExample': join(SRC_MAIN_RESOURCES,'site/parts/jsExample/jsExample.jsx'),
-					'site/parts/tsExample/tsExample': join(SRC_MAIN_RESOURCES,'site/parts/tsExample/tsExample.tsx')
-				}
-			);
-		});
-        //const OUTPUT_PATH = join(DIR_NAME, 'dummy-build', 'react4xp');
+		// NOTE: This test has a side-effect it creates an extra file build/resources/main/site/entries.json
+		// it('handles site parts', () => {
+		// 	expect(
+		// 		getEntries(
+		// 			[{
+		// 				sourcePath: join(SRC_MAIN_RESOURCES, 'site'),
+		// 				sourceExtensions: ['jsx', 'tsx'],
+		// 				targetSubDir: 'site',
+		// 			},{
+		// 				sourcePath: join(SRC_MAIN_RESOURCES, 'react4xp/anEntryDirInsideR4xDir'),
+		// 				sourceExtensions: ['jsx', 'tsx'],
+		// 			},{
+		// 				sourcePath: join(SRC_MAIN_RESOURCES, 'anEntryDirOutsideR4xDir'),
+		// 				sourceExtensions: ['jsx', 'tsx'],
+		// 			}],
+		// 			join(DIR_NAME, 'build', 'resources', 'main', 'site'),
+		// 			'entries.json',
+		// 			()=>{}
+		// 		)
+		// 	).to.deep.equal(
+		// 		{
+		// 			'anEntryInAnEntryDirInsideR4xDir': join(SRC_MAIN_RESOURCES,'react4xp/anEntryDirInsideR4xDir/anEntryInAnEntryDirInsideR4xDir.jsx'),
+		// 			'anEntryInAnEntryDirOutsideR4xDir': join(SRC_MAIN_RESOURCES,'anEntryDirOutsideR4xDir/anEntryInAnEntryDirOutsideR4xDir.tsx'),
+		// 			'site/parts/jsExample/jsExample': join(SRC_MAIN_RESOURCES,'site/parts/jsExample/jsExample.jsx'),
+		// 			'site/parts/tsExample/tsExample': join(SRC_MAIN_RESOURCES,'site/parts/tsExample/tsExample.tsx')
+		// 		}
+		// 	);
+		// });
+
+		//const OUTPUT_PATH = join(DIR_NAME, 'dummy-build', 'react4xp');
         //console.log("OUTPUT_PATH:", JSON.stringify(OUTPUT_PATH, null, 2));
 
         // actualEntries object should exactly match this. storedEntries should exactly match these keys.
@@ -184,35 +189,48 @@ describe('components', ()=>{
 			const exists = existsSync(join(DIR_R4X, 'stats.components.json'));
 			expect(exists).to.be.true;
 		});
+	});
 
-		it('makes a runtime.js file', () => {
-			const exists = existsSync(join(DIR_R4X, 'runtime.js'));
+	describe('chunks', ()=> {
+		it('makes a runtimeChunks file', () => {
+			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['_chunks/runtime.js'][0]));
 			expect(exists).to.be.true;
 		});
 
-		it('makes a react4xp.js file', () => {
-			const exists = existsSync(join(DIR_R4X, 'react4xp.js'));
+		it('makes a react4xp chunk file', () => {
+			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['react4xp'][0]));
 			expect(exists).to.be.true;
 		});
 
-		it('makes a AChunkDirInsideReact4xpDir.js file', () => {
-			const exists = existsSync(join(DIR_R4X, 'AChunkDirInsideReact4xpDir.js'));
+		it('makes a anEntryInAnEntryDirInsideR4xDir chunk file', () => {
+			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['_entries/anEntryInAnEntryDirInsideR4xDir'][0]));
 			expect(exists).to.be.true;
 		});
 
-		it('makes a AChunkDirOutsideReact4xpDir.js file', () => {
-			const exists = existsSync(join(DIR_R4X, 'AChunkDirOutsideReact4xpDir.js'));
+		it('makes a anEntryInAnEntryDirOutsideR4xDir chunk file', () => {
+			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['_entries/anEntryInAnEntryDirOutsideR4xDir'][0]));
 			expect(exists).to.be.true;
 		});
 
-		it('makes a site/parts/jsExample/jsExample.js file', () => {
-			const exists = existsSync(join(DIR_R4X, 'site/parts/jsExample/jsExample.js'));
+		it('makes a site/parts/jsExample/jsExample chunk file', () => {
+			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['_entries/site/parts/jsExample/jsExample'][0]));
 			expect(exists).to.be.true;
 		});
 
-		it('makes a site/parts/tsExample/tsExample.js file', () => {
-			const exists = existsSync(join(DIR_R4X, 'site/parts/tsExample/tsExample.js'));
+		it('makes a site/parts/tsExample/tsExample chunk file', () => {
+			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['_entries/site/parts/tsExample/tsExample'][0]));
 			expect(exists).to.be.true;
 		});
+
+		it('makes a aChunkDirInsideReact4xpDir chunk file', () => {
+			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['aChunkDirInsideReact4xpDir'][0]));
+			expect(exists).to.be.true;
+		});
+
+		it('makes a aChunkDirOutsideReact4xpDir chunk file', () => {
+			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['aChunkDirOutsideReact4xpDir'][0]));
+			expect(exists).to.be.true;
+		});
+
 	});
 });

@@ -1,32 +1,15 @@
 /* eslint-disable no-console */
 
-/*
-  Externals is webpack's way to keep certain dependencies
-  out of the compilation/chunking flow,
-  and instead tell compiled code that they will be
-  globally available in runtime from other ímported libraries, say from a CDN.
+// This webpack config builds a globals library, which by default contains react
+// and react-dom.
+//
+// Which additional dependencies are inserted into the globals library, depends
+// on the `globals` property in the react4xp.config.js file.
+//
+// The `globals` property must be an object on the webpack externals format
+// { "libraryname": "ReferenceInCode", ... } e.g. { "react-dom": "ReactDOM" }.
 
-  This webpack file wraps the building those external libraries from existing packages.
-  They are built into one separate chunk (TODO for later: multiple chunks?),
-  along with some features tailored for React4xp:
-  it gives the produced chunk a contenthash in the filename, and outputs a JSON file with the
-  hashed name, for runtime reference. Content-hashed for caching and cache-busting.
 
-  Which dependencies are inserted into the external library,
-  depends on an `env.EXTERNALS` parameter (EXTERNALS can also be supplied through a
-  JSON config file referenced with an `env.REACT4XP_CONFIG_FILE`
-  This `EXTERNALS` parameter must be an object on the webpack
-  externals format `{ "libraryname": "ReferenceInCode", ... }`,
-  e.g. `{ "react-dom": "ReactDOM" }`. These libraries of course have to be supplied
-  from the calling context (as such, they can be thought of
-  as peer dependencies, but are obviously impossible to declare).
-  `EXTERNALS` can also be a valid JSON-format string.
-
-  In the same way, one more parameter is expected either directly through `env`
-  or in the JSON file referenced through `env.REACT4XP_CONFIG_FILE`:
-  - `BUILD_R4X`: mandatory string, full path to the
-  React4xp build folder (where all react4xp-specific output files will be built)
-*/
 import type {Environment} from './index.d';
 
 
@@ -44,13 +27,13 @@ import FileManagerPlugin from 'filemanager-webpack-plugin';
 
 import {
 	DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
-	EXTERNALS_DEFAULT,
+	GLOBALS_DEFAULT,
 	FILE_NAME_R4X_CONFIG_JS
 } from './constants.buildtime';
 
-import {EXTERNALS_CHUNKS_FILENAME} from './constants.runtime';
+import {GLOBALS_FILENAME} from './constants.runtime';
 
-import {generateTempES6SourceAndGetFilename} from './externals/generateTempES6SourceAndGetFilename';
+import {generateTempES6SourceAndGetFilename} from './globals/generateTempES6SourceAndGetFilename';
 
 import {makeVerboseLogger} from './util/makeVerboseLogger';
 import webpackLogLevel, {
@@ -61,9 +44,7 @@ import webpackLogLevel, {
 
 
 // TODO: Find a good pattern to control output name for chunks,
-// allowing for multi-chunks and still doing it in one pass (only one chunks.externals.json)
-// TODO: Allowing build path (where BUILD_R4X today must be absolute)
-// to instead be relative to project/calling context
+// allowing for multi-chunks and still doing it in one pass (only one globals.json)
 
 module.exports = (env: Environment = {}) => {
 	//console.debug('env', toStr(env));
@@ -82,6 +63,13 @@ module.exports = (env: Environment = {}) => {
 	const DEVMODE = WEBPACK_MODE !== "production";
 	const LOG_LEVEL = webpackLogLevel(process.env.R4X_BUILD_LOG_LEVEL as R4X_BUILD_LOG_LEVEL);
 
+	const verboseLog = makeVerboseLogger([
+		WEBPACK_STATS_LOG_LEVEL.LOG,
+		WEBPACK_STATS_LOG_LEVEL.VERBOSE
+	].includes(LOG_LEVEL));
+	verboseLog(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, 'DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X', 1);
+
+
 	const LOADER = 'swc' as 'babel'|'swc';
 
 	const environmentObj = {
@@ -92,37 +80,32 @@ module.exports = (env: Environment = {}) => {
 	//console.debug('environmentObj', environmentObj);
 
 
-	let EXTERNALS = EXTERNALS_DEFAULT;
-	//console.debug('EXTERNALS', toStr(EXTERNALS));
+	let GLOBALS = GLOBALS_DEFAULT;
+	verboseLog(GLOBALS, 'GLOBALS');
+
 	const FILE_PATH_ABSOLUTE_R4X_CONFIG_JS = join(R4X_DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JS);
 	try {
 		const configJsonStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
 		if (configJsonStats.isFile()) {
-		const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
-		//console.debug('config', toStr(config));
-		if (config.externals) {
-			EXTERNALS = Object.assign(config.externals, EXTERNALS);
-		}
+			const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
+			//console.debug('config', toStr(config));
+			if (config.globals) {
+				GLOBALS = Object.assign(config.globals, GLOBALS);
+			}
 		} // if FILE_NAME_R4X_CONFIG_JS
-		//console.debug('EXTERNALS', toStr(EXTERNALS));
+		verboseLog(GLOBALS, 'GLOBALS');
 	} catch (e) {
 		//console.debug('e', e);
 		console.info(`${FILE_PATH_ABSOLUTE_R4X_CONFIG_JS} not found.`)
 	}
 
-	const verboseLog = makeVerboseLogger([
-		WEBPACK_STATS_LOG_LEVEL.LOG,
-		WEBPACK_STATS_LOG_LEVEL.VERBOSE
-	].includes(LOG_LEVEL));
-	verboseLog(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, 'DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X', 1);
-
 	const tempFileName = generateTempES6SourceAndGetFilename(
-		EXTERNALS,
-		join(__dirname, '_AUTOGENERATED_tmp_externals_.es6')
+		GLOBALS,
+		join(__dirname, '_AUTOGENERATED_tmp_global_.es6')
 	);
 	//console.debug('tempFileName', tempFileName);
 
-	const entry = tempFileName ? { externals: tempFileName } : {};
+	const entry = tempFileName ? { globals: tempFileName } : {};
 	// console.debug('entry', entry);
 
 	const plugins = tempFileName
@@ -150,7 +133,7 @@ module.exports = (env: Environment = {}) => {
 			}),*/
 			new Chunks2json({
 				outputDir: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X,
-				filename: EXTERNALS_CHUNKS_FILENAME,
+				filename: GLOBALS_FILENAME,
 			}),
 		]
 		: undefined;
@@ -252,7 +235,7 @@ module.exports = (env: Environment = {}) => {
 
 		output: {
 			path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, // <-- Sets the base url for plugins and other target dirs.
-			filename: DEVMODE ? '[name].js' : '[name].[contenthash].js',
+			filename: DEVMODE ? '_chunks/[name].js' : '_chunks/[name].[contenthash].js',
 			environment: {
 				arrowFunction: false,
 				bigIntLiteral: false,

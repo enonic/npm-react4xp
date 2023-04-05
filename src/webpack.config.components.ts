@@ -5,6 +5,7 @@ import type {
 } from './buildComponents/index.d';
 
 
+import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { StatsWriterPlugin } from 'webpack-stats-plugin';
 
 import {
@@ -21,7 +22,7 @@ import {
 	DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
 	DIR_PATH_RELATIVE_SRC_R4X,
 	DIR_PATH_RELATIVE_SRC_SITE,
-	EXTERNALS_DEFAULT,
+	GLOBALS_DEFAULT,
 	FILE_NAME_R4X_CONFIG_JS,
 	FILE_NAME_WEBPACK_CONFIG_R4X_JS
 } from './constants.buildtime';
@@ -80,8 +81,8 @@ module.exports = (env: Environment = {}) => {
 
 	const appName = ucFirst(camelize(process.env.R4X_APP_NAME, /\./g));
 
-	let EXTERNALS = EXTERNALS_DEFAULT;
-	//console.debug('EXTERNALS', EXTERNALS);
+	let GLOBALS = GLOBALS_DEFAULT;
+
 	const FILE_PATH_ABSOLUTE_R4X_CONFIG_JS = join(R4X_DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JS);
 	//console.debug('FILE_PATH_ABSOLUTE_R4X_CONFIG_JS', FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
 
@@ -93,7 +94,7 @@ module.exports = (env: Environment = {}) => {
 				chunkDirs: string[]
 				entryDirs: string[]
 				entryExtensions: string[]
-				externals: object
+				globals: object
 			};
 			//console.debug('config', toStr(config));
 			if (config.chunkDirs) {
@@ -108,15 +109,23 @@ module.exports = (env: Environment = {}) => {
 				.map((ext) => ext.replace(/^\./, ""))
 				.filter((ext) => !!ext);;
 			}
-			if (config.externals) {
-				EXTERNALS = Object.assign(config.externals, EXTERNALS);
+			if (config.globals) {
+				GLOBALS = Object.assign(config.globals, GLOBALS);
 			}
 		} // if FILE_NAME_R4X_CONFIG_JS
-		//console.debug('EXTERNALS', EXTERNALS);
 	} catch (e) {
 		//console.debug('e', e);
 		console.info(`${FILE_PATH_ABSOLUTE_R4X_CONFIG_JS} not found, which is fine :)`)
 	}
+
+	const VERBOSE = [
+		WEBPACK_STATS_LOG_LEVEL.LOG,
+		WEBPACK_STATS_LOG_LEVEL.VERBOSE
+	].includes(LOG_LEVEL);
+
+	const verboseLog = makeVerboseLogger(VERBOSE);
+
+	verboseLog(GLOBALS, 'EXTERNALS');
 
 	/*if (isSet(env.CHUNK_DIRS)) {
 		environmentObj.chunkDirsStringArray = env.CHUNK_DIRS;
@@ -135,13 +144,6 @@ module.exports = (env: Environment = {}) => {
 
 	const DIR_PATH_ABSOLUTE_SRC_SITE = join(R4X_DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_SRC_SITE);
 	//console.debug('DIR_PATH_ABSOLUTE_SRC_SITE', DIR_PATH_ABSOLUTE_SRC_SITE);
-
-	const VERBOSE = [
-		WEBPACK_STATS_LOG_LEVEL.LOG,
-		WEBPACK_STATS_LOG_LEVEL.VERBOSE
-	].includes(LOG_LEVEL);
-
-	const verboseLog = makeVerboseLogger(VERBOSE);
 
 	verboseLog(R4X_DIR_PATH_ABSOLUTE_PROJECT, 'R4X_DIR_PATH_ABSOLUTE_PROJECT');
 
@@ -269,9 +271,9 @@ module.exports = (env: Environment = {}) => {
 	// Build the entries
 	const entrySets: EntrySet[] = [
 		{
-		sourcePath: DIR_PATH_ABSOLUTE_SRC_SITE,
-		sourceExtensions: ["jsx", "tsx"],
-		targetSubDir: "site",
+			sourcePath: DIR_PATH_ABSOLUTE_SRC_SITE,
+			sourceExtensions: ["jsx", "tsx"],
+			targetSubDir: "site",
 		},
 		/*{
 		sourcePath: join(
@@ -283,8 +285,8 @@ module.exports = (env: Environment = {}) => {
 		sourceExtensions: ["jsx", "tsx", "js", "ts", "es6", "es"],
 		},*/
 		...entryDirs.map((entryDir) => ({
-		sourcePath: entryDir,
-		sourceExtensions: environmentObj.entryExtStringArray,
+			sourcePath: entryDir,
+			sourceExtensions: environmentObj.entryExtStringArray,
 		})),
 	];
 	verboseLog(entrySets, "\n\n---\entrySets", 1);
@@ -377,29 +379,23 @@ module.exports = (env: Environment = {}) => {
 	// higher priority (default value is 0 for custom groups).
 	const cacheGroups = {
 		vendors: {
-			name: "vendors",
+			// chunks: "all",// splitChunks.cacheGroups.{cacheGroup}.chunks doesn't exist!
 			enforce: true,
-			test: allFilesUnderNodeModulesExceptFilesUnderEnonicReactComponents,
-			chunks: "all",
+			filename: DEVMODE ? '_chunks/[name].js' : '_chunks/[name].[contenthash].js',
+			name: "vendors",
 			priority: 100,
+			test: allFilesUnderNodeModulesExceptFilesUnderEnonicReactComponents,
+			usedExports: !DEVMODE, // Disable slow tree-shaking in dev mode
 		},
 		templates: {
+			// chunks: "all",// splitChunks.cacheGroups.{cacheGroup}.chunks doesn't exist!
+			enforce: true,
+			filename: DEVMODE ? '_chunks/[name].js' : '_chunks/[name].[contenthash].js',
 			name: "templates",
-			enforce: true,
-			test: anyFilesUnderEnonicReactComponents,
-			chunks: "all",
 			priority: 99,
-		},
-		react4xp: {
-			name: "react4xp",
-			enforce: true,
-			chunks: "all",
-			priority: 1,
-			test: `${DIR_PATH_ABSOLUTE_SRC_R4X}${
-				react4xpExclusions
-				? `[\\\\/]((?!(${react4xpExclusions})).)[\\\\/]?`
-				: ""
-			}`,
+			// reuseExistingChunk: true,
+			test: anyFilesUnderEnonicReactComponents,
+			usedExports: !DEVMODE, // Disable slow tree-shaking in dev mode
 		},
 	};
 
@@ -424,17 +420,67 @@ module.exports = (env: Environment = {}) => {
 			verboseLog
 		);
 		const test = `${chunkDir}${
-			chunkExclusions ? `[\\\\/]((?!(${chunkExclusions})).)[\\\\/]?` : ""
+			// https://www.regular-expressions.info/lookaround.html
+			// Negative lookahead is indispensable if you want to match something not followed by something else.
+			//
+			// https://www.regular-expressions.info/brackets.html
+			// The question mark and the colon after the opening parenthesis are the syntax that creates a non-capturing group.
+			//
+			// This ensures that any chunk or entry dir inside this chunkdir is excluded from this chunk/bundle.
+			chunkExclusions ? `[\\\\/](?!(?:${chunkExclusions})[\\\\/])` : "[\\\\/]"
 		}`;
 
 		cacheGroups[name] = {
 			name,
 			test,
+			// https://webpack.js.org/plugins/split-chunks-plugin/#splitchunkscachegroupscachegroupenforce
+			// Tells webpack to ignore splitChunks.minSize,
+			// splitChunks.minChunks, splitChunks.maxAsyncRequests and
+			// splitChunks.maxInitialRequests options and always create chunks
+			// for this cache group.
 			enforce: true,
-			chunks: "all",
-			priority: 1,
+			// enforceSizeThreshold: 1,
+			filename: DEVMODE ? '_chunks/[name].js' : '_chunks/[name].[contenthash].js',
+			// minRemainingSize: 0,
+
+			// chunks: "all", // splitChunks.cacheGroups.{cacheGroup}.chunks doesn't exist!
+
+			priority: 2,
+
+			// https://webpack.js.org/plugins/split-chunks-plugin/#splitchunkscachegroupscachegroupreuseexistingchunk
+			// If the current chunk contains modules already split out from the
+			// main bundle, it will be reused instead of a new one being
+			// generated. This can affect the resulting file name of the chunk.
+			// reuseExistingChunk: true,
+
+			usedExports: !DEVMODE, // Disable slow tree-shaking in dev mode
 		};
 	});
+
+	cacheGroups['react4xp'] = {
+		enforce: true,
+		// enforceSizeThreshold: 1,
+		filename: DEVMODE ? '_chunks/[name].js' : '_chunks/[name].[contenthash].js',
+		// minRemainingSize: 0,
+		name: "react4xp",
+		// chunks: "all",// splitChunks.cacheGroups.{cacheGroup}.chunks doesn't exist!
+		priority: 1,
+		test: `${DIR_PATH_ABSOLUTE_SRC_R4X}${
+			react4xpExclusions
+				// https://www.regular-expressions.info/lookaround.html
+				// Negative lookahead is indispensable if you want to match something not followed by something else.
+				//
+				// https://www.regular-expressions.info/brackets.html
+				// The question mark and the colon after the opening parenthesis are the syntax that creates a non-capturing group.
+				//
+				// This ensures that any chunk or entry dir inside the SRC_R4X is excluded from the react4xp bundle/chunk.
+				// Because the content of those folders become their own bundles/chunks.
+				? `[\\\\/](?!(?:${react4xpExclusions})[\\\\/])`
+				: "[\\\\/]"
+		}`,
+		// reuseExistingChunk: true,
+		usedExports: !DEVMODE, // Disable slow tree-shaking in dev mode
+	};
 
 	// Finally, turn all generated regexp strings in each .test attribute into actual RegExp's:
 	Object.keys(cacheGroups).forEach((key) => {
@@ -456,7 +502,7 @@ module.exports = (env: Environment = {}) => {
 
 		entry: entries,
 
-		externals: EXTERNALS,
+		externals: GLOBALS,
 
 		mode: WEBPACK_MODE,
 
@@ -546,7 +592,10 @@ module.exports = (env: Environment = {}) => {
 			removeAvailableModules: !DEVMODE,
 			removeEmptyChunks: !DEVMODE,
 
-			runtimeChunk: 'single', // Fix #216 webpack module cache is entry-local
+			// Fix #216 webpack module cache is entry-local
+			runtimeChunk: {
+				name: '_chunks/runtime.js'
+			},
 
 			sideEffects: !DEVMODE,
 
@@ -572,6 +621,8 @@ module.exports = (env: Environment = {}) => {
 				// https://webpack.js.org/plugins/split-chunks-plugin/#splitchunksname
 				// Providing false will keep the same name of the chunks so it doesn't change names unnecessarily.
 				// It is the recommended value for production builds.
+				chunks: 'all',
+				// chunks: 'initial',
 				name: false,
 				cacheGroups,
 			},
@@ -605,6 +656,7 @@ module.exports = (env: Environment = {}) => {
 		}, // output
 
 		plugins: [
+			new CaseSensitivePathsPlugin(),
 			new StatsWriterPlugin({
 				filename: COMPONENT_STATS_FILENAME,
 				stats: {
