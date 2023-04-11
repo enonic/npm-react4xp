@@ -72,11 +72,27 @@ module.exports = {
 	// entryExtensions: ['jsx', 'js', 'tsx', 'ts', 'es6', 'es'],
 
 	//────────────────────────────────────────────────────────────────────────────
-	// Globals
+	// Globals & Externals:
 	//────────────────────────────────────────────────────────────────────────────
+	// React4xp builds a globals bundle, which MUST contain all assets NEEDED to
+	// render server-side. By default it contains react and react-dom, but more
+	// assets can be added here:
+	globals: {
+		// lodash: '_'
+	},
 
-	/*globals: {
-		lodash: '_'
-	}*/
+	// By default the globals bundle is also used on the client-side, but you
+	// can provide the REQUIRED assets on your own, for example via CDN.
+	//
+	// To disable serving the globals bundle to the client-side add this line to
+	// $XP_HOME/config/appname.cfg:
+	// react4xp.serveGlobals = false
+
+	// It's possible to have pure client-side rendered components in React4xp.
+	// If these components use assets which are NOT needed to render server-side
+	// you can add them here:
+	externals: {
+		// jquery: 'jQuery'
+	},
 
 }; // module.exports
