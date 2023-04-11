@@ -2,6 +2,7 @@ import manifestPlugin from 'esbuild-plugin-manifest';
 import { isAbsolute, join } from 'path';
 // import { print } from 'q-i';
 import { defineConfig, type Options } from 'tsup';
+import { DIR_PATH_RELATIVE_BUILD_ASSETS_R4X } from './src/constants.buildtime';
 import { LIBRARY_NAME } from './src/constants.runtime';
 
 
@@ -51,7 +52,7 @@ export default defineConfig((options: MyOptions) => {
 			})
 		],
 		platform: 'browser',
-		outDir: join(R4X_DIR_PATH_ABSOLUTE_PROJECT, 'build/resources/main/assets/react4xp/'),
+		outDir: join(R4X_DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X),
 		target: 'es2015',
 		tsconfig: 'tsconfig.executor.json'
 	};

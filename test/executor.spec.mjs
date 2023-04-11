@@ -2,13 +2,13 @@ import { expect } from 'chai';
 import { existsSync, readFileSync } from 'fs';
 import { document, Element as HTMLElement} from 'html-element';
 import { join } from 'path';
-import manifest from './components/build/resources/main/assets/react4xp/executor.manifest.json' assert {
+import manifest from './components/build/resources/main/r4xAssets/executor.manifest.json' assert {
 	type: 'json',
 };
 
 
 const DIR_NAME = join(process.cwd(), 'test/components');
-const DIR_R4X = join(DIR_NAME, 'build/resources/main/assets/react4xp');
+const DIR_R4X = join(DIR_NAME, 'build/resources/main/r4xAssets');
 const FILE_PATH_MANIFEST = join(DIR_R4X, 'executor.manifest.json')
 const FILE_PATH_JS = join(DIR_R4X, manifest['executor.js'])
 

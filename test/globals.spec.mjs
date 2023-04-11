@@ -1,15 +1,14 @@
 import { expect } from 'chai';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
-import manifest from './components/build/resources/main/assets/react4xp/globals.json' assert {
+import manifest from './components/build/resources/main/r4xAssets/globals.json' assert {
 	type: 'json',
 };
 
 const DIR_NAME = join(process.cwd(), 'test/components');
-const DIR_R4X = join(DIR_NAME, 'build/resources/main/assets/react4xp');
+const DIR_R4X = join(DIR_NAME, 'build/resources/main/r4xAssets');
 const FILE_PATH_MANIFEST = join(DIR_R4X, 'globals.json')
-const FILE_PATH_JS = join(DIR_R4X, manifest['globals']['js'][0])
-
+const FILE_PATH_GLOBALS_JS = join(DIR_R4X, manifest['globals']['js'][0]);
 
 describe('globals', () => {
 	describe('manifest', () => {
@@ -18,12 +17,12 @@ describe('globals', () => {
 			expect(exists).to.be.true;
 		});
 		it('the manifest file points to a js file', () => {
-			const exists = existsSync(FILE_PATH_JS);
+			const exists = existsSync(FILE_PATH_GLOBALS_JS);
 			expect(exists).to.be.true;
 		});
 	});
 	describe('exports', () => {
-		const script = readFileSync(FILE_PATH_JS).toString();
+		const script = readFileSync(FILE_PATH_GLOBALS_JS).toString();
 		global.eval(script);
 		it('the js file exports React', () => {
 			expect(!!React).to.be.true;
@@ -54,6 +53,9 @@ describe('globals', () => {
 		});
 		it("the js file DOESN'T export MaterialUIButton", () => {
 			expect(typeof MaterialUIButton === 'undefined').to.be.true;
+		});
+		it("the js file DOESN'T export jQuery", () => {
+			expect(typeof jQuery === 'undefined').to.be.true;
 		});
 	});
 });

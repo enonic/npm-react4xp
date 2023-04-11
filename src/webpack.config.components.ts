@@ -82,7 +82,7 @@ module.exports = (env: Environment = {}) => {
 
 	const appName = ucFirst(camelize(process.env.R4X_APP_NAME, /\./g));
 
-	let GLOBALS = GLOBALS_DEFAULT;
+	let EXTERNALS = GLOBALS_DEFAULT;
 
 	const FILE_PATH_ABSOLUTE_R4X_CONFIG_JS = join(R4X_DIR_PATH_ABSOLUTE_PROJECT, FILE_NAME_R4X_CONFIG_JS);
 	//console.debug('FILE_PATH_ABSOLUTE_R4X_CONFIG_JS', FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
@@ -95,6 +95,7 @@ module.exports = (env: Environment = {}) => {
 				chunkDirs: string[]
 				entryDirs: string[]
 				entryExtensions: string[]
+				externals: object
 				globals: object
 			};
 			//console.debug('config', toStr(config));
@@ -111,7 +112,10 @@ module.exports = (env: Environment = {}) => {
 				.filter((ext) => !!ext);;
 			}
 			if (config.globals) {
-				GLOBALS = Object.assign(config.globals, GLOBALS);
+				EXTERNALS = Object.assign(config.globals, EXTERNALS);
+			}
+			if (config.externals) {
+				EXTERNALS = Object.assign(config.externals, EXTERNALS);
 			}
 		} // if FILE_NAME_R4X_CONFIG_JS
 	} catch (e) {
@@ -126,7 +130,7 @@ module.exports = (env: Environment = {}) => {
 
 	const verboseLog = makeVerboseLogger(VERBOSE);
 
-	verboseLog(GLOBALS, 'EXTERNALS');
+	verboseLog(EXTERNALS, 'EXTERNALS');
 
 	/*if (isSet(env.CHUNK_DIRS)) {
 		environmentObj.chunkDirsStringArray = env.CHUNK_DIRS;
@@ -382,7 +386,7 @@ module.exports = (env: Environment = {}) => {
 		vendors: {
 			// chunks: "all",// splitChunks.cacheGroups.{cacheGroup}.chunks doesn't exist!
 			enforce: true,
-			filename: DEVMODE ? '_chunks/[name].js' : '_chunks/[name].[contenthash].js',
+			filename: DEVMODE ? '[name].js' : '[name].[contenthash].js',
 			name: "vendors",
 			priority: 100,
 			test: allFilesUnderNodeModulesExceptFilesUnderEnonicReactComponents,
@@ -391,7 +395,7 @@ module.exports = (env: Environment = {}) => {
 		templates: {
 			// chunks: "all",// splitChunks.cacheGroups.{cacheGroup}.chunks doesn't exist!
 			enforce: true,
-			filename: DEVMODE ? '_chunks/[name].js' : '_chunks/[name].[contenthash].js',
+			filename: DEVMODE ? '[name].js' : '[name].[contenthash].js',
 			name: "templates",
 			priority: 99,
 			// reuseExistingChunk: true,
@@ -401,7 +405,15 @@ module.exports = (env: Environment = {}) => {
 	};
 
 	// Add new cacheGroups, excluding (by regexp) both other chunknames and entrydirs
-	const takenNames = ["vendors", "templates", "react4xp"];
+	const takenNames = [
+		"client",
+		"executor",
+		"global",
+		"react4xp",
+		"templates",
+		"vendors",
+	];
+
 	chunkDirs.forEach((chunkDir) => {
 		let name = chunkDir.split(sep).slice(-1)[0];
 		if (takenNames.indexOf(name) !== -1) {
@@ -441,7 +453,7 @@ module.exports = (env: Environment = {}) => {
 			// for this cache group.
 			enforce: true,
 			// enforceSizeThreshold: 1,
-			filename: DEVMODE ? '_chunks/[name].js' : '_chunks/[name].[contenthash].js',
+			filename: DEVMODE ? '[name].js' : '[name].[contenthash].js',
 			// minRemainingSize: 0,
 
 			// chunks: "all", // splitChunks.cacheGroups.{cacheGroup}.chunks doesn't exist!
@@ -461,7 +473,7 @@ module.exports = (env: Environment = {}) => {
 	cacheGroups['react4xp'] = {
 		enforce: true,
 		// enforceSizeThreshold: 1,
-		filename: DEVMODE ? '_chunks/[name].js' : '_chunks/[name].[contenthash].js',
+		filename: DEVMODE ? '[name].js' : '[name].[contenthash].js',
 		// minRemainingSize: 0,
 		name: "react4xp",
 		// chunks: "all",// splitChunks.cacheGroups.{cacheGroup}.chunks doesn't exist!
@@ -503,7 +515,7 @@ module.exports = (env: Environment = {}) => {
 
 		entry: entries,
 
-		externals: GLOBALS,
+		externals: EXTERNALS,
 
 		mode: WEBPACK_MODE,
 
@@ -595,7 +607,7 @@ module.exports = (env: Environment = {}) => {
 
 			// Fix #216 webpack module cache is entry-local
 			runtimeChunk: {
-				name: '_chunks/runtime.js'
+				name: 'runtime.js'
 			},
 
 			sideEffects: !DEVMODE,
