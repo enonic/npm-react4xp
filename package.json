@@ -88,6 +88,9 @@
     "webpack": "^5.66",
     "webpack-cli": "^5"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com:enonic/enonic-react4xp.git"
