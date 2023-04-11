@@ -235,7 +235,7 @@ module.exports = (env: Environment = {}) => {
 
 		output: {
 			path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, // <-- Sets the base url for plugins and other target dirs.
-			filename: DEVMODE ? '_chunks/[name].js' : '_chunks/[name].[contenthash].js',
+			filename: DEVMODE ? '[name].js' : '[name].[contenthash].js',
 			environment: {
 				arrowFunction: false,
 				bigIntLiteral: false,

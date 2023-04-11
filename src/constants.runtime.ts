@@ -6,4 +6,4 @@ export const GLOBALS_FILENAME = 'globals.json';
 
 export const LIBRARY_NAME = 'React4xp';
 
-export const R4X_TARGETSUBDIR = 'assets/react4xp';
+export const R4X_TARGETSUBDIR = 'r4xAssets';

@@ -1,13 +1,13 @@
 import { expect } from 'chai';
 // import deepFreeze from 'deep-freeze';
-import { existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import {join} from 'path';
 
 import { getEntries } from '../dist/buildComponents/getEntries.js';
 import { makeExclusionsRegexpString } from '../dist/buildComponents/makeExclusionsRegexpString.js';
 import { makeVerboseLogger } from '../dist/util/makeVerboseLogger.js';
 //import { normalizePath } from '../../dist/buildComponents/normalizePath.js';
-import stats from './components/build/resources/main/assets/react4xp/stats.components.json' assert {
+import stats from './components/build/resources/main/r4xAssets/stats.components.json' assert {
 	type: 'json',
 };
 
@@ -17,7 +17,8 @@ const DIR_NAME = join(process.cwd(), 'test', 'components'); // eslint-disable-li
 console.log('DIR_NAME:', JSON.stringify(DIR_NAME, null, 2));
 
 const SRC_MAIN_RESOURCES = join(DIR_NAME, 'src', 'main', 'resources');
-const DIR_R4X = join(DIR_NAME, 'build/resources/main/assets/react4xp');
+const DIR_R4X = join(DIR_NAME, 'build/resources/main/r4xAssets');
+const FILE_PATH_VENDORS_JS = join(DIR_R4X, stats.assetsByChunkName['vendors'][0]);
 
 const verboseLog = makeVerboseLogger(true);
 
@@ -193,7 +194,12 @@ describe('components', ()=>{
 
 	describe('chunks', ()=> {
 		it('makes a runtimeChunks file', () => {
-			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['_chunks/runtime.js'][0]));
+			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['runtime.js'][0]));
+			expect(exists).to.be.true;
+		});
+
+		it('makes a vendors chunk file', () => {
+			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['vendors'][0]));
 			expect(exists).to.be.true;
 		});
 
@@ -203,22 +209,22 @@ describe('components', ()=>{
 		});
 
 		it('makes a anEntryInAnEntryDirInsideR4xDir chunk file', () => {
-			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['_entries/anEntryInAnEntryDirInsideR4xDir'][0]));
+			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['anEntryInAnEntryDirInsideR4xDir'][0]));
 			expect(exists).to.be.true;
 		});
 
 		it('makes a anEntryInAnEntryDirOutsideR4xDir chunk file', () => {
-			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['_entries/anEntryInAnEntryDirOutsideR4xDir'][0]));
+			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['anEntryInAnEntryDirOutsideR4xDir'][0]));
 			expect(exists).to.be.true;
 		});
 
 		it('makes a site/parts/jsExample/jsExample chunk file', () => {
-			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['_entries/site/parts/jsExample/jsExample'][0]));
+			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['site/parts/jsExample/jsExample'][0]));
 			expect(exists).to.be.true;
 		});
 
 		it('makes a site/parts/tsExample/tsExample chunk file', () => {
-			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['_entries/site/parts/tsExample/tsExample'][0]));
+			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['site/parts/tsExample/tsExample'][0]));
 			expect(exists).to.be.true;
 		});
 
@@ -234,3 +240,66 @@ describe('components', ()=>{
 
 	});
 });
+
+
+describe('externals', () => {
+
+	// Polyfill window for jquery
+	global.eval(`
+	if (typeof globalThis === 'undefined') { var globalThis = this; }
+	if (typeof window === 'undefined') { var window = this; }
+	if (typeof global === 'undefined') { var global = this; }
+	if (typeof exports === 'undefined') { var exports = {}; }
+	if (typeof process === 'undefined') { var process = {env:{}}; }
+	if (typeof console === 'undefined') { var console = {debug : print, log: print, warn: print, error: print}; }
+	if (typeof window.addEventListener !== 'function') { window.addEventListener = function () {}; }`);
+
+	global.eval(readFileSync(FILE_PATH_VENDORS_JS).toString()); // jquery requires window
+
+	it('lodash should NOT exist in the vendors bundle', () => {
+		expect(Array.isArray(webpackChunkComEnonicAppWhateverReact4xp)).to.be.true;
+
+		let found = false;
+		outer: for (let i = 0; i < webpackChunkComEnonicAppWhateverReact4xp.length; i++) {
+			const anArray = webpackChunkComEnonicAppWhateverReact4xp[i];
+			expect(Array.isArray(anArray)).to.be.true;
+			middle: for (let j = 0; j < anArray.length; j++) {
+				const arrayOrObject = anArray[j];
+				// verboseLog(arrayOrObject);
+				if (Array.isArray(arrayOrObject) && arrayOrObject[0] === 'vendors') {
+					found = true;
+					const vendorsObj = anArray[j+1];
+					// verboseLog(vendorsObj);
+					expect(typeof vendorsObj['../../node_modules/lodash/lodash.js'] === 'undefined').to.be.true;
+					break outer;
+				}
+			}
+		}
+
+		expect(found).to.be.true;
+	});
+
+	it('jquery should NOT exist in the vendors bundle', () => {
+		expect(Array.isArray(webpackChunkComEnonicAppWhateverReact4xp)).to.be.true;
+
+		let found = false;
+		outer: for (let i = 0; i < webpackChunkComEnonicAppWhateverReact4xp.length; i++) {
+			const anArray = webpackChunkComEnonicAppWhateverReact4xp[i];
+			expect(Array.isArray(anArray)).to.be.true;
+			middle: for (let j = 0; j < anArray.length; j++) {
+				const arrayOrObject = anArray[j];
+				// verboseLog(arrayOrObject);
+				if (Array.isArray(arrayOrObject) && arrayOrObject[0] === 'vendors') {
+					found = true;
+					const vendorsObj = anArray[j+1];
+					// verboseLog(vendorsObj);
+					expect(typeof vendorsObj['../../node_modules/jquery/dist/jquery.js'] === 'undefined').to.be.true;
+					break outer;
+				}
+			}
+		}
+
+		expect(found).to.be.true;
+	});
+
+}); // externals

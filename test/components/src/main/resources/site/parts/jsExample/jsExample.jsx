@@ -5,7 +5,7 @@ import AComponentInAChunkDirInsideReact4xpDir from '../../../react4xp/aChunkDirI
 import AComponentInAChunkDirOutsideReact4xpDir from '../../../aChunkDirOutsideReact4xpDir/AComponentInAChunkDirOutsideReact4xpDir';
 import AnEntryInAnEntryDirInsideR4xDir from '../../../react4xp/anEntryDirInsideR4xDir/anEntryInAnEntryDirInsideR4xDir'
 import AnEntryInAnEntryDirOutsideR4xDir from '../../../anEntryDirOutsideR4xDir/anEntryInAnEntryDirOutsideR4xDir'
-import lodashArray from 'lodash/array';
+import lodashArray from 'lodash/array'; // This makes a vendors file because it doesn't match externals nor globals, which is fine.
 
 var _ = require('lodash');
 
