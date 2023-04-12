@@ -194,7 +194,7 @@ describe('components', ()=>{
 
 	describe('chunks', ()=> {
 		it('makes a runtimeChunks file', () => {
-			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['runtime.js'][0]));
+			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['runtime'][0]));
 			expect(exists).to.be.true;
 		});
 
