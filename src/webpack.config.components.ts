@@ -20,6 +20,7 @@ import {statSync} from 'fs';
 
 import {
 	DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
+	DIR_PATH_RELATIVE_SRC_MAIN_RESOURCES,
 	DIR_PATH_RELATIVE_SRC_R4X,
 	DIR_PATH_RELATIVE_SRC_SITE,
 	GLOBALS_DEFAULT,
@@ -591,7 +592,7 @@ module.exports = (env: Environment = {}) => {
 			// https://webpack.js.org/configuration/optimization/#optimizationchunkids
 			// deterministic: Short numeric ids which will not be changing between compilation. Good for long term caching. Enabled by default for production mode.
 			// named: Readable ids for better debugging.
-			chunkIds: DEVMODE ? 'named' : 'deterministic',
+			chunkIds: DEVMODE ? 'named' : 'deterministic', // Named chunks gives weird names that starts with src_main_resources_*
 
 			// By default concatenateModules is enabled in production mode and disabled elsewise
 			// By default flagIncludedChunks is enabled in production mode and disabled elsewise.
@@ -606,9 +607,7 @@ module.exports = (env: Environment = {}) => {
 			removeEmptyChunks: !DEVMODE,
 
 			// Fix #216 webpack module cache is entry-local
-			runtimeChunk: {
-				name: 'runtime.js'
-			},
+			runtimeChunk: 'single',
 
 			sideEffects: !DEVMODE,
 
@@ -707,7 +706,15 @@ module.exports = (env: Environment = {}) => {
 		], // plugins
 
 		resolve: {
-			extensions: ['.ts', '.tsx', '.es6', '.es', '.jsx', '.js', '.json'],
+			extensions: [
+				'.tsx',
+				'.jsx',
+				'.ts',
+				'.es6',
+				'.es',
+				'.js',
+				'.json'
+			],
 			modules: [
 				// Tell webpack what directories should be searched when
 				// resolving modules.
@@ -726,14 +733,13 @@ module.exports = (env: Environment = {}) => {
 				resolve(DIR_PATH_ABSOLUTE_BUILD_SYSTEM, 'node_modules'),
 				//'node_modules'
 			],
-			/*roots: [ // Works, but maybe modules is more specific
-			// A list of directories where requests of server-relative URLs
-			// (starting with '/') are resolved, defaults to context configuration
-			// option. On non-Windows systems these requests are resolved as an
-			// absolute path first.
-			R4X_DIR_PATH_ABSOLUTE_PROJECT, // same as context
-			DIR_PATH_ABSOLUTE_BUILD_SYSTEM
-			],*/
+			roots: [
+				// A list of directories where requests of server-relative URLs
+				// (starting with '/') are resolved, defaults to context configuration
+				// option. On non-Windows systems these requests are resolved as an
+				// absolute path first.
+				resolve(R4X_DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_SRC_MAIN_RESOURCES)
+			],
 		}, // resolve
 
 		stats: {
