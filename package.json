@@ -31,7 +31,6 @@
     "filemanager-webpack-plugin": "^8",
     "glob": "^10",
     "mocha": "^10",
-    "npm-safe-install": "^1",
     "prop-types": "^15",
     "properties": "^1.2.1",
     "q-i": "^2",
