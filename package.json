@@ -13,7 +13,6 @@
     "@babel/plugin-transform-arrow-functions": "^7",
     "@babel/plugin-transform-block-scoping": "^7",
     "@babel/plugin-transform-typeof-symbol": "^7",
-    "@babel/polyfill": "^7",
     "@babel/preset-env": "^7",
     "@babel/preset-react": "^7",
     "@babel/preset-typescript": "^7",
