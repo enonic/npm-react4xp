@@ -4,13 +4,16 @@ import { isAbsolute, join } from 'path';
 import { defineConfig, type Options } from 'tsup';
 import { DIR_PATH_RELATIVE_BUILD_ASSETS_R4X } from './src/constants.buildtime';
 import { LIBRARY_NAME } from './src/constants.runtime';
+import { camelize } from './src/util/camelize';
+import { ucFirst } from './src/util/ucFirst';
 
 
 interface MyOptions extends Options {
 	env?: {
-		APP_NAME?: string
+		R4X_APP_NAME?: string
+		R4X_CLIENT_NAME?: string
 		R4X_DIR_PATH_ABSOLUTE_PROJECT?: string
-		LIBRARY_NAME?: string
+		R4X_LIBRARY_NAME?: string
 	}
 }
 
@@ -22,8 +25,7 @@ export default defineConfig((options: MyOptions) => {
 		throw new Error(`env.R4X_DIR_PATH_ABSOLUTE_PROJECT:${R4X_DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
 	}
 
-	const appName = process.env.R4X_APP_NAME;
-	if (!appName) {
+	if (!process.env.R4X_APP_NAME) {
 		throw new Error(`System environment variable $R4X_APP_NAME is required!`);
 	}
 	// print(appName);
@@ -31,8 +33,9 @@ export default defineConfig((options: MyOptions) => {
 	if (!options.env) {
 		options.env = {};
 	}
-	options.env.APP_NAME = appName;
-	options.env.LIBRARY_NAME = LIBRARY_NAME;
+	options.env.R4X_APP_NAME = process.env.R4X_APP_NAME;
+	options.env.R4X_LIBRARY_NAME = `${ucFirst(camelize(process.env.R4X_APP_NAME,/\./g))}${LIBRARY_NAME}`;
+	options.env.R4X_CLIENT_NAME = `${options.env.R4X_LIBRARY_NAME}Client`;
 	// print(options, { maxItems: Infinity });
 
 	return {

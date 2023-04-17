@@ -1,6 +1,3 @@
-import {camelize} from './util/camelize';
-import {ucFirst} from './util/ucFirst';
-
 type BooleanProp = '1' | '0' | 1 | 0 | boolean;
 
 interface Data {
@@ -13,7 +10,7 @@ interface Data {
 }
 
 const inlineJsonElements = Array.from(document.querySelectorAll(
-	`script[data-react4xp-app-name="${process.env.APP_NAME}"][data-react4xp-ref][type="application/json"]`
+	`script[data-react4xp-app-name="${process.env.R4X_APP_NAME}"][data-react4xp-ref][type="application/json"]`
 ));
 //console.debug('inlineJsonElements', inlineJsonElements);
 for (let index = 0; index < inlineJsonElements.length; index++) {
@@ -21,8 +18,6 @@ for (let index = 0; index < inlineJsonElements.length; index++) {
 	if (inlineJsonElement instanceof HTMLElement) {
 		const id = inlineJsonElement.dataset['react4xpRef'];
 		//console.debug('id', id);
-
-		const prefix = ucFirst(camelize(process.env.APP_NAME,/\./g));
 
 		const json = inlineJsonElement.textContent;
 		//console.debug('json', json);
@@ -50,8 +45,8 @@ for (let index = 0; index < inlineJsonElements.length; index++) {
 		console.debug('jsxPath', jsxPath);
 		console.debug('props', props);*/
 		//@ts-ignore
-		window[`${prefix}${process.env.LIBRARY_NAME}Client`][command](
-			window[`${prefix}${process.env.LIBRARY_NAME}`][jsxPath], id, props, isPage, hasRegions, devMode
+		window[process.env.R4X_CLIENT_NAME][command](
+			window[process.env.R4X_LIBRARY_NAME][jsxPath], id, props, isPage, hasRegions, devMode
 		);
 	}
 } // for
