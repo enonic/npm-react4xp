@@ -2290,10 +2290,10 @@ es6-set-and-map@^1:
   resolved "https://registry.yarnpkg.com/es6-set-and-map/-/es6-set-and-map-1.0.5.tgz#98524f76db4d4ac8cc37bff2c15696f3667c9db4"
   integrity sha512-wGof14KrJvcVxt7/KjY3g4Kp70XDIbrR9H1JzvLwvtv5yGCQOGMTFNiaYQ177nUG/Y+TGqE3cstlFkxsm6MF/Q==
 
-esbuild-plugin-manifest@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/esbuild-plugin-manifest/-/esbuild-plugin-manifest-0.5.0.tgz#01831ff00069ecf6035dc9bf3f6eec3ccfd9a434"
-  integrity sha512-AdmlFxiUXAaFmpxwno7qq96OAeJUUoxzJPPlLpMfcs9NwjvRI4Lg7htohb/2pi/t4BPdAuoj2D0vNYql5yhIhg==
+esbuild-plugin-manifest@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/esbuild-plugin-manifest/-/esbuild-plugin-manifest-0.6.0.tgz#48d5ecffbf9bad62b80dc1564647c31041db799e"
+  integrity sha512-Tm+bq9hqtkV0Zkrk/3YE6XxSkUowEqDBVD1McqVX0OKtlpW19QnXO/E4QiPyJY9Ci+CmKqAhoKdZ5Rva20JL1Q==
 
 esbuild@^0.17.12, esbuild@^0.17.6:
   version "0.17.17"
