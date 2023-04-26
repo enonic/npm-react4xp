@@ -21,11 +21,11 @@ import {
 // into an array of unique, verified, absolute-path'd and OS-compliant folder names.
 // Halts on errors, displays warnings, skips items that are not found.
 export const normalizeDirList = (
-  commaSepDirList :string,
-  singularLabel :string,
-  dirPathAbsoluteSrcR4x :string,
-  symlinksUnderReact4xpRootObject :SymlinksUnderR4xRoot,
-  VERBOSE :boolean
+  commaSepDirList: string,
+  singularLabel: string,
+  dirPathAbsoluteSrcR4x: string,
+  symlinksUnderReact4xpRootObject: SymlinksUnderR4xRoot,
+  VERBOSE: boolean
 ) =>
   (commaSepDirList || "").trim()
     ? Array.from(
