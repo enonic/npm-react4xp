@@ -305,7 +305,7 @@ module.exports = (env: Environment = {}) => {
 		ENTRIES_FILENAME,
 		verboseLog
 	);
-	// console.debug('entries', entries);
+	// verboseLog(entries, 'entries');
 
 	// ------------------------------------------- Entries are generated. Error reporting and isVerbose output:
 
@@ -348,6 +348,23 @@ module.exports = (env: Environment = {}) => {
 			entries
 		)}). Tip: the combination of entryDirs and entryExtStringArrayensions in react4xp.config.js was resolved to the entrySets above. Check the content of those directories, with those file extensions. Add entry source files, adjust react4xp.config.js, or run the build with -i for more info.`
 		);
+	}
+
+	// Case insensitive comparison bewteen chunkDirs and Object.keys(entries) in
+	// order to avoid:
+	// [webpack-cli] Error: Prevent writing to file that only differs in casing
+	// or query string from already written file.
+	// This will lead to a race-condition and corrupted files on
+	// case-insensitive file systems.
+	const entryKeys = Object.keys(entries);
+	for (let i = 0; i < chunkDirs.length; i++) {
+		let aChunkDir = chunkDirs[i].split(sep).slice(-1)[0];
+		for (let j = 0; j < entryKeys.length; j++) {
+			const anEntryKey = entryKeys[j];
+			if (aChunkDir.toLowerCase() === anEntryKey.toLowerCase()) {
+				throw new Error(`Entry name collision:${anEntryKey}!\nentry file:${entries[anEntryKey]}\nchunk  dir:${chunkDirs[i]}`);
+			}
+		}
 	}
 
 	verboseLog(entries, "\nreact4xp-build-components - entries", 1);
@@ -427,6 +444,7 @@ module.exports = (env: Environment = {}) => {
 			}
 		}
 		takenNames.push(name);
+		// verboseLog(takenNames, "\nreact4xp-build-components - takenNames", 1);
 
 		const chunkExclusions = makeExclusionsRegexpString(
 			chunkDir,
