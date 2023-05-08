@@ -44,7 +44,7 @@
   "devDependencies": {
     "@mui/material": "^5.11.16",
     "@types/lodash": "^4.14.192",
-    "@types/node": "^18.15.3",
+    "@types/node": "^20.1.0",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "chai-files": "^1.4.0",
