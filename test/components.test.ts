@@ -8,10 +8,10 @@ import { expect } from 'chai';
 import { existsSync, readFileSync } from 'fs';
 import {join} from 'path';
 
-import { getEntries } from '../dist/buildComponents/getEntries.js';
-import { makeExclusionsRegexpString } from '../dist/buildComponents/makeExclusionsRegexpString.js';
-import { makeVerboseLogger } from '../dist/util/makeVerboseLogger.js';
-//import { normalizePath } from '../../dist/buildComponents/normalizePath.js';
+// import { getEntries } from '../src/buildComponents/getEntries';
+// import { makeExclusionsRegexpString } from '../src/buildComponents/makeExclusionsRegexpString';
+import { makeVerboseLogger } from '../src/util/makeVerboseLogger';
+//import { normalizePath } from '../../src/buildComponents/normalizePath';
 // NOTE: Import assertion not needed when using jest
 import stats from './components/build/resources/main/r4xAssets/stats.components.json' /* assert {
 	type: 'json',
