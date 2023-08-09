@@ -52,7 +52,7 @@ module.exports = (env: Environment = {}) => {
 		DIR_PATH_RELATIVE_SRC_MAIN_RESOURCES,
 		FILE_NAME_R4X_NASHORN_POLYFILLS
 	);
-	//verboseLog(filePathAbsoluteR4xNashornPolyfills, 'filePathAbsoluteR4xNashornPolyfills');
+	// verboseLog(filePathAbsoluteR4xNashornPolyfills, 'filePathAbsoluteR4xNashornPolyfills');
 
 	const entry = {}
 	try {

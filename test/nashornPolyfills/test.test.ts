@@ -16,7 +16,7 @@ const BUILD_RESOURCES_MAIN = join(DIR_NAME, 'build', 'resources', 'main');
 
 describe('nashornPolyfills', ()=>{
 	it('make a file', ()=>{
-		const exists = existsSync(join(BUILD_RESOURCES_MAIN, 'assets','react4xp', 'nashornPolyfills.userAdded.js'));
+		const exists = existsSync(join(BUILD_RESOURCES_MAIN, 'lib', 'enonic', 'react4xp', 'nashornPolyfills.userAdded.js'));
 		expect(exists).to.be.true;
 	});
 });
