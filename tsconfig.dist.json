@@ -25,6 +25,7 @@
 		]
 	},
 	"exclude": [
+		"./jest.config.ts",
 		"./tsup.config.*.ts",
 		"./src/client*",
 		"./src/executor.ts",
