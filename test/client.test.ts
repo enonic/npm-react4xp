@@ -1,9 +1,15 @@
+import {
+	describe,
+	// expect,
+	test as it
+} from '@jest/globals';
 import { expect } from 'chai';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
-import manifest from './components/build/resources/main/r4xAssets/client.manifest.json' assert {
+// NOTE: Import assertion not needed when using jest
+import manifest from './components/build/resources/main/r4xAssets/client.manifest.json' /* assert {
 	type: 'json',
-};
+}; */
 
 
 const DIR_NAME = join(process.cwd(), 'test/components');
@@ -24,9 +30,13 @@ describe('client', () => {
 	it('the js file export the correct global, and have hydrate, render and renderWithDependencies', () => {
 		const script = readFileSync(FILE_PATH_JS).toString();
 		global.eval(script);
+		// @ts-expect-error TS2304: Cannot find name 'ComEnonicAppWhateverReact4xpClient'.
 		expect(!!ComEnonicAppWhateverReact4xpClient).to.be.true;
+		// @ts-expect-error TS2304: Cannot find name 'ComEnonicAppWhateverReact4xpClient'.
 		expect(!!ComEnonicAppWhateverReact4xpClient.hydrate).to.be.true;
+		// @ts-expect-error TS2304: Cannot find name 'ComEnonicAppWhateverReact4xpClient'.
 		expect(!!ComEnonicAppWhateverReact4xpClient.render).to.be.true;
+		// @ts-expect-error TS2304: Cannot find name 'ComEnonicAppWhateverReact4xpClient'.
 		expect(!!ComEnonicAppWhateverReact4xpClient.renderWithDependencies).to.be.true;
 	});
 });

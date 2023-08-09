@@ -1,0 +1,27 @@
+{ // https://www.typescriptlang.org/tsconfig
+	"compilerOptions": {
+		"allowJs": true,
+		"baseUrl": ".",
+		"declaration": false,
+		"esModuleInterop": true,
+		"jsx": "react-jsx",
+		"lib": [
+			"ESNext",
+		],
+
+		"module": "ESNext",
+		// "module": "NodeNext", // Import assertions are not allowed on statements that transpile to commonjs 'require' calls.ts(2836)
+
+		"moduleResolution": "node",
+		"noEmit": true,
+		"resolveJsonModule": true,
+		"rootDir": "..",
+		"skipLibCheck": true,
+		"strictNullChecks": false,
+		"target": "ESNext",
+	},
+	"exclude": [],
+	"include": [
+		"./**/*.ts"
+	]
+}

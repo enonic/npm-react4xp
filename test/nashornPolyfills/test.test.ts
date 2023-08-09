@@ -1,5 +1,10 @@
+import {
+	describe,
+	// expect,
+	test as it
+} from '@jest/globals';
 import { expect } from 'chai';
-import { file } from 'chai-files';
+// import { file } from 'chai-files';
 import {join} from 'path';
 import {existsSync} from 'fs';
 

@@ -1,3 +1,8 @@
+import {
+	describe,
+	// expect,
+	test as it
+} from '@jest/globals';
 import { expect } from 'chai';
 // import deepFreeze from 'deep-freeze';
 import { existsSync, readFileSync } from 'fs';
@@ -7,14 +12,15 @@ import { getEntries } from '../dist/buildComponents/getEntries.js';
 import { makeExclusionsRegexpString } from '../dist/buildComponents/makeExclusionsRegexpString.js';
 import { makeVerboseLogger } from '../dist/util/makeVerboseLogger.js';
 //import { normalizePath } from '../../dist/buildComponents/normalizePath.js';
-import stats from './components/build/resources/main/r4xAssets/stats.components.json' assert {
+// NOTE: Import assertion not needed when using jest
+import stats from './components/build/resources/main/r4xAssets/stats.components.json' /* assert {
 	type: 'json',
-};
+}; */
 
 //console.debug(process.cwd());
 
 const DIR_NAME = join(process.cwd(), 'test', 'components'); // eslint-disable-line no-undef
-console.log('DIR_NAME:', JSON.stringify(DIR_NAME, null, 2));
+// console.debug('DIR_NAME:', JSON.stringify(DIR_NAME, null, 2));
 
 const SRC_MAIN_RESOURCES = join(DIR_NAME, 'src', 'main', 'resources');
 const DIR_R4X = join(DIR_NAME, 'build/resources/main/r4xAssets');
@@ -257,10 +263,13 @@ describe('externals', () => {
 	global.eval(readFileSync(FILE_PATH_VENDORS_JS).toString()); // jquery requires window
 
 	it('lodash should NOT exist in the vendors bundle', () => {
+		// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
 		expect(Array.isArray(webpackChunkComEnonicAppWhateverReact4xp)).to.be.true;
 
 		let found = false;
+		// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
 		outer: for (let i = 0; i < webpackChunkComEnonicAppWhateverReact4xp.length; i++) {
+			// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
 			const anArray = webpackChunkComEnonicAppWhateverReact4xp[i];
 			expect(Array.isArray(anArray)).to.be.true;
 			middle: for (let j = 0; j < anArray.length; j++) {
@@ -280,10 +289,13 @@ describe('externals', () => {
 	});
 
 	it('jquery should NOT exist in the vendors bundle', () => {
+		// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
 		expect(Array.isArray(webpackChunkComEnonicAppWhateverReact4xp)).to.be.true;
 
 		let found = false;
+		// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
 		outer: for (let i = 0; i < webpackChunkComEnonicAppWhateverReact4xp.length; i++) {
+			// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
 			const anArray = webpackChunkComEnonicAppWhateverReact4xp[i];
 			expect(Array.isArray(anArray)).to.be.true;
 			middle: for (let j = 0; j < anArray.length; j++) {

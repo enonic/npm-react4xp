@@ -3,6 +3,7 @@
 **/build/
 **/test/output/
 **/*.log
+/coverage/
 /dist/
 /npmInstalled.marker
 
