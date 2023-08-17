@@ -49,18 +49,12 @@ describe('executor', () => {
 		element.dataset['type'] = 'application/json';
 		element.textContent = '{"command":"render","devMode":false,"hasRegions":0,"isPage":0,"jsxPath":"site/parts/example/example","props":{"react4xpId":"parts_example__main_0"}}'
 		document.querySelectorAll = () => [element] as unknown as NodeListOf<HTMLScriptElement>;
-		const window = {
-			'ComEnonicAppWhateverReact4xp': {
-				'site/parts/example/example': () => undefined
-			},
-			'ComEnonicAppWhateverReact4xpClient': {
-				render: () => undefined
-			},
-			HTMLElement
-		} as unknown as Window & typeof globalThis;
-
-		// TS2322: Type ... is not assignable to type 'Window & typeof globalThis'.
-		global.window = window; // Test runs fine without this? why?
+		global.ComEnonicAppWhateverReact4xp = {
+			'site/parts/example/example': () => undefined
+		};
+		global.ComEnonicAppWhateverReact4xpClient =  {
+			render: () => undefined
+		};
 
 		// const context = {
 		// 	document,
