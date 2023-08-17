@@ -69,8 +69,6 @@ module.exports = (env: Environment = {}) => {
 	const DEVMODE = WEBPACK_MODE !== "production";
 	const LOG_LEVEL = webpackLogLevel(process.env.R4X_BUILD_LOG_LEVEL as R4X_BUILD_LOG_LEVEL);
 
-	const LOADER = 'swc' as 'babel'|'swc';
-
 	const environmentObj = {
 		chunkDirsStringArray: [],
 		entryDirsStringArray: [],
@@ -556,30 +554,7 @@ module.exports = (env: Environment = {}) => {
 					/node_modules[\\/]webpack[\\/]buildin/ // will cause errors if they are transpiled by Babel
 				],
 
-				use: [LOADER === 'babel' ? {
-					loader: "babel-loader",
-					options: {
-						compact: !DEVMODE,
-						presets: [
-							'@babel/preset-typescript',
-							"@babel/preset-react",
-							"@babel/preset-env"
-							// [
-							// 	"@babel/preset-env", {
-							// 		// https://webpack.js.org/guides/tree-shaking/#conclusion
-							// 		// Ensure no compilers transform your ES2015 module syntax into CommonJS modules (this is the default behavior of the popular Babel preset @babel/preset-env - see the documentation for more details).
-							// 		// https://babeljs.io/docs/babel-preset-env#modules
-							// 		// modules: false,
-							// 	}
-							// ]
-						],
-						plugins: [
-							'@babel/plugin-proposal-object-rest-spread',
-							'@babel/plugin-transform-arrow-functions',
-							'@babel/plugin-transform-typeof-symbol',
-						],
-					},
-				} : {
+				use: [{
 					loader: "swc-loader",
 					options: {
 						jsc: {
@@ -671,9 +646,9 @@ module.exports = (env: Environment = {}) => {
 			filename: DEVMODE ? '[name].js' : '[name].[contenthash].js',
 			library: {
 				name: [`${appName}${LIBRARY_NAME}`,"[name]"],
-				type: "var",
+				type: "global",
 			},
-			globalObject: "window",
+			globalObject: "globalThis",
 			environment: {
 				arrowFunction: false,
 				bigIntLiteral: false,

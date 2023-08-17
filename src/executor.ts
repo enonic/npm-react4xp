@@ -45,8 +45,8 @@ for (let index = 0; index < inlineJsonElements.length; index++) {
 		console.debug('jsxPath', jsxPath);
 		console.debug('props', props);*/
 		//@ts-ignore
-		window[process.env.R4X_CLIENT_NAME][command](
-			window[process.env.R4X_LIBRARY_NAME][jsxPath], id, props, isPage, hasRegions, devMode
+		globalThis[process.env.R4X_CLIENT_NAME][command](
+			globalThis[process.env.R4X_LIBRARY_NAME][jsxPath], id, props, isPage, hasRegions, devMode
 		);
 	}
 } // for
