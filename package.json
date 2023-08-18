@@ -122,5 +122,5 @@
     "webpack:globals": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" webpack --config dist/webpack.config.globals.js",
     "webpack:nashornPolyfills": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" webpack --config dist/webpack.config.nashornPolyfills.js"
   },
-  "version": "4.0.0"
+  "version": "4.1.0"
 }
