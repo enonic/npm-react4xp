@@ -9,3 +9,12 @@
 **Not really intended for separate installation or use!**
 
 Better start with the [React4xp introduction](https://developer.enonic.com/templates/react4xp).
+
+## Release
+
+````
+git tag vX.Y.Z
+git push origin vX.Y.Z
+````
+
+This will trigger release & publish on NPM
