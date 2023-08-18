@@ -2,7 +2,7 @@
 
 <img src="media/react4xp.svg" alt="React4xp logo" title="React4xp logo" width="160px">
 
-Bundles all the necessary build tools required by [lib-react4xp](https://github.com/enonic/lib-react4xp/) and [react4xp starter](https://market.enonic.com/vendors/enonic/react4xp-starter).
+[NPM module](https://www.npmjs.com/package/@enonic/react4xp) of the Enonic React4XP implementation which bundles all the necessary build tools required by [lib-react4xp](https://github.com/enonic/lib-react4xp/) and [react4xp starter](https://market.enonic.com/vendors/enonic/react4xp-starter).
 
 ## Usage
 
