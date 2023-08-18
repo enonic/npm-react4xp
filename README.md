@@ -9,10 +9,3 @@ Bundles all the necessary build tools required by [lib-react4xp](https://github.
 **Not really intended for separate installation or use!**
 
 Better start with the [React4xp introduction](https://developer.enonic.com/templates/react4xp).
-
-<br/><br/>
-
-### IMPORTANT: git
-
-When committing to git, please follow the [conventional commits](https://www.conventionalcommits.org/en/v1.0.0-beta.2/)
-pattern in your messages, at least use `feat:` and `BREAKING CHANGE`.
