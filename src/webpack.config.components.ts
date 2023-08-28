@@ -1,9 +1,9 @@
-import type {Environment} from './index.d';
+import type { LoaderContext } from 'webpack';
+import type { Environment } from './index.d';
 import type {
 	EntrySet,
 	SymlinksUnderR4xRoot
 } from './buildComponents/index.d';
-
 
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { StatsWriterPlugin } from 'webpack-stats-plugin';
@@ -16,7 +16,7 @@ import {
 	sep
 } from 'path';
 
-import {statSync} from 'fs';
+import { statSync } from 'fs';
 
 import {
 	DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
@@ -27,30 +27,38 @@ import {
 	FILE_NAME_R4X_CONFIG_JS,
 	FILE_NAME_WEBPACK_CONFIG_R4X_JS
 } from './constants.buildtime';
-
 import {
 	COMPONENT_STATS_FILENAME,
 	ENTRIES_FILENAME,
 	LIBRARY_NAME
 } from './constants.runtime';
-
-import {getEntries} from './buildComponents/getEntries';
-import {makeExclusionsRegexpString} from './buildComponents/makeExclusionsRegexpString';
-import {normalizeDirList} from './buildComponents/normalizeDirList';
-
-import {camelize} from './util/camelize';
-import {isSet} from './util/isSet';
-import {makeVerboseLogger} from './util/makeVerboseLogger';
-// import {toStr} from './util/toStr';
+import { getEntries } from './buildComponents/getEntries';
+import { makeExclusionsRegexpString } from './buildComponents/makeExclusionsRegexpString';
+import { normalizeDirList } from './buildComponents/normalizeDirList';
+import { camelize } from './util/camelize';
+import { isSet } from './util/isSet';
+import { makeVerboseLogger } from './util/makeVerboseLogger';
+// import { toStr } from './util/toStr';
 import webpackLogLevel, {
 	R4X_BUILD_LOG_LEVEL,
 	WEBPACK_STATS_LOG_LEVEL
 } from './util/webpackLogLevel';
-import {ucFirst} from './util/ucFirst';
-import {regexpEscape} from './util/regexpEscape';
+import { ucFirst } from './util/ucFirst';
+import { regexpEscape } from './util/regexpEscape';
 
 
-module.exports = (env: Environment = {}) => {
+const slashCode = "/".charCodeAt(0);
+const backslashCode = "\\".charCodeAt(0);
+
+const isInside = (path: string, parent: string) => {
+	if (!path.startsWith(parent)) return false;
+	if (path.length === parent.length) return true;
+	const charCode = path.charCodeAt(parent.length);
+	return charCode === slashCode || charCode === backslashCode;
+};
+
+
+export default (env: Environment = {}) => {
 	const R4X_DIR_PATH_ABSOLUTE_PROJECT = process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
 	if (!isAbsolute(R4X_DIR_PATH_ABSOLUTE_PROJECT)) {
 		throw new Error(`System environment variable $R4X_DIR_PATH_ABSOLUTE_PROJECT:${R4X_DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
@@ -525,6 +533,29 @@ module.exports = (env: Environment = {}) => {
 
 	// ------------------------------------------
 
+	const restrictions = [DIR_PATH_ABSOLUTE_SRC_SITE].concat(entryDirs);
+
+	const decider = (importPath: string, loaderContext: LoaderContext<{}>) => new Promise((resolve, reject) => {
+		loaderContext.resolve(loaderContext.context, importPath, (err, result: string) => {
+			if (err === null) {
+				let matchesRestriction = false;
+				for (const rule of restrictions) {
+					if (isInside(result, rule)) {
+						matchesRestriction = true;
+						break;
+					}
+				} // for
+				if (matchesRestriction) {
+					reject(new Error(`Importing from React4XP entries is not allowed! Illegal import: "${importPath}". Please move shared code outside site and entrydirs.`));
+				} else {
+					resolve(true);
+				}
+			} else {
+				reject(err.message);
+			}
+		});
+	});
+
 	const config = {
 		context: R4X_DIR_PATH_ABSOLUTE_PROJECT, // Used as default for resolve.roots
 
@@ -576,7 +607,17 @@ module.exports = (env: Environment = {}) => {
 						//parseMap: true,
 						sourceMaps: !DEVMODE
 					}
-				}], // use
+				},{
+					loader: 'restrict-imports-loader',
+					options: {
+						severity: "error",
+						rules: [
+						{
+							restricted: decider
+						},
+					  ],
+					},
+				  },], // use
 			}], // rules
 		}, // module
 
