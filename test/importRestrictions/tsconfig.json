@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"jsx": "react",
+		"paths": {
+			"/*": ["./src/main/resources/*"]
+		}
+	},
+	"include": [
+		"./src/main/resources/**/*.tsx"
+	]
+}
