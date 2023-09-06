@@ -538,7 +538,7 @@ export default (env: Environment = {}) => {
 
 	const restrictions = [DIR_PATH_ABSOLUTE_SRC_SITE].concat(entryDirs);
 
-	const EXTENSION_WHITELIST = ['css', 'less', 'sass', 'scss', 'stylus'];
+	const EXTENSION_WHITELIST = ['css', 'less', 'sass', 'scss', 'styl'];
 	const decider = (importPath: string, loaderContext: LoaderContext<{}>) => new Promise((resolve, reject) => {
 		loaderContext.resolve(loaderContext.context, importPath, (err, result: string) => {
 			if (err !== null) {
