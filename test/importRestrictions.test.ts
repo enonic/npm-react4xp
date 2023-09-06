@@ -76,12 +76,14 @@ describe('components', () => {
 				{ "name": "site/parts/allowedFunctionalTsx/entry.js" }
 			]);
 
-			expect(readFileSync(join(DIR_R4X, 'site/parts/allowedFunctionalJsx/entry.css')).toString()).toBe(`.red{color:red}
-.bold{font-weight:bold}
-`);
-			expect(readFileSync(join(DIR_R4X, 'site/parts/allowedFunctionalTsx/entry.css')).toString()).toBe(`.red{color:red}
-.bold{font-weight:bold}
-`);
+			const css = `.bold{font-weight:bold}
+.italic{font-style:italic}
+.red{color:red}
+.underline{text-decoration:underline}
+`;
+
+			expect(readFileSync(join(DIR_R4X, 'site/parts/allowedFunctionalJsx/entry.css')).toString()).toBe(css);
+			expect(readFileSync(join(DIR_R4X, 'site/parts/allowedFunctionalTsx/entry.css')).toString()).toBe(css);
 		}); // webpack
 	}); // test
 }); // describe
