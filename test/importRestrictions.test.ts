@@ -6,6 +6,8 @@ import {
 	expect,
 	test,
 } from '@jest/globals';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import webpack from 'webpack';
 import buildWebpackOptions from '../src/webpack.config.components';
 // import { print } from 'q-i';
@@ -13,6 +15,8 @@ import buildWebpackOptions from '../src/webpack.config.components';
 process.env.NODE_ENV='development';
 process.env.R4X_APP_NAME='com.enonic.app.whatever';
 process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT=`${process.env.INIT_CWD}/test/importRestrictions`;
+
+const DIR_R4X = join(process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT, 'build/resources/main/r4xAssets');
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -39,6 +43,45 @@ describe('components', () => {
 			// 	const files = stats.toJson().assets.map(x => x.name);
 			// 	print(files);
 			// }
+			const entriesJson = readFileSync(join(DIR_R4X, 'entries.json')).toString();
+			const entriesArray = JSON.parse(entriesJson) as string[];
+			expect(entriesArray).toContain('site/parts/allowedFunctionalJsx/entry');
+			expect(entriesArray).toContain('site/parts/allowedFunctionalTsx/entry');
+
+			const statsJson = readFileSync(join(DIR_R4X, 'stats.components.json')).toString();
+			const statsObject = JSON.parse(statsJson) as {
+				assetsByChunkName: Record<string, string[]>;
+				entrypoints: Record<string, {
+					assets: {
+						name: string
+					}[]
+				}>;
+			};
+			expect(statsObject.assetsByChunkName['site/parts/allowedFunctionalJsx/entry']).toStrictEqual([
+				"site/parts/allowedFunctionalJsx/entry.css",
+				"site/parts/allowedFunctionalJsx/entry.js"
+			]);
+			expect(statsObject.assetsByChunkName['site/parts/allowedFunctionalTsx/entry']).toStrictEqual([
+				"site/parts/allowedFunctionalTsx/entry.css",
+				"site/parts/allowedFunctionalTsx/entry.js"
+			]);
+			expect(statsObject.entrypoints['site/parts/allowedFunctionalJsx/entry'].assets).toStrictEqual([
+				{ "name": "runtime.js"},
+				{ "name": "site/parts/allowedFunctionalJsx/entry.css" },
+				{ "name": "site/parts/allowedFunctionalJsx/entry.js" }
+			]);
+			expect(statsObject.entrypoints['site/parts/allowedFunctionalTsx/entry'].assets).toStrictEqual([
+				{ "name": "runtime.js"},
+				{ "name": "site/parts/allowedFunctionalTsx/entry.css" },
+				{ "name": "site/parts/allowedFunctionalTsx/entry.js" }
+			]);
+
+			expect(readFileSync(join(DIR_R4X, 'site/parts/allowedFunctionalJsx/entry.css')).toString()).toBe(`.red{color:red}
+.bold{font-weight:bold}
+`);
+			expect(readFileSync(join(DIR_R4X, 'site/parts/allowedFunctionalTsx/entry.css')).toString()).toBe(`.red{color:red}
+.bold{font-weight:bold}
+`);
 		}); // webpack
 	}); // test
 }); // describe

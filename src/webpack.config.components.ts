@@ -15,6 +15,9 @@ import {
 	resolve,
 	sep
 } from 'path';
+import {
+	basename as posixBasename
+} from 'node:path/posix';
 
 import { statSync } from 'fs';
 
@@ -352,7 +355,7 @@ export default (env: Environment = {}) => {
 		throw Error(
 		`react4xp-build-components can't continue - no entries were found (entries=${JSON.stringify(
 			entries
-		)}). Tip: the combination of entryDirs and entryExtStringArrayensions in react4xp.config.js was resolved to the entrySets above. Check the content of those directories, with those file extensions. Add entry source files, adjust react4xp.config.js, or run the build with -i for more info.`
+		)}). Tip: the combination of entryDirs and entryExtensions in react4xp.config.js was resolved to the entrySets above. Check the content of those directories, with those file extensions. Add entry source files, adjust react4xp.config.js, or run the build with -i for more info.`
 		);
 	}
 
@@ -535,9 +538,12 @@ export default (env: Environment = {}) => {
 
 	const restrictions = [DIR_PATH_ABSOLUTE_SRC_SITE].concat(entryDirs);
 
+	const EXTENSION_WHITELIST = ['css', 'less', 'sass', 'scss', 'stylus'];
 	const decider = (importPath: string, loaderContext: LoaderContext<{}>) => new Promise((resolve, reject) => {
 		loaderContext.resolve(loaderContext.context, importPath, (err, result: string) => {
-			if (err === null) {
+			if (err !== null) {
+				reject(err.message);
+			} else {
 				let matchesRestriction = false;
 				for (const rule of restrictions) {
 					if (isInside(result, rule)) {
@@ -546,12 +552,24 @@ export default (env: Environment = {}) => {
 					}
 				} // for
 				if (matchesRestriction) {
-					reject(new Error(`Importing from React4XP entries is not allowed! Illegal import: "${importPath}". Please move shared code outside site and entrydirs.`));
+					const basename = posixBasename(importPath);
+					const dotParts = basename.split('.');
+					if (dotParts.length > 1) { // has extension
+						const extension = dotParts.pop();
+						if (EXTENSION_WHITELIST.includes(extension)) {
+							resolve(true);
+						} else {
+							if (!environmentObj.entryExtStringArray.includes(extension)) {
+								console.warn(`Unknown extension: "${extension}" not in entryExtensions:"${environmentObj.entryExtStringArray.join(',')}" nor WHITELIST: "${EXTENSION_WHITELIST.join(',')}"`);
+							}
+							reject(new Error(`Importing from React4XP entries is not allowed! Illegal import: "${importPath}". Please move shared code outside site and entrydirs.`));
+						}
+					} else { // no extension
+						reject(new Error(`Importing from React4XP entries is not allowed! Illegal import: "${importPath}". Please move shared code outside site and entrydirs.`));
+					}
 				} else {
 					resolve(true);
 				}
-			} else {
-				reject(err.message);
 			}
 		});
 	});
