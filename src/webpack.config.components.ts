@@ -562,7 +562,7 @@ export default (env: Environment = {}) => {
 							if (!environmentObj.entryExtStringArray.includes(extension)) {
 								console.warn(`Unknown extension: "${extension}" not in entryExtensions:"${environmentObj.entryExtStringArray.join(',')}" nor WHITELIST: "${EXTENSION_WHITELIST.join(',')}"`);
 							}
-							reject(new Error(`Importing from React4XP entries is not allowed! Illegal import: "${importPath}". Please move shared code outside site and entrydirs.`));
+							resolve(true);
 						}
 					} else { // no extension
 						reject(new Error(`Importing from React4XP entries is not allowed! Illegal import: "${importPath}". Please move shared code outside site and entrydirs.`));
