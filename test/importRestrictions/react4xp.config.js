@@ -7,6 +7,12 @@ module.exports = {
 		'anEntryDirInsideR4xDir',
 		'../anEntryDirOutsideR4xDir'
 	],
+	entryExtensionWhitelist: [
+		'css',
+		'sass',
+		'scss',
+		'styl'
+	],
 	// Since jquery is only listed under externals and not globals,
 	// it should not be bundled anywhere (globals nor vendors).
 	externals: {
