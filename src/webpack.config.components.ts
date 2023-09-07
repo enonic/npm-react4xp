@@ -85,6 +85,7 @@ export default (env: Environment = {}) => {
 		entryDirsStringArray: [],
 		entryExtStringArray: ['jsx', 'tsx', 'ts', 'es6', 'es', 'js'],
 		entryExtWhiteListArray: [
+			'd',
 			'css', 'less', 'sass', 'scss', 'styl',
 			'jpg', 'jpeg', 'gif', 'png', 'svg', 'webp',
 		]
