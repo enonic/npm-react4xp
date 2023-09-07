@@ -84,10 +84,15 @@ export default (env: Environment = {}) => {
 		chunkDirsStringArray: [],
 		entryDirsStringArray: [],
 		entryExtStringArray: ['jsx', 'tsx', 'ts', 'es6', 'es', 'js'],
+		entryExtWhiteListArray: [
+			'css', 'less', 'sass', 'scss', 'styl',
+			'jpg', 'jpeg', 'gif', 'png', 'svg', 'webp',
+		]
 	} as {
 		chunkDirsStringArray: string[]
 		entryDirsStringArray: string[]
 		entryExtStringArray: string[]
+		entryExtWhiteListArray: string[]
 	};
 
 	const appName = ucFirst(camelize(process.env.R4X_APP_NAME, /\./g));
@@ -105,6 +110,7 @@ export default (env: Environment = {}) => {
 				chunkDirs: string[]
 				entryDirs: string[]
 				entryExtensions: string[]
+				entryExtensionWhitelist: string[]
 				externals: object
 				globals: object
 			};
@@ -117,6 +123,12 @@ export default (env: Environment = {}) => {
 			}
 			if (isSet(config.entryExtensions)) {
 				environmentObj.entryExtStringArray = config.entryExtensions
+				.map((ext) => ext.trim())
+				.map((ext) => ext.replace(/^\./, ""))
+				.filter((ext) => !!ext);;
+			}
+			if (isSet(config.entryExtensionWhitelist)) {
+				environmentObj.entryExtWhiteListArray = config.entryExtensionWhitelist
 				.map((ext) => ext.trim())
 				.map((ext) => ext.replace(/^\./, ""))
 				.filter((ext) => !!ext);;
@@ -538,7 +550,6 @@ export default (env: Environment = {}) => {
 
 	const restrictions = [DIR_PATH_ABSOLUTE_SRC_SITE].concat(entryDirs);
 
-	const EXTENSION_WHITELIST = ['css', 'less', 'sass', 'scss', 'styl'];
 	const decider = (importPath: string, loaderContext: LoaderContext<{}>) => new Promise((resolve, reject) => {
 		loaderContext.resolve(loaderContext.context, importPath, (err, result: string) => {
 			if (err !== null) {
@@ -556,13 +567,13 @@ export default (env: Environment = {}) => {
 					const dotParts = basename.split('.');
 					if (dotParts.length > 1) { // has extension
 						const extension = dotParts.pop();
-						if (EXTENSION_WHITELIST.includes(extension)) {
+						if (environmentObj.entryExtWhiteListArray.includes(extension)) {
 							resolve(true);
 						} else {
 							if (environmentObj.entryExtStringArray.includes(extension)) {
 								reject(new Error(`Importing from React4XP entries is not allowed! Illegal import: "${importPath}". Please move shared code outside site and entrydirs.`));
 							} else {
-								console.warn(`Unknown extension: "${extension}" not in entryExtensions:"${environmentObj.entryExtStringArray.join(',')}" nor WHITELIST: "${EXTENSION_WHITELIST.join(',')}"`);
+								console.warn(`Unknown extension: "${extension}" not in entryExtensions:"${environmentObj.entryExtStringArray.join(',')}" nor WHITELIST: "${environmentObj.entryExtWhiteListArray.join(',')}"`);
 								resolve(true);
 							}
 						}
