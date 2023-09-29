@@ -17,38 +17,38 @@ import {runEntryCalls} from './runEntryCalls';
  * a trailing slash). Optional, sort of: you can define the constant SERVICE_URL_ROOT in global namespace and skip it. If you don't,
  * it's mandatory. */
 export function renderWithDependencies(
-  entriesWithTargetIdsAndProps :Entries,
-  callback :()=>void,
-  serviceUrlRoot :string
+	entriesWithTargetIdsAndProps: Entries,
+	callback: ()=> void,
+	serviceUrlRoot: string
 ) {
-  const entries = Object.keys(entriesWithTargetIdsAndProps) || [];
+	const entries = Object.keys(entriesWithTargetIdsAndProps) || [];
 
-  const entryNames = entries
-    .map((name) => `${name || ""}`.trim())
-    .filter((name) => name !== "");
+	const entryNames = entries
+		.map((name) => `${name || ""}`.trim())
+		.filter((name) => name !== "");
 
-  let localServiceUrlRoot = serviceUrlRoot; // avoid no-param-reassign
+	let localServiceUrlRoot = serviceUrlRoot; // avoid no-param-reassign
 
-  if (entryNames.length > 0) {
-    /*if (!localServiceUrlRoot) {
-      if (typeof SERVICE_URL_ROOT === "undefined") {
-        throw new Error(
-          "Missing service URL root. Include it as a last argument " +
-            "or set a global variable constant SERVICE_URL_ROOT before calling renderWithDependencies."
-        );
-      }
-      localServiceUrlRoot = SERVICE_URL_ROOT;
-  	}*/
+	if (entryNames.length > 0) {
+		/*if (!localServiceUrlRoot) {
+		if (typeof SERVICE_URL_ROOT === "undefined") {
+			throw new Error(
+			"Missing service URL root. Include it as a last argument " +
+				"or set a global variable constant SERVICE_URL_ROOT before calling renderWithDependencies."
+			);
+		}
+		localServiceUrlRoot = SERVICE_URL_ROOT;
+		}*/
 
-    fetch(`${localServiceUrlRoot}/react4xp-dependencies?${entryNames.join("&")}`)
-      .then((data) => data.json())
-      .then((dependencyUrls) => {
-		  loadScripts(dependencyUrls, () =>
-		  	runEntryCalls(entriesWithTargetIdsAndProps, entryNames, callback)
-        );
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
+		fetch(`${localServiceUrlRoot}/react4xp-dependencies?${entryNames.join("&")}`)
+			.then((data) => data.json())
+			.then((dependencyUrls) => {
+				loadScripts(dependencyUrls, () =>
+					runEntryCalls(entriesWithTargetIdsAndProps, entryNames, callback)
+				);
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+	}
 }
