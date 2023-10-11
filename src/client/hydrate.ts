@@ -37,7 +37,7 @@ export function hydrate(
 	if (isFunction(ReactDOM.hydrateRoot)) {
 		// React 18
 		ReactDOM.hydrateRoot(container, renderable, {
-			identifierPrefix: process.env.APP_NAME // Resolved compiletime
+			identifierPrefix: process.env.R4X_APP_NAME // Resolved compiletime
 		});
 	} else {
 		ReactDOM.hydrate(renderable, container); // React 17

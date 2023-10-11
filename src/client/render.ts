@@ -48,7 +48,7 @@ export function render(
 		if (isFunction(ReactDOM.createRoot)) {
 			// React 18
 			ReactDOM.createRoot(container, {
-				identifierPrefix: process.env.APP_NAME // Resolved compiletime
+				identifierPrefix: process.env.R4X_APP_NAME // Resolved compiletime
 			}).render(renderable);
 		} else {
 			ReactDOM.render(renderable, container); // React 17
