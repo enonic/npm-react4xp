@@ -27,7 +27,7 @@
     "deep-freeze": "^0.0.1",
     "es6-set-and-map": "^1",
     "esbuild": "^0.19.0",
-    "esbuild-plugin-manifest": "^0.7.0",
+    "esbuild-plugin-manifest": "^1.0.0",
     "filemanager-webpack-plugin": "^8",
     "glob": "^10",
     "prop-types": "^15",
