@@ -3351,9 +3351,9 @@ es6-set-and-map@^1:
   integrity sha512-wGof14KrJvcVxt7/KjY3g4Kp70XDIbrR9H1JzvLwvtv5yGCQOGMTFNiaYQ177nUG/Y+TGqE3cstlFkxsm6MF/Q==
 
 esbuild-plugin-manifest@^1.0.1:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/esbuild-plugin-manifest/-/esbuild-plugin-manifest-1.0.2.tgz#6b23efd33ff737849a58f2997012abadd6e43509"
-  integrity sha512-hgGZ2Vwf2PIAsv+xHwmwsuIOdYcckACcdrt5fDybtFveeXUxX+cHarm5/heIpm5Iv6Jdn3AmiRIuuhQeBl0Sug==
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/esbuild-plugin-manifest/-/esbuild-plugin-manifest-1.0.3.tgz#335c82714b6c14a5528881eaa5a3f901107529ff"
+  integrity sha512-Z3UbubjJg16CEqnZblVeyQbEo6sHb4x21RPNnq8mYC7g8xqvgqC9xmyRBMYISDbsnlQixSIE+ZHqMVKymbDgaQ==
   dependencies:
     proper-lockfile "^4.1.2"
 
