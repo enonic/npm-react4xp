@@ -44,7 +44,6 @@ for (let index = 0; index < inlineJsonElements.length; index++) {
 		console.debug('isPage', isPage);
 		console.debug('jsxPath', jsxPath);
 		console.debug('props', props);*/
-		//@ts-ignore
 		globalThis[process.env.R4X_CLIENT_NAME][command](
 			globalThis[process.env.R4X_LIBRARY_NAME][jsxPath], id, props, isPage, hasRegions, devMode
 		);

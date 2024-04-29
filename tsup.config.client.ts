@@ -41,7 +41,9 @@ export default defineConfig((options: MyOptions) => {
 		entry: {
 			'client': 'src/client.ts'
 		},
-		esbuildOptions(options, context) {
+		esbuildOptions(
+			// options, context
+		) {
 			// Let's see if this works, it does but: Dynamic require of "react-dom/client" is not supported
 			// options.external = [
 			// 	'react',

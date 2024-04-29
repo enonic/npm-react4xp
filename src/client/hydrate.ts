@@ -19,7 +19,7 @@ import {getContainer} from './getContainer';
 import {getRenderable} from './getRenderable';
 
 // Avoid 'ReactDOM' refers to a UMD global, but the current file is a module. Consider adding an import instead.ts(2686)
-declare var ReactDOM: {
+declare const ReactDOM: {
 	hydrate: typeof hydrateOrig
 	hydrateRoot: typeof hydrateRoot
 };

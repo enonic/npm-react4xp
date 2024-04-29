@@ -6,9 +6,9 @@ import type {
 
 import {globSync} from 'glob';
 import {
-	join,
+	// join,
 	parse,
-	normalize,
+	// normalize,
 	resolve,
 	sep
 } from 'path';
@@ -52,7 +52,6 @@ export function buildEntriesToSubfolder(
 							const entry = resolve(sourcePath, match);
 							verboseLog(`${name} -> ${entry}`, "\tEntry");
 
-							// eslint-disable-next-line no-param-reassign
 							obj[name] = entry;
 							return obj;
 						},
