@@ -27,7 +27,7 @@ export function renderWithDependencies(
 		.map((name) => `${name || ""}`.trim())
 		.filter((name) => name !== "");
 
-	let localServiceUrlRoot = serviceUrlRoot; // avoid no-param-reassign
+	const localServiceUrlRoot = serviceUrlRoot; // avoid no-param-reassign
 
 	if (entryNames.length > 0) {
 		/*if (!localServiceUrlRoot) {

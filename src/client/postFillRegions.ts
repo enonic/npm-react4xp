@@ -31,7 +31,7 @@ export const postFillRegions = (
 		regionsRemaining[regionName] = components.length;
 
 		// Used in dev mode for constructing the inserted postfill console warning (see webpack.config.js):
-		const regionPathsPostfilled = []; // eslint-disable-line
+		const regionPathsPostfilled = [];
 
 		components.forEach((component) => {
 			if (
@@ -110,7 +110,7 @@ export const postFillRegions = (
 	React4xp entry was client-side rendered from an XP controller. Path(s):
 	${JSON.stringify(regionPathsPostfilled.join(", "))}.
 
-	NOTE: This version of React4xp and/or XP don\'t support XP components that need
+	NOTE: This version of React4xp and/or XP don't support XP components that need
 	page contributions inside client-rendered Regions. This includes React4xp
 	entries in parts, etc. For now, avoid using React4xp client-side-rendering for
 	entries with Regions, or avoid inserting XP components that need page

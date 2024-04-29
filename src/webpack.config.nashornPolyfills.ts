@@ -1,5 +1,5 @@
 // Transpiles nashorn polyfill from, among other things, npm libraries.
-import type {Environment} from './index.d';
+// import type {Environment} from './index.d';
 
 
 import {statSync} from 'fs';
@@ -26,7 +26,9 @@ import webpackLogLevel, {
 const FILE_STEM_NASHORNPOLYFILLS_USERADDED = 'nashornPolyfills.userAdded';
 
 
-module.exports = (env: Environment = {}) => {
+module.exports = (
+	// env: Environment = {}
+) => {
 	const R4X_DIR_PATH_ABSOLUTE_PROJECT = process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
 
 	if (!isAbsolute(R4X_DIR_PATH_ABSOLUTE_PROJECT)) {

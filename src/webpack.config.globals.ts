@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 // This webpack config builds a globals library, which by default contains react
 // and react-dom.
 //
@@ -10,7 +8,7 @@
 // { "libraryname": "ReferenceInCode", ... } e.g. { "react-dom": "ReactDOM" }.
 
 
-import type {Environment} from './index.d';
+// import type {Environment} from './index.d';
 
 
 import {statSync} from 'fs';
@@ -46,7 +44,9 @@ import webpackLogLevel, {
 // TODO: Find a good pattern to control output name for chunks,
 // allowing for multi-chunks and still doing it in one pass (only one globals.json)
 
-module.exports = (env: Environment = {}) => {
+module.exports = (
+	// env: Environment = {}
+) => {
 	//console.debug('env', toStr(env));
 
 	const R4X_DIR_PATH_ABSOLUTE_PROJECT = process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
@@ -72,11 +72,11 @@ module.exports = (env: Environment = {}) => {
 
 	const LOADER = 'swc' as 'babel'|'swc';
 
-	const environmentObj = {
-		chunkDirsCommaString: null,
-		entryDirsCommaString: null,
-		entryExtCommaString: 'jsx,tsx,js,ts,es6,es',
-	};
+	// const environmentObj = {
+	// 	chunkDirsCommaString: null,
+	// 	entryDirsCommaString: null,
+	// 	entryExtCommaString: 'jsx,tsx,js,ts,es6,es',
+	// };
 	//console.debug('environmentObj', environmentObj);
 
 
@@ -87,7 +87,10 @@ module.exports = (env: Environment = {}) => {
 	try {
 		const configJsonStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
 		if (configJsonStats.isFile()) {
+
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
 			const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
+
 			//console.debug('config', toStr(config));
 			if (config.globals) {
 				GLOBALS = Object.assign(config.globals, GLOBALS);
@@ -110,7 +113,6 @@ module.exports = (env: Environment = {}) => {
 
 	const plugins = tempFileName
 		? [
-			//@ts-ignore
 			new FileManagerPlugin({
 				events: {
 					onStart: {
@@ -120,7 +122,7 @@ module.exports = (env: Environment = {}) => {
 					}
 				}
 			}),
-			//@ts-ignore
+			// // @ts-expect-error
 			/*new CoreWebPlugin({
 			browsers: {
 				chrome: "63",

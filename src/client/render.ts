@@ -22,7 +22,7 @@ import {postFillRegions} from './postFillRegions';
 
 
 // Avoid 'ReactDOM' refers to a UMD global, but the current file is a module. Consider adding an import instead.ts(2686)
-declare var ReactDOM: {
+declare const ReactDOM: {
 	createRoot: typeof createRoot
 	flushSync: typeof flushSync
 	render: typeof renderOrig
@@ -33,7 +33,7 @@ export function render(
 	component: Component,
 	targetId: string,
 	props: Props,
-	//@ts-expect-error TS6133: 'isPage' is declared but its value is never read.
+	// @ts-expect-error TS6133: 'isPage' is declared but its value is never read.
 	isPage: number, //boolean, // 0 means false
 	hasRegions: number, //boolean, // 0 means false
 	isDevMode: number //boolean // 0 means false

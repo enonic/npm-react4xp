@@ -107,6 +107,8 @@ export default (env: Environment = {}) => {
 		const configJsStats = statSync(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS);
 		//console.debug('configJsStats', configJsStats);
 		if (configJsStats.isFile()) {
+
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
 			const config = require(FILE_PATH_ABSOLUTE_R4X_CONFIG_JS) as {
 				chunkDirs: string[]
 				entryDirs: string[]
@@ -116,6 +118,7 @@ export default (env: Environment = {}) => {
 				globals: object
 			};
 			//console.debug('config', toStr(config));
+
 			if (config.chunkDirs) {
 				environmentObj.chunkDirsStringArray = config.chunkDirs;
 			}
@@ -183,7 +186,7 @@ export default (env: Environment = {}) => {
 		const webpackConfigR4xStats = statSync(filePathAbsoluteWebpackOverride);
 		if (webpackConfigR4xStats.isFile()) {
 
-			// eslint-disable-next-line import/no-dynamic-require, global-require
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
 			const overridden = require(filePathAbsoluteWebpackOverride);
 			//console.debug('overridden', overridden); // function
 
@@ -204,7 +207,7 @@ export default (env: Environment = {}) => {
 
 	// -------------------------------------  Okay, settings and context are parsed. Let's go:
 
-	let symlinksUnderReact4xpRootObject = {} as SymlinksUnderR4xRoot;
+	const symlinksUnderReact4xpRootObject = {} as SymlinksUnderR4xRoot;
 
 	const chunkDirs = normalizeDirList(
 		environmentObj.chunkDirsStringArray.join(','),
@@ -317,7 +320,7 @@ export default (env: Environment = {}) => {
 			sourceExtensions: environmentObj.entryExtStringArray,
 		})),
 	];
-	verboseLog(entrySets, "\n\n---\entrySets", 1);
+	verboseLog(entrySets, "\n\n---entrySets", 1);
 
 	// console.debug('entrySets', toStr(entrySets));
 	// console.debug('ENTRIES_FILENAME', ENTRIES_FILENAME); // entries.json
@@ -380,7 +383,7 @@ export default (env: Environment = {}) => {
 	// case-insensitive file systems.
 	const entryKeys = Object.keys(entries);
 	for (let i = 0; i < chunkDirs.length; i++) {
-		let aChunkDir = chunkDirs[i].split(sep).slice(-1)[0];
+		const aChunkDir = chunkDirs[i].split(sep).slice(-1)[0];
 		for (let j = 0; j < entryKeys.length; j++) {
 			const anEntryKey = entryKeys[j];
 			if (aChunkDir.toLowerCase() === anEntryKey.toLowerCase()) {
@@ -551,7 +554,7 @@ export default (env: Environment = {}) => {
 
 	const restrictions = [DIR_PATH_ABSOLUTE_SRC_SITE].concat(entryDirs);
 
-	const decider = (importPath: string, loaderContext: LoaderContext<{}>) => new Promise((resolve, reject) => {
+	const decider = (importPath: string, loaderContext: LoaderContext<Record<string, unknown>>) => new Promise((resolve, reject) => {
 		loaderContext.resolve(loaderContext.context, importPath, (err, result: string) => {
 			if (err !== null) {
 				reject(err.message);

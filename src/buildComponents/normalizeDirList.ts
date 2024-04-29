@@ -74,7 +74,7 @@ export const normalizeDirList = (
 
                 if (existsSync(dir)) {
                   if (dir.startsWith(dirPathAbsoluteSrcR4x)) {
-                    symlinksUnderReact4xpRootObject[orig] = true; // eslint-disable-line no-param-reassign
+                    symlinksUnderReact4xpRootObject[orig] = true;
                     //console.debug('normalizeDirList() symlinksUnderReact4xpRootObject', toStr(symlinksUnderReact4xpRootObject));
                   }
                   lstat = lstatSync(dir);
