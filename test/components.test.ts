@@ -1,9 +1,8 @@
 import {
 	describe,
-	// expect,
+	expect,
 	test as it
 } from '@jest/globals';
-import { expect } from 'chai';
 // import deepFreeze from 'deep-freeze';
 import { existsSync, readFileSync } from 'fs';
 import {join} from 'path';
@@ -189,59 +188,59 @@ describe('components', ()=>{
 	describe('files', ()=> {
 		it('makes a entries.json file', () => {
 			const exists = existsSync(join(DIR_R4X, 'entries.json'));
-			expect(exists).to.be.true;
+			expect(exists).toBeTruthy();
 		});
 
 		it('makes a stats.components.json file', () => {
 			const exists = existsSync(join(DIR_R4X, 'stats.components.json'));
-			expect(exists).to.be.true;
+			expect(exists).toBeTruthy();
 		});
 	});
 
 	describe('chunks', ()=> {
 		it('makes a runtimeChunks file', () => {
 			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['runtime'][0]));
-			expect(exists).to.be.true;
+			expect(exists).toBeTruthy();
 		});
 
 		it('makes a vendors chunk file', () => {
 			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['vendors'][0]));
-			expect(exists).to.be.true;
+			expect(exists).toBeTruthy();
 		});
 
 		it('makes a react4xp chunk file', () => {
 			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['react4xp'][0]));
-			expect(exists).to.be.true;
+			expect(exists).toBeTruthy();
 		});
 
 		it('makes a anEntryInAnEntryDirInsideR4xDir chunk file', () => {
 			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['anEntryInAnEntryDirInsideR4xDir'][0]));
-			expect(exists).to.be.true;
+			expect(exists).toBeTruthy();
 		});
 
 		it('makes a anEntryInAnEntryDirOutsideR4xDir chunk file', () => {
 			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['anEntryInAnEntryDirOutsideR4xDir'][0]));
-			expect(exists).to.be.true;
+			expect(exists).toBeTruthy();
 		});
 
 		it('makes a site/parts/jsExample/jsExample chunk file', () => {
 			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['site/parts/jsExample/jsExample'][0]));
-			expect(exists).to.be.true;
+			expect(exists).toBeTruthy();
 		});
 
 		it('makes a site/parts/tsExample/tsExample chunk file', () => {
 			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['site/parts/tsExample/tsExample'][0]));
-			expect(exists).to.be.true;
+			expect(exists).toBeTruthy();
 		});
 
 		it('makes a aChunkDirInsideReact4xpDir chunk file', () => {
 			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['aChunkDirInsideReact4xpDir'][0]));
-			expect(exists).to.be.true;
+			expect(exists).toBeTruthy();
 		});
 
 		it('makes a aChunkDirOutsideReact4xpDir chunk file', () => {
 			const exists = existsSync(join(DIR_R4X, stats.assetsByChunkName['aChunkDirOutsideReact4xpDir'][0]));
-			expect(exists).to.be.true;
+			expect(exists).toBeTruthy();
 		});
 
 	});
@@ -264,14 +263,14 @@ describe('externals', () => {
 
 	it('lodash should NOT exist in the vendors bundle', () => {
 		// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
-		expect(Array.isArray(webpackChunkComEnonicAppWhateverReact4xp)).to.be.true;
+		expect(Array.isArray(webpackChunkComEnonicAppWhateverReact4xp)).toBeTruthy();
 
 		let found = false;
 		// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
 		outer: for (let i = 0; i < webpackChunkComEnonicAppWhateverReact4xp.length; i++) {
 			// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
 			const anArray = webpackChunkComEnonicAppWhateverReact4xp[i];
-			expect(Array.isArray(anArray)).to.be.true;
+			expect(Array.isArray(anArray)).toBeTruthy();
 			middle: for (let j = 0; j < anArray.length; j++) {
 				const arrayOrObject = anArray[j];
 				// verboseLog(arrayOrObject);
@@ -279,25 +278,25 @@ describe('externals', () => {
 					found = true;
 					const vendorsObj = anArray[j+1];
 					// verboseLog(vendorsObj);
-					expect(typeof vendorsObj['../../node_modules/lodash/lodash.js'] === 'undefined').to.be.true;
+					expect(typeof vendorsObj['../../node_modules/lodash/lodash.js'] === 'undefined').toBeTruthy();
 					break outer;
 				}
 			}
 		}
 
-		expect(found).to.be.true;
+		expect(found).toBeTruthy();
 	});
 
 	it('jquery should NOT exist in the vendors bundle', () => {
 		// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
-		expect(Array.isArray(webpackChunkComEnonicAppWhateverReact4xp)).to.be.true;
+		expect(Array.isArray(webpackChunkComEnonicAppWhateverReact4xp)).toBeTruthy();
 
 		let found = false;
 		// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
 		outer: for (let i = 0; i < webpackChunkComEnonicAppWhateverReact4xp.length; i++) {
 			// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
 			const anArray = webpackChunkComEnonicAppWhateverReact4xp[i];
-			expect(Array.isArray(anArray)).to.be.true;
+			expect(Array.isArray(anArray)).toBeTruthy();
 			middle: for (let j = 0; j < anArray.length; j++) {
 				const arrayOrObject = anArray[j];
 				// verboseLog(arrayOrObject);
@@ -305,13 +304,13 @@ describe('externals', () => {
 					found = true;
 					const vendorsObj = anArray[j+1];
 					// verboseLog(vendorsObj);
-					expect(typeof vendorsObj['../../node_modules/jquery/dist/jquery.js'] === 'undefined').to.be.true;
+					expect(typeof vendorsObj['../../node_modules/jquery/dist/jquery.js'] === 'undefined').toBeTruthy();
 					break outer;
 				}
 			}
 		}
 
-		expect(found).to.be.true;
+		expect(found).toBeTruthy();
 	});
 
 }); // externals
