@@ -1,9 +1,8 @@
 import {
 	describe,
-	// expect,
+	expect,
 	test as it
 } from '@jest/globals';
-import { expect } from 'chai';
 import { execSync } from 'node:child_process';
 
 
@@ -14,7 +13,7 @@ describe('components', () => {
 				stdio: 'pipe'
 			});
 		} catch (e) {
-			expect(e.message.split(/\r?\n/)[1]).to.equal('[webpack-cli] Error: Entry name collision:ChUnKdIr!');
+			expect(e.message.split(/\r?\n/)[1]).toEqual('[webpack-cli] Error: Entry name collision:ChUnKdIr!');
 		}
 	});
 });

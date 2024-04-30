@@ -1,9 +1,8 @@
 import {
 	describe,
-	// expect,
+	expect,
 	test as it
 } from '@jest/globals';
-import { expect } from 'chai';
 import { existsSync, readFileSync } from 'fs';
 import {
 	document,
@@ -35,11 +34,11 @@ const FILE_PATH_JS = join(DIR_R4X, manifest['executor.js'])
 describe('executor', () => {
 	it('makes a manifest file', () => {
 		const exists = existsSync(FILE_PATH_MANIFEST);
-		expect(exists).to.be.true;
+		expect(exists).toBeTruthy();
 	});
 	it('the manifest file points to a js file', () => {
 		const exists = existsSync(FILE_PATH_JS);
-		expect(exists).to.be.true;
+		expect(exists).toBeTruthy();
 	});
 	it('the js file runs without error', () => {
 		const script = readFileSync(FILE_PATH_JS).toString();

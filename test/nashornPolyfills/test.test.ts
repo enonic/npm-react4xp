@@ -1,10 +1,8 @@
 import {
 	describe,
-	// expect,
+	expect,
 	test as it
 } from '@jest/globals';
-import { expect } from 'chai';
-// import { file } from 'chai-files';
 import {join} from 'path';
 import {existsSync} from 'fs';
 
@@ -17,6 +15,6 @@ const BUILD_RESOURCES_MAIN = join(DIR_NAME, 'build', 'resources', 'main');
 describe('nashornPolyfills', ()=>{
 	it('make a file', ()=>{
 		const exists = existsSync(join(BUILD_RESOURCES_MAIN, 'lib', 'enonic', 'react4xp', 'nashornPolyfills.userAdded.js'));
-		expect(exists).to.be.true;
+		expect(exists).toBeTruthy();
 	});
 });
