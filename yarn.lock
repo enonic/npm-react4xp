@@ -6227,9 +6227,9 @@ stylis@4.2.0:
   integrity sha512-Orov6g6BB1sDfYgzWfTHDOxamtX1bE/zo104Dh9e6fqJ3PooipYyfJ0pUmrZO2wAvO8YbEyeFrkV91XTsGMSrw==
 
 stylus-loader@^8.0.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/stylus-loader/-/stylus-loader-8.1.0.tgz#b68b6693314efee7adedd0990a04bcce68e6f0e3"
-  integrity sha512-+Xcn5fd0azjzSXxclT31wVviXlXbBfcBamFgAQimN2qug9ZQf0OmRlK+/MJwLs1V8DJWhTFGuFwmOTkfV4KnYQ==
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/stylus-loader/-/stylus-loader-8.1.1.tgz#e43f71660a16cb14a45b3d13acb1cc7a16d11b8f"
+  integrity sha512-Ohe29p3gwJiu1kxq16P80g1qq0FxGtwQevKctLE4su8KUq+Ea06Q6lp7SpcJjaKNrWIuEZQGvESUPt8JpukKVw==
   dependencies:
     fast-glob "^3.3.2"
     normalize-path "^3.0.0"
