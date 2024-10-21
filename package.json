@@ -64,7 +64,7 @@
     "react-dom": "^18.2.0",
     "sass": "^1",
     "sass-loader": "^14",
-    "stylus": "^0.63.0",
+    "stylus": "^0.64.0",
     "stylus-loader": "^8.0.0",
     "ts-jest": "^29",
     "ts-node": "^10",
