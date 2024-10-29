@@ -75,8 +75,18 @@ describe('components', () => {
 				{ "name": "site/parts/allowedFunctionalTsx/entry.css" },
 				{ "name": "site/parts/allowedFunctionalTsx/entry.js" }
 			]);
-
-			const css = `.bold{font-weight:bold}
+			const css = `.bold {
+  font-weight: bold;
+}
+.italic{font-style:italic}
+.red {
+  color: red;
+}
+.underline {
+  text-decoration: underline;
+}
+`;
+			const minifiedCss = `.bold{font-weight:bold}
 .italic{font-style:italic}
 .red{color:red}
 .underline{text-decoration:underline}
