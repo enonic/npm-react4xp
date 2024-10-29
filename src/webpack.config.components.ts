@@ -740,37 +740,43 @@ export default (env: Environment = {}) => {
 			new CaseSensitivePathsPlugin(),
 			new StatsWriterPlugin({
 				filename: COMPONENT_STATS_FILENAME,
-				stats: {
-					// all: false,
-					assets: true, // Also important, to figure out whether asset filename contains contenthash
-					entrypoints: true, // <-- THE IMPORTANT ONE, FOR DEPENDENCY TRACKING!
-					errors: true,
-					warnings: true,
+				fields: [
+					'assetsByChunkName',
+					'assets',
+					'entrypoints',
+					'errors',
+					'warnings',
+				],
+				transform(data) {
+					data.assets = data.assets.map(({
+						info,
+						name
+					}) => ({
+						info,
+						name
+					}));
 
-					// Everything else switched off:
-					builtAt: false,
-					cached: false,
-					cachedAssets: false,
-					children: false,
-					chunks: false,
-					chunkGroups: false,
-					chunkModules: false,
-					chunkOrigins: false,
-					depth: false,
-					env: false,
-					errorDetails: false,
-					hash: false,
-					modules: false,
-					moduleTrace: false,
-					performance: false,
-					providedExports: false,
-					publicPath: false,
-					reasons: false,
-					source: false,
-					timings: false,
-					usedExports: false,
-					version: false,
-				}
+					const filteredEntrypoints = {};
+					Object.keys(data.entrypoints).forEach((key) => {
+						filteredEntrypoints[key] = {
+							// name, // this is just the same as key
+							assets: data.entrypoints[key].assets.map(({	name }) => ({ name })),
+							auxiliaryAssets: data.entrypoints[key].auxiliaryAssets.map(({ name }) => ({ name })),
+							// NOTE: Currently not using these for anything:
+							// assetsSize
+							// auxiliaryAssetsSize
+							// childAssets
+							// children
+							// chunks
+							// filteredAssets
+							// filteredAuxiliaryAssets
+							// isOverSizeLimit
+						};
+					});
+					data.entrypoints = filteredEntrypoints;
+
+					return JSON.stringify(data, null, 2);
+				},
 			})
 		], // plugins
 

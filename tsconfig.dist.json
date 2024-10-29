@@ -16,6 +16,7 @@
 			"@enonic/js-utils/*": ["./node_modules/@enonic/js-utils/src/*"]
 		},
 		"rootDir": "./src",
+		"skipLibCheck": true,
 		"target": "ES2015",
 		// "typeRoots": [
 		// 	"./node_modules/@types"
