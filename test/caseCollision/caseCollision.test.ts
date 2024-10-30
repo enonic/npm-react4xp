@@ -13,7 +13,7 @@ describe('components', () => {
 				stdio: 'pipe'
 			});
 		} catch (e) {
-			expect(e.message.split(/\r?\n/)[1]).toEqual('[webpack-cli] Error: Entry name collision:ChUnKdIr!');
+			expect(e.message.split(/\r?\n/)[1]).toEqual('Error: Entry name collision:ChUnKdIr!');
 		}
 	});
 });

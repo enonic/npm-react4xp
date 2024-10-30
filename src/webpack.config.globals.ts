@@ -44,7 +44,7 @@ import webpackLogLevel, {
 // TODO: Find a good pattern to control output name for chunks,
 // allowing for multi-chunks and still doing it in one pass (only one globals.json)
 
-module.exports = (
+export default (
 	// env: Environment = {}
 ) => {
 	//console.debug('env', toStr(env));
@@ -68,9 +68,6 @@ module.exports = (
 		WEBPACK_STATS_LOG_LEVEL.VERBOSE
 	].includes(LOG_LEVEL));
 	verboseLog(DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, 'DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X', 1);
-
-
-	const LOADER = 'swc' as 'babel'|'swc';
 
 	// const environmentObj = {
 	// 	chunkDirsCommaString: null,
@@ -168,57 +165,31 @@ module.exports = (
 					/[\\/]node_modules[\\/]webpack[\\/]buildin/ // will cause errors if they are transpiled by Babel
 				],
 
-				use: [LOADER === 'babel' ? {
-					loader: 'babel-loader',
-					options: {
-						babelrc: false,
-						comments: DEVMODE,
-						compact: !DEVMODE,
-						minified: !DEVMODE,
-						plugins: [
-							'@babel/plugin-proposal-object-rest-spread',
-							'@babel/plugin-transform-arrow-functions',
-							'@babel/plugin-transform-typeof-symbol',
-							//'@mrhenry/babel-plugin-core-web', // Did nothing
-							//'@mrhenry/core-web'  // Also did nothing
-							/*["@mrhenry/core-web", { // Again nothing!
-							browsers: {
-								chrome: "63",
-								firefox: "57",
-								edge: "18",
-								opera: "57",
-								safari: "12",
-								ie: "11",
-							}
-							}]*/
-						],
-						presets: [
-							'@babel/preset-typescript',
-							'@babel/preset-react',
-							// '@babel/preset-env'
-							[
-								"@babel/preset-env", {
-									// https://webpack.js.org/guides/tree-shaking/#conclusion
-									// Ensure no compilers transform your ES2015 module syntax into CommonJS modules (this is the default behavior of the popular Babel preset @babel/preset-env - see the documentation for more details).
-									// https://babeljs.io/docs/babel-preset-env#modules
-									// Enable transformation of ES module syntax to another module type. Note that cjs is just an alias for commonjs.
-									// Setting this to false will preserve ES modules. Use this only if you intend to ship native ES Modules to browsers. If you are using a bundler with Babel, the default modules: "auto" is always preferred.
-									modules: false,
-								}
-							]
-						]
-					},
-				} : {
-					loader: "swc-loader",
+				use: [{
+					loader: 'builtin:swc-loader',
 					options: {
 						jsc: {
+
+							// https://swc.rs/docs/configuration/compilation#jscexternalhelpers
+							// externalHelpers: true,
+
 							parser: {
 								dynamicImport: false,
 								jsx: true,
 								syntax: 'typescript',
 								tsx: true
 							},
-							// target: 'es2015'
+							// target: 'es2015',
+							transform: {
+								react: {
+									runtime: 'automatic',
+									development: DEVMODE,
+
+									// $RefreshReg$ is not defined
+									// refresh: DEVMODE,
+									refresh: false,
+								}
+							}
 						},
 						minify: !DEVMODE,
 						// module: {
@@ -295,4 +266,4 @@ module.exports = (
 		}, // stats
 
 	}; // return
-}; // module.exports
+};
