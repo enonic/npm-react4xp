@@ -26,7 +26,7 @@ import webpackLogLevel, {
 const FILE_STEM_NASHORNPOLYFILLS_USERADDED = 'nashornPolyfills.userAdded';
 
 
-module.exports = (
+export default (
 	// env: Environment = {}
 ) => {
 	const R4X_DIR_PATH_ABSOLUTE_PROJECT = process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
@@ -79,40 +79,52 @@ module.exports = (
 		module: {
 		rules: [
 			{
-			test: /\.es6$/,
+				test: /\.es6$/,
 
-			// I don't think we can exclude much, everything must be able to run:
-			// * server-side (Nashorn/Graal-JS) and
-			// * client-side (Browsers).
-			//exclude: /node_modules/,
+				// I don't think we can exclude much, everything must be able to run:
+				// * server-side (Nashorn/Graal-JS) and
+				// * client-side (Browsers).
+				//exclude: /node_modules/,
 
-			// It takes time to transpile, if you know they don't need
-			// transpilation to run in Enonic XP (Nashorn/Graal-JS) you may list
-			// them here:
-			exclude: [
-						/node_modules[\\/]core-js/, // will cause errors if they are transpiled by Babel
-						/node_modules[\\/]webpack[\\/]buildin/ // will cause errors if they are transpiled by Babel
-					],
+				// It takes time to transpile, if you know they don't need
+				// transpilation to run in Enonic XP (Nashorn/Graal-JS) you may list
+				// them here:
+				exclude: [
+					/node_modules[\\/]core-js/, // will cause errors if they are transpiled by Babel
+					/node_modules[\\/]webpack[\\/]buildin/ // will cause errors if they are transpiled by Babel
+				],
 
-			use: {
-				loader: 'babel-loader',
+				loader: 'builtin:swc-loader',
 				options: {
-				babelrc: false,
-				comments: false,
-				compact: !DEVMODE,
-				minified: !DEVMODE,
-				presets: [
-					'@babel/preset-react',
-					'@babel/preset-env'
-				],
-				plugins: [
-					'@babel/plugin-proposal-object-rest-spread',
-					'@babel/plugin-transform-arrow-functions',
-					'@babel/plugin-transform-block-scoping', // transpile 'const' and 'let to 'var'
-					'@babel/plugin-transform-typeof-symbol',
-				],
-				},
-			},
+					jsc: {
+						// parser: {
+						// 	syntax: 'typescript'
+						// },
+
+						// https://swc.rs/docs/configuration/compilation#jscexternalhelpers
+						// externalHelpers: true,
+
+						// `env` and `jsc.target` cannot be used together
+						target: 'es2022', // Tested on "Graal" in Enonic 7.14.4
+
+						transform: {
+							// https://swc.rs/docs/configuration/compilation#jsctransformreact
+							react: {
+								runtime: 'automatic',
+								development: DEVMODE,
+
+								// $RefreshReg$ is not defined
+								// refresh: DEVMODE,
+								refresh: false,
+							}
+						}
+					},
+					// env: { // `env` and `jsc.target` cannot be used together
+						// mode: 'usage',
+						// coreJs: '3.26.1',
+						// targets: 'Chrome >= 48',
+					// }
+				}
 			},
 		],
 		}, // module

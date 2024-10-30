@@ -1,4 +1,4 @@
-import type { LoaderContext } from 'webpack';
+import type { LoaderContext } from '@rspack/core';
 import type { Environment } from './index.d';
 import type {
 	EntrySet,
@@ -621,16 +621,34 @@ export default (env: Environment = {}) => {
 				],
 
 				use: [{
-					loader: "swc-loader",
+					loader: 'builtin:swc-loader',
 					options: {
 						jsc: {
+
+							// https://swc.rs/docs/configuration/compilation#jscexternalhelpers
+							// externalHelpers: true,
+
 							parser: {
 								dynamicImport: false,
 								jsx: true,
 								syntax: 'typescript',
 								tsx: true
 							},
-							// target: 'es2015'
+
+							// `env` and `jsc.target` cannot be used together
+							target: 'es2022', // Tested on "Graal" in Enonic 7.14.4
+
+							transform: {
+								// https://swc.rs/docs/configuration/compilation#jsctransformreact
+								react: {
+									runtime: 'automatic',
+									development: DEVMODE,
+
+									// $RefreshReg$ is not defined
+									// refresh: DEVMODE,
+									refresh: false,
+								}
+							}
 						},
 						minify: !DEVMODE,
 						// module: {
@@ -639,7 +657,7 @@ export default (env: Environment = {}) => {
 						// parallel: true,
 						// https://swc.rs/docs/usage/swc-loader#with-babel-loader
 						// When used with babel-loader, the parseMap option must be set to true.
-						//parseMap: true,
+						// parseMap: true,
 						sourceMaps: !DEVMODE
 					}
 				},{
@@ -667,7 +685,12 @@ export default (env: Environment = {}) => {
 			// By default flagIncludedChunks is enabled in production mode and disabled elsewise.
 			innerGraph: !DEVMODE, // tells webpack whether to conduct inner graph analysis for unused exports
 			// By default mangleExports: 'deterministic' is enabled in production mode and disabled elsewise.
-			mangleWasmImports: false, // I think false is the default, but doc is unclear.
+
+			// Invalid configuration object. Rspack has been initialized using a configuration object that does not match the API schema.
+			// - Unrecognized key(s) in object: 'mangleWasmImports' at "optimization"
+			// mangleWasmImports: false, // I think false is the default, but doc is unclear.
+
+
 			minimize: !DEVMODE,
 			// minimizer // TODO?
 			mergeDuplicateChunks: !DEVMODE, // Might be slow, so avoid in DEVMOVE
@@ -751,10 +774,25 @@ export default (env: Environment = {}) => {
 					data.assets = data.assets.map(({
 						info,
 						name
-					}) => ({
-						info,
-						name
-					}));
+					}) => {
+						const transformedAssets: {
+							name: string
+							info?: {
+								immutable?: boolean
+							}
+						} = {
+							name
+						};
+						if (info) {
+							const {
+								immutable
+							} = info;
+							transformedAssets.info = {
+								immutable
+							};
+						}
+						return transformedAssets;
+					});
 
 					const filteredEntrypoints = {};
 					Object.keys(data.entrypoints).forEach((key) => {

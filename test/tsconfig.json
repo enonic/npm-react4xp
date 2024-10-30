@@ -6,11 +6,10 @@
 		"esModuleInterop": true,
 		"jsx": "react-jsx",
 		"lib": [
-			"ESNext",
+			"ES2020",
 		],
 
-		"module": "ESNext",
-		// "module": "NodeNext", // Import assertions are not allowed on statements that transpile to commonjs 'require' calls.ts(2836)
+		"module": "ES2020",
 
 		"moduleResolution": "node",
 		"noEmit": true,
@@ -18,7 +17,7 @@
 		"rootDir": "..",
 		"skipLibCheck": true,
 		"strictNullChecks": false,
-		"target": "ESNext",
+		"target": "ES2020",
 	},
 	"exclude": [],
 	"include": [

@@ -1,4 +1,4 @@
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const rspack = require('@rspack/core');
 
 module.exports = function(env, config) {
 	config.module.rules = [
@@ -6,7 +6,7 @@ module.exports = function(env, config) {
 		{
 			test: /\.((sa|sc|c))ss$/i,
 			use: [
-				MiniCssExtractPlugin.loader,
+				rspack.CssExtractRspackPlugin.loader,
 				{
 					loader: 'css-loader',
 					options: {
@@ -26,7 +26,7 @@ module.exports = function(env, config) {
 		}, {
 			test: /\.styl$/,
 			use: [
-				MiniCssExtractPlugin.loader,
+				rspack.CssExtractRspackPlugin.loader,
 				{
 					loader: "css-loader",
 					options: {
@@ -47,7 +47,7 @@ module.exports = function(env, config) {
 	]
 	config.plugins = [
 		...(config.plugins || []),
-		new MiniCssExtractPlugin({
+		new rspack.CssExtractRspackPlugin({
 			filename: '[name].css',
 			chunkFilename: '[id].[contenthash:9].css'
 		})
