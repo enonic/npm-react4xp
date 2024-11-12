@@ -8,8 +8,8 @@ import {
 } from '@jest/globals';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import webpack from 'webpack';
-import buildWebpackOptions from '../src/webpack.config.components';
+import { rspack } from '@rspack/core';
+import buildWebpackOptions from '../dist/webpack.config.components';
 // import { print } from 'q-i';
 
 process.env.NODE_ENV='development';
@@ -29,8 +29,8 @@ describe('components', () => {
 		// console.log(process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT);
 		const options = buildWebpackOptions(process.env as Environment);
 		// print(options);
-		webpack(options, function(err, stats) {
-			expect(stats.toJson().errorsCount).toBe(3);
+		rspack(options, function(err, stats) {
+			expect(stats.toJson({}).errors.length).toBe(3);
 			// if (err) {
 			// 	console.error(err.stack || err);
 			// 	return;
@@ -66,14 +66,22 @@ describe('components', () => {
 				"site/parts/allowedFunctionalTsx/entry.js"
 			]);
 			expect(statsObject.entrypoints['site/parts/allowedFunctionalJsx/entry'].assets).toStrictEqual([
-				{ "name": "runtime.js"},
+				{ "name": "runtime.js" },
+
+				{ "name": "vendors.js" }, // rspack added this line
+
+				// Rspack swapped the order of these two lines:
+				{ "name": "site/parts/allowedFunctionalJsx/entry.js" },
 				{ "name": "site/parts/allowedFunctionalJsx/entry.css" },
-				{ "name": "site/parts/allowedFunctionalJsx/entry.js" }
 			]);
 			expect(statsObject.entrypoints['site/parts/allowedFunctionalTsx/entry'].assets).toStrictEqual([
-				{ "name": "runtime.js"},
+				{ "name": "runtime.js" },
+
+				{ "name": "vendors.js" }, // rspack added this line
+
+				// Rspack swapped the order of these two lines:
+				{ "name": "site/parts/allowedFunctionalTsx/entry.js" },
 				{ "name": "site/parts/allowedFunctionalTsx/entry.css" },
-				{ "name": "site/parts/allowedFunctionalTsx/entry.js" }
 			]);
 			const css = `.bold {
   font-weight: bold;
