@@ -95,6 +95,9 @@
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "name": "@enonic/react4xp",
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "*"
+  },
   "peerDependencies": {
     "@babel/plugin-transform-class-properties": "^7",
     "react": "*",
