@@ -97,7 +97,7 @@
   "name": "@enonic/react4xp",
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "*",
-    "@rspack/binding-linux-x64-gnu":"1.2.7"
+    "@rspack/binding-linux-x64-gnu":"1.2.8"
   },
   "peerDependencies": {
     "@babel/plugin-transform-class-properties": "^7",
