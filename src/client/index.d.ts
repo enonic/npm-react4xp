@@ -1,3 +1,5 @@
+import {ReactNode} from 'react';
+
 export interface Props {
 	regionsData: {
 		[regionName: string]: {
@@ -10,9 +12,9 @@ export interface Props {
 		}
 	}
 }
-export type ComponentFunction = (props: Props) => void;
+export type ComponentFunction = (props: Props) => ReactNode;
 export interface ComponentObject {
-	default: ComponentFunction|unknown
+	default: ComponentFunction|ReactNode
 }
 export type Component = ComponentFunction|ComponentObject|unknown;
 
