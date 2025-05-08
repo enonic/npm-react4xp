@@ -1,3 +1,4 @@
+import {ReactNode} from 'react';
 import type {
 	Component,
 	ComponentFunction,
@@ -18,7 +19,7 @@ function isComponentObject(component: unknown): component is ComponentObject {
 export const getRenderable = (
 	component: Component,
 	props: Props
-) =>
+): ReactNode =>
 	isComponentFunction(component)
 		? component(props)
 		: isComponentObject(component)
@@ -27,4 +28,5 @@ export const getRenderable = (
 					? component.default(props)
 					: component.default
 			)
-			: component
+			: component as ReactNode
+
