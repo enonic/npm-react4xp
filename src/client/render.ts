@@ -2,8 +2,8 @@ import type {
 	Component,
 	Props
 } from './index.d';
-import type {createRoot} from 'react-dom/client';
-import type {flushSync, render as renderOrig} from 'react-dom';
+import {createRoot} from 'react-dom/client';
+import {flushSync} from 'react-dom';
 
 import {isFunction} from '../util/isFunction';
 
@@ -19,15 +19,6 @@ import {isFunction} from '../util/isFunction';
 import {getContainer} from './getContainer';
 import {getRenderable} from './getRenderable';
 import {postFillRegions} from './postFillRegions';
-
-
-// Avoid 'ReactDOM' refers to a UMD global, but the current file is a module. Consider adding an import instead.ts(2686)
-declare const ReactDOM: {
-	createRoot: typeof createRoot
-	flushSync: typeof flushSync
-	render: typeof renderOrig
-};
-
 
 export function render(
 	component: Component,
@@ -45,21 +36,14 @@ export function render(
 	const renderable = getRenderable(component, props);
 
 	async function render() {
-		if (isFunction(ReactDOM.createRoot)) {
-			// React 18
-			ReactDOM.createRoot(container, {
-				identifierPrefix: process.env.R4X_APP_NAME // Resolved compiletime
-			}).render(renderable);
-		} else {
-			ReactDOM.render(renderable, container); // React 17
-		}
+		createRoot(container, {
+			identifierPrefix: process.env.R4X_APP_NAME // Resolved compiletime
+		}).render(renderable);
 	}
 
 	if (hasRegions) {
 		// Or postfill will run before the DOM is populated
-		ReactDOM.flushSync(() => {
-			render();
-		});
+		flushSync(() => render());
 		postFillRegions(props, isDevMode);
 	} else {
 		render();
