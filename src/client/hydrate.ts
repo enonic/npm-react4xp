@@ -4,7 +4,7 @@ import type {
 } from './index.d';
 
 
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import {getContainer} from './getContainer';
 import {getRenderable} from './getRenderable';
