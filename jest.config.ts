@@ -1,3 +1,5 @@
+import ReactDOM from 'react-dom';
+
 export default {
 	collectCoverageFrom: [
 		'src/**/*.ts'
@@ -21,6 +23,13 @@ export default {
 
 	// testEnvironment: 'jsdom', // Doesn't change Uncovered Lines
 	testEnvironment: 'node',
+
+	// add window and external react for client tests
+	globals: {
+		window: {
+			ReactDOM: ReactDOM,
+		},
+	},
 
 	testMatch: [
 		'<rootDir>/test/**/*.(spec|test).{ts,tsx}'

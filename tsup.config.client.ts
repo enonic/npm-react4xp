@@ -1,13 +1,15 @@
 import manifestPlugin from 'esbuild-plugin-manifest';
-import { isAbsolute, join } from 'path';
+import globalPluginPkg from 'esbuild-plugin-external-global';
+import {isAbsolute, join} from 'path';
 // import { print } from 'q-i';
-import { defineConfig, type Options } from 'tsup';
-import { LIBRARY_NAME } from './src/constants.runtime';
-import { DIR_PATH_RELATIVE_BUILD_ASSETS_R4X } from './src/constants.buildtime';
-import { camelize } from './src/util/camelize';
-import { ucFirst } from './src/util/ucFirst';
+import {defineConfig, type Options} from 'tsup';
+import {LIBRARY_NAME} from './src/constants.runtime';
+import {DIR_PATH_RELATIVE_BUILD_ASSETS_R4X} from './src/constants.buildtime';
+import {camelize} from './src/util/camelize';
+import {ucFirst} from './src/util/ucFirst';
 
-interface MyOptions extends Options {
+interface MyOptions
+	extends Options {
 	env?: {
 		R4X_APP_NAME?: string
 		R4X_CLIENT_NAME?: string
@@ -32,7 +34,7 @@ export default defineConfig((options: MyOptions) => {
 		options.env = {};
 	}
 	options.env.R4X_APP_NAME = process.env.R4X_APP_NAME;
-	options.env.R4X_LIBRARY_NAME = `${ucFirst(camelize(process.env.R4X_APP_NAME,/\./g))}${LIBRARY_NAME}`;
+	options.env.R4X_LIBRARY_NAME = `${ucFirst(camelize(process.env.R4X_APP_NAME, /\./g))}${LIBRARY_NAME}`;
 	options.env.R4X_CLIENT_NAME = `${options.env.R4X_LIBRARY_NAME}Client`;
 	// print(options, { maxItems: Infinity });
 
@@ -52,6 +54,11 @@ export default defineConfig((options: MyOptions) => {
 			// ]
 		},
 		esbuildPlugins: [
+			globalPluginPkg.externalGlobalPlugin({
+				'react': 'window.React',
+				'react-dom': 'window.ReactDOM',
+				'react-dom/client': 'window.ReactDOM'
+			}),
 			manifestPlugin({
 				extensionless: 'input',
 				filename: 'client.manifest.json',
