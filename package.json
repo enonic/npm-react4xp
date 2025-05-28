@@ -4,7 +4,8 @@
     "url": "https://github.com/enonic/npm-react4xp/issues"
   },
   "contributors": [
-    "Christian Westgaard <cwe@enonic.com>"
+    "Christian Westgaard",
+    "Pavel Milkevich"
   ],
   "dependencies": {
     "@babel/cli": "^7",
