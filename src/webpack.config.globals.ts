@@ -13,31 +13,19 @@
 
 import {statSync} from 'fs';
 
-import {
-	isAbsolute,
-	join,
-	resolve
-} from 'path';
+import {isAbsolute, join, resolve} from 'path';
 
 import Chunks2json from 'chunks-2-json-webpack-plugin';
 import FileManagerPlugin from 'filemanager-webpack-plugin';
 //import * as CoreWebPlugin from '@mrhenry/core-web';
-
-import {
-	DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
-	GLOBALS_DEFAULT,
-	FILE_NAME_R4X_CONFIG_JS
-} from './constants.buildtime';
+import {DIR_PATH_RELATIVE_BUILD_ASSETS_R4X, GLOBALS_DEFAULT, FILE_NAME_R4X_CONFIG_JS} from './constants.buildtime';
 
 import {GLOBALS_FILENAME} from './constants.runtime';
 
 import {generateTempES6SourceAndGetFilename} from './globals/generateTempES6SourceAndGetFilename';
 
 import {makeVerboseLogger} from './util/makeVerboseLogger';
-import webpackLogLevel, {
-	R4X_BUILD_LOG_LEVEL,
-	WEBPACK_STATS_LOG_LEVEL
-} from './util/webpackLogLevel';
+import webpackLogLevel, {R4X_BUILD_LOG_LEVEL, WEBPACK_STATS_LOG_LEVEL} from './util/webpackLogLevel';
 //import {toStr} from './util/toStr';
 
 
@@ -227,6 +215,10 @@ export default (
 		plugins,
 
 		resolve: {
+			alias: {
+				// Graalvm works with server-side version only!
+				"html-dom-parser": resolve(DIR_PATH_ABSOLUTE_BUILD_SYSTEM, 'node_modules/html-dom-parser/lib/server/html-to-dom.js'),
+			},
 			extensions: ['.ts', '.tsx', '.es6', '.es', '.jsx', '.js', '.json'],
 			modules: [
 				// Tell webpack what directories should be searched when resolving

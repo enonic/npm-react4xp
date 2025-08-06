@@ -19,6 +19,7 @@ export const GLOBALS_DEFAULT = {
 	react: 'React',
 	'react-dom': 'ReactDOM',
 	'react-dom/server': 'ReactDOMServer',
+	'html-react-parser': 'HTMLReactParser'		// Adding it to globals to make sure we use server-side version of html-dom-parser dependency
 } as const;
 
 export const FILE_NAME_R4X_CONFIG_JS = 'react4xp.config.js';

@@ -1,25 +1,14 @@
-import type { LoaderContext } from '@rspack/core';
-import type { Environment } from './index.d';
-import type {
-	EntrySet,
-	SymlinksUnderR4xRoot
-} from './buildComponents/index.d';
+import {LoaderContext} from '@rspack/core';
+import type {Environment} from './index.d';
+import type {EntrySet, SymlinksUnderR4xRoot} from './buildComponents/index.d';
 
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
-import { StatsWriterPlugin } from 'webpack-stats-plugin';
+import {StatsWriterPlugin} from 'webpack-stats-plugin';
 
-import {
-	isAbsolute,
-	join,
-	parse,
-	resolve,
-	sep
-} from 'path';
-import {
-	basename as posixBasename
-} from 'node:path/posix';
+import {isAbsolute, join, parse, resolve, sep} from 'path';
+import {basename as posixBasename} from 'node:path/posix';
 
-import { statSync } from 'fs';
+import {statSync} from 'fs';
 
 import {
 	DIR_PATH_RELATIVE_BUILD_ASSETS_R4X,
@@ -30,24 +19,17 @@ import {
 	FILE_NAME_R4X_CONFIG_JS,
 	FILE_NAME_WEBPACK_CONFIG_R4X_JS
 } from './constants.buildtime';
-import {
-	COMPONENT_STATS_FILENAME,
-	ENTRIES_FILENAME,
-	LIBRARY_NAME
-} from './constants.runtime';
-import { getEntries } from './buildComponents/getEntries';
-import { makeExclusionsRegexpString } from './buildComponents/makeExclusionsRegexpString';
-import { normalizeDirList } from './buildComponents/normalizeDirList';
-import { camelize } from './util/camelize';
-import { isSet } from './util/isSet';
-import { makeVerboseLogger } from './util/makeVerboseLogger';
+import {COMPONENT_STATS_FILENAME, ENTRIES_FILENAME, LIBRARY_NAME} from './constants.runtime';
+import {getEntries} from './buildComponents/getEntries';
+import {makeExclusionsRegexpString} from './buildComponents/makeExclusionsRegexpString';
+import {normalizeDirList} from './buildComponents/normalizeDirList';
+import {camelize} from './util/camelize';
+import {isSet} from './util/isSet';
+import {makeVerboseLogger} from './util/makeVerboseLogger';
 // import { toStr } from './util/toStr';
-import webpackLogLevel, {
-	R4X_BUILD_LOG_LEVEL,
-	WEBPACK_STATS_LOG_LEVEL
-} from './util/webpackLogLevel';
-import { ucFirst } from './util/ucFirst';
-import { regexpEscape } from './util/regexpEscape';
+import webpackLogLevel, {R4X_BUILD_LOG_LEVEL, WEBPACK_STATS_LOG_LEVEL} from './util/webpackLogLevel';
+import {ucFirst} from './util/ucFirst';
+import {regexpEscape} from './util/regexpEscape';
 
 
 const slashCode = "/".charCodeAt(0);
@@ -734,6 +716,10 @@ export default (env: Environment = {}) => {
 		},
 
 		output: {
+			// When supporting browsers where an automatic publicPath is not supported you must specify an output.publicPath manually via configuration",
+			// or pass an empty string ("") and set the __webpack_public_path__ variable from your code to use your own logic.',
+			publicPath: '',
+
 			path: DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X, // <-- Sets the base url for plugins and other target dirs. Note the use of {{assetUrl}} in index.html (or index.ejs).
 
 			// https://webpack.js.org/guides/build-performance/#output-without-path-info
@@ -819,6 +805,10 @@ export default (env: Environment = {}) => {
 		], // plugins
 
 		resolve: {
+			alias: {
+				// Graalvm works with server-side version only!
+				"html-dom-parser": resolve(DIR_PATH_ABSOLUTE_BUILD_SYSTEM, 'node_modules/html-dom-parser/lib/server/html-to-dom.js'),
+			},
 			extensions: [
 				'.tsx',
 				'.jsx',
