@@ -5,3 +5,5 @@ export {
 	LIBRARY_NAME,
 	R4X_TARGETSUBDIR
 } from './constants.runtime'
+
+export {getPublicPath} from './globals/getPublicPath';
