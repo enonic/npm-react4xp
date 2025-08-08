@@ -36,8 +36,12 @@ const slashCode = "/".charCodeAt(0);
 const backslashCode = "\\".charCodeAt(0);
 
 const isInside = (path: string, parent: string) => {
-	if (!path.startsWith(parent)) return false;
-	if (path.length === parent.length) return true;
+	if (!path.startsWith(parent)) {
+		return false;
+	}
+	if (path.length === parent.length) {
+		return true;
+	}
 	const charCode = path.charCodeAt(parent.length);
 	return charCode === slashCode || charCode === backslashCode;
 };
@@ -47,7 +51,8 @@ export default (env: Environment = {}) => {
 	const R4X_DIR_PATH_ABSOLUTE_PROJECT = process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
 	// console.debug('R4X_DIR_PATH_ABSOLUTE_PROJECT', R4X_DIR_PATH_ABSOLUTE_PROJECT);
 	if (!isAbsolute(R4X_DIR_PATH_ABSOLUTE_PROJECT)) {
-		throw new Error(`System environment variable $R4X_DIR_PATH_ABSOLUTE_PROJECT:${R4X_DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
+		throw new Error(
+			`System environment variable $R4X_DIR_PATH_ABSOLUTE_PROJECT:${R4X_DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
 	}
 
 	if (!process.env.R4X_APP_NAME) {
@@ -110,15 +115,15 @@ export default (env: Environment = {}) => {
 			}
 			if (isSet(config.entryExtensions)) {
 				environmentObj.entryExtStringArray = config.entryExtensions
-				.map((ext) => ext.trim())
-				.map((ext) => ext.replace(/^\./, ""))
-				.filter((ext) => !!ext);;
+					.map((ext) => ext.trim())
+					.map((ext) => ext.replace(/^\./, ""))
+					.filter((ext) => !!ext);
 			}
 			if (isSet(config.entryExtensionWhitelist)) {
 				environmentObj.entryExtWhiteListArray = config.entryExtensionWhitelist
-				.map((ext) => ext.trim())
-				.map((ext) => ext.replace(/^\./, ""))
-				.filter((ext) => !!ext);;
+					.map((ext) => ext.trim())
+					.map((ext) => ext.replace(/^\./, ""))
+					.filter((ext) => !!ext);
 			}
 			if (config.globals) {
 				EXTERNALS = Object.assign(config.globals, EXTERNALS);
@@ -174,13 +179,13 @@ export default (env: Environment = {}) => {
 			//console.debug('overridden', overridden); // function
 
 			if (typeof overridden === "object") {
-			overrideCallback = () => overridden;
+				overrideCallback = () => overridden;
 			} else if (typeof overridden === "function") {
-			overrideCallback = overridden;
+				overrideCallback = overridden;
 			} else {
-			throw Error(
-				`Optional overrideComponentWebpack (${filePathAbsoluteWebpackOverride}) doesn't seem to default-export an object or a (env, config) => config function. Should either export a webpack-config-style object directly, OR take an env object and a webpack-config-type object 'config' as arguments, then manipulate or replace config, then return it.`
-			);
+				throw Error(
+					`Optional overrideComponentWebpack (${filePathAbsoluteWebpackOverride}) doesn't seem to default-export an object or a (env, config) => config function. Should either export a webpack-config-style object directly, OR take an env object and a webpack-config-type object 'config' as arguments, then manipulate or replace config, then return it.`
+				);
 			}
 		}
 	} catch (e) {
@@ -222,20 +227,20 @@ export default (env: Environment = {}) => {
 	);
 	if (symlinksUnderReact4xpRootArray.length) {
 		console.warn(
-		`Warning: ${
-			symlinksUnderReact4xpRootArray.length
-		} chunkDir(s) / entryDir(s) in react4xp.config.js are symlinks that lead inside the folder structure below the React4xp root (${DIR_PATH_ABSOLUTE_SRC_R4X}). This could cause a mess in React4xp's entry/chunk structure, so I hope you know what you're doing. These are: '${
-			symlinksUnderReact4xpRootArray.join("', '")}'`
+			`Warning: ${
+				symlinksUnderReact4xpRootArray.length
+			} chunkDir(s) / entryDir(s) in react4xp.config.js are symlinks that lead inside the folder structure below the React4xp root (${DIR_PATH_ABSOLUTE_SRC_R4X}). This could cause a mess in React4xp's entry/chunk structure, so I hope you know what you're doing. These are: '${
+				symlinksUnderReact4xpRootArray.join("', '")}'`
 		);
 	}
 	const duplicates = chunkDirs.filter((dir) => entryDirs.indexOf(dir) !== -1);
 	if (duplicates.length) {
 		throw Error(
-		`${
-			duplicates.length
-		} directories in ${FILE_PATH_ABSOLUTE_R4X_CONFIG_JS} are listed both as chunkDirs and entryDirs. Bad items are: '${duplicates.join(
-			"', '"
-		)}'`
+			`${
+				duplicates.length
+			} directories in ${FILE_PATH_ABSOLUTE_R4X_CONFIG_JS} are listed both as chunkDirs and entryDirs. Bad items are: '${duplicates.join(
+				"', '"
+			)}'`
 		);
 	}
 
@@ -243,28 +248,28 @@ export default (env: Environment = {}) => {
 	const tooGeneralPaths = DIR_PATH_ABSOLUTE_SRC_SITE.split(sep).reduce((accum, current) => {
 		const longestPath = accum.slice(-1)[0];
 		if (longestPath === undefined) {
-		return [siteParsed.root];
+			return [siteParsed.root];
 		}
 		const dir = resolve(longestPath, current);
 		if (dir !== DIR_PATH_ABSOLUTE_SRC_SITE) {
-		accum.push(dir);
+			accum.push(dir);
 		}
 		return accum;
 	}, []);
 
 	const badChunkDirs = chunkDirs.filter(
 		(dir) =>
-		dir === DIR_PATH_ABSOLUTE_SRC_SITE ||
-		dir.startsWith(DIR_PATH_ABSOLUTE_SRC_SITE) ||
-		tooGeneralPaths.indexOf(dir) !== -1
+			dir === DIR_PATH_ABSOLUTE_SRC_SITE ||
+			dir.startsWith(DIR_PATH_ABSOLUTE_SRC_SITE) ||
+			tooGeneralPaths.indexOf(dir) !== -1
 	);
 	if (badChunkDirs.length) {
 		throw Error(
-		`${
-			badChunkDirs.length
-		} chunkDir(s) in react4xp.config.js are illegal or too general. For chunkDirs, avoid 'src/main/resources/site' in general, and direct references to its parent directories. Bad items are: '${badChunkDirs.join(
-			"', '"
-		)}'`
+			`${
+				badChunkDirs.length
+			} chunkDir(s) in react4xp.config.js are illegal or too general. For chunkDirs, avoid 'src/main/resources/site' in general, and direct references to its parent directories. Bad items are: '${badChunkDirs.join(
+				"', '"
+			)}'`
 		);
 	}
 	const badEntryDirs = entryDirs.filter(
@@ -272,11 +277,11 @@ export default (env: Environment = {}) => {
 	);
 	if (badEntryDirs.length) {
 		throw Error(
-		`${
-			badEntryDirs.length
-		} entryDir(s) in react4xp.config.js are too general. For entryDirs, avoid direct references to the XP folder 'src/main/resources/' or its direct parent directories. Bad items are: '${badEntryDirs.join(
-			"', '"
-		)}'`
+			`${
+				badEntryDirs.length
+			} entryDir(s) in react4xp.config.js are too general. For entryDirs, avoid direct references to the XP folder 'src/main/resources/' or its direct parent directories. Bad items are: '${badEntryDirs.join(
+				"', '"
+			)}'`
 		);
 	}
 
@@ -319,42 +324,42 @@ export default (env: Environment = {}) => {
 
 	if (entries && typeof entries !== "object") {
 		console.error(
-		`react4xp-build-entriesandchunks used entrySets (${
-			Array.isArray(entrySets)
-			? `array[${entrySets.length}]`
-			: typeof entrySets +
-				(entrySets && typeof entrySets === "object"
-				? ` with keys: ${JSON.stringify(Object.keys(entrySets))}`
-				: "")
-		}): ${JSON.stringify(entrySets, null, 2)}`
+			`react4xp-build-entriesandchunks used entrySets (${
+				Array.isArray(entrySets)
+				? `array[${entrySets.length}]`
+				: typeof entrySets +
+				  (entrySets && typeof entrySets === "object"
+				   ? ` with keys: ${JSON.stringify(Object.keys(entrySets))}`
+				   : "")
+			}): ${JSON.stringify(entrySets, null, 2)}`
 		);
 		throw Error(
-		`react4xp-build-components can't continue. The sub-package react4xp-build-entriesandchunks seems to have produced malformed 'entries' data, using the entrysets above. Run the build with -i for more info. Expected an object, but got ${
-			Array.isArray(entries)
-			? `array[${(entries as unknown[]).length}]`
-			: typeof entries +
-				(entries && typeof entries === "object"
-				? ` with keys: ${JSON.stringify(Object.keys(entries))}`
-				: "")
-		}: ${JSON.stringify(entries)}`
+			`react4xp-build-components can't continue. The sub-package react4xp-build-entriesandchunks seems to have produced malformed 'entries' data, using the entrysets above. Run the build with -i for more info. Expected an object, but got ${
+				Array.isArray(entries)
+				? `array[${(entries as unknown[]).length}]`
+				: typeof entries +
+				  (entries && typeof entries === "object"
+				   ? ` with keys: ${JSON.stringify(Object.keys(entries))}`
+				   : "")
+			}: ${JSON.stringify(entries)}`
 		);
 	}
 
 	if (!entries || !Object.keys(entries).length) {
 		console.error(
-		`react4xp-build-entriesandchunks used entrySets (${
-			Array.isArray(entrySets)
-			? `array[${entrySets.length}]`
-			: typeof entrySets +
-				(entrySets && typeof entrySets === "object"
-				? ` with keys: ${JSON.stringify(Object.keys(entrySets))}`
-				: "")
-		}): ${JSON.stringify(entrySets, null, 2)}`
+			`react4xp-build-entriesandchunks used entrySets (${
+				Array.isArray(entrySets)
+				? `array[${entrySets.length}]`
+				: typeof entrySets +
+				  (entrySets && typeof entrySets === "object"
+				   ? ` with keys: ${JSON.stringify(Object.keys(entrySets))}`
+				   : "")
+			}): ${JSON.stringify(entrySets, null, 2)}`
 		);
 		throw Error(
-		`react4xp-build-components can't continue - no entries were found (entries=${JSON.stringify(
-			entries
-		)}). Tip: the combination of entryDirs and entryExtensions in react4xp.config.js was resolved to the entrySets above. Check the content of those directories, with those file extensions. Add entry source files, adjust react4xp.config.js, or run the build with -i for more info.`
+			`react4xp-build-components can't continue - no entries were found (entries=${JSON.stringify(
+				entries
+			)}). Tip: the combination of entryDirs and entryExtensions in react4xp.config.js was resolved to the entrySets above. Check the content of those directories, with those file extensions. Add entry source files, adjust react4xp.config.js, or run the build with -i for more info.`
 		);
 	}
 
@@ -515,8 +520,8 @@ export default (env: Environment = {}) => {
 				//
 				// This ensures that any chunk or entry dir inside the SRC_R4X is excluded from the react4xp bundle/chunk.
 				// Because the content of those folders become their own bundles/chunks.
-				? `[\\\\/](?!(?:${react4xpExclusions})[\\\\/])`
-				: "[\\\\/]"
+			? `[\\\\/](?!(?:${react4xpExclusions})[\\\\/])`
+			: "[\\\\/]"
 		}`,
 		// reuseExistingChunk: true,
 		usedExports: !DEVMODE, // Disable slow tree-shaking in dev mode
@@ -525,11 +530,11 @@ export default (env: Environment = {}) => {
 	// Finally, turn all generated regexp strings in each .test attribute into actual RegExp's:
 	Object.keys(cacheGroups).forEach((key) => {
 		cacheGroups[key] = {
-		...cacheGroups[key],
-		test:
-			typeof cacheGroups[key].test === "string"
-			? new RegExp(cacheGroups[key].test)
-			: cacheGroups[key].test,
+			...cacheGroups[key],
+			test:
+				typeof cacheGroups[key].test === "string"
+				? new RegExp(cacheGroups[key].test)
+				: cacheGroups[key].test,
 		};
 	});
 
@@ -558,14 +563,18 @@ export default (env: Environment = {}) => {
 							resolve(true);
 						} else {
 							if (environmentObj.entryExtStringArray.includes(extension)) {
-								reject(new Error(`Importing from React4XP entries is not allowed! Illegal import: "${importPath}". Please move shared code outside site and entrydirs.`));
+								reject(new Error(
+									`Importing from React4XP entries is not allowed! Illegal import: "${importPath}". Please move shared code outside site and entrydirs.`));
 							} else {
-								console.warn(`Unknown extension: "${extension}" not in entryExtensions:"${environmentObj.entryExtStringArray.join(',')}" nor WHITELIST: "${environmentObj.entryExtWhiteListArray.join(',')}"`);
+								console.warn(
+									`Unknown extension: "${extension}" not in entryExtensions:"${environmentObj.entryExtStringArray.join(
+										',')}" nor WHITELIST: "${environmentObj.entryExtWhiteListArray.join(',')}"`);
 								resolve(true);
 							}
 						}
 					} else { // no extension
-						reject(new Error(`Importing from React4XP entries is not allowed! Illegal import: "${importPath}". Please move shared code outside site and entrydirs.`));
+						reject(new Error(
+							`Importing from React4XP entries is not allowed! Illegal import: "${importPath}". Please move shared code outside site and entrydirs.`));
 					}
 				} else {
 					resolve(true);
@@ -643,17 +652,17 @@ export default (env: Environment = {}) => {
 						// parseMap: true,
 						sourceMaps: !DEVMODE
 					}
-				},{
+				}, {
 					loader: 'restrict-imports-loader',
 					options: {
 						severity: "error",
 						rules: [
-						{
-							restricted: decider
-						},
-					  ],
+							{
+								restricted: decider
+							},
+						],
 					},
-				  },], // use
+				},], // use
 			}], // rules
 		}, // module
 
@@ -731,7 +740,7 @@ export default (env: Environment = {}) => {
 
 			filename: DEVMODE ? '[name].js' : '[name].[contenthash].js',
 			library: {
-				name: [`${appName}${LIBRARY_NAME}`,"[name]"],
+				name: [`${appName}${LIBRARY_NAME}`, "[name]"],
 				type: "global",
 			},
 			globalObject: "globalThis",
@@ -759,9 +768,9 @@ export default (env: Environment = {}) => {
 				],
 				transform(data) {
 					data.assets = data.assets.map(({
-						info,
-						name
-					}) => {
+													   info,
+													   name
+												   }) => {
 						const transformedAssets: {
 							name: string
 							info?: {
@@ -785,8 +794,8 @@ export default (env: Environment = {}) => {
 					Object.keys(data.entrypoints).forEach((key) => {
 						filteredEntrypoints[key] = {
 							// name, // this is just the same as key
-							assets: data.entrypoints[key].assets.map(({	name }) => ({ name })),
-							auxiliaryAssets: data.entrypoints[key].auxiliaryAssets.map(({ name }) => ({ name })),
+							assets: data.entrypoints[key].assets.map(({name}) => ({name})),
+							auxiliaryAssets: data.entrypoints[key].auxiliaryAssets.map(({name}) => ({name})),
 							// NOTE: Currently not using these for anything:
 							// assetsSize
 							// auxiliaryAssetsSize
@@ -808,7 +817,10 @@ export default (env: Environment = {}) => {
 		resolve: {
 			alias: {
 				// Graalvm works with server-side version only!
-				"html-dom-parser": resolve(R4X_DIR_PATH_ABSOLUTE_PROJECT, 'node_modules/html-dom-parser/lib/server/html-to-dom.js'),
+				"html-dom-parser": [
+					resolve(R4X_DIR_PATH_ABSOLUTE_PROJECT, 'node_modules/html-dom-parser/lib/server/html-to-dom.js'),
+					resolve(DIR_PATH_ABSOLUTE_BUILD_SYSTEM, 'node_modules/html-dom-parser/lib/server/html-to-dom.js'),
+				]
 			},
 			extensions: [
 				'.tsx',

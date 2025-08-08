@@ -38,12 +38,13 @@ export default (
 	//console.debug('env', toStr(env));
 
 	const R4X_DIR_PATH_ABSOLUTE_PROJECT = process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
+	// console.debug('R4X_DIR_PATH_ABSOLUTE_PROJECT', R4X_DIR_PATH_ABSOLUTE_PROJECT);
 	if (!isAbsolute(R4X_DIR_PATH_ABSOLUTE_PROJECT)) {
 		throw new Error(`System environment variable R4X_DIR_PATH_ABSOLUTE_PROJECT:${R4X_DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
 	}
 
 	const DIR_PATH_ABSOLUTE_BUILD_SYSTEM = resolve(__dirname, '..');
-	//console.debug('DIR_PATH_ABSOLUTE_BUILD_SYSTEM', DIR_PATH_ABSOLUTE_BUILD_SYSTEM);
+	// console.debug('DIR_PATH_ABSOLUTE_BUILD_SYSTEM', DIR_PATH_ABSOLUTE_BUILD_SYSTEM);
 
 	const DIR_PATH_ABSOLUTE_BUILD_ASSETS_R4X = join(R4X_DIR_PATH_ABSOLUTE_PROJECT, DIR_PATH_RELATIVE_BUILD_ASSETS_R4X);
 
@@ -93,11 +94,11 @@ export default (
 	);
 	//console.debug('tempFileName', tempFileName);
 
-	const entry = tempFileName ? { globals: tempFileName } : {};
+	const entry = tempFileName ? {globals: tempFileName} : {};
 	// console.debug('entry', entry);
 
 	const plugins = tempFileName
-		? [
+					? [
 			new FileManagerPlugin({
 				events: {
 					onStart: {
@@ -123,7 +124,7 @@ export default (
 				filename: GLOBALS_FILENAME,
 			}),
 		]
-		: undefined;
+					: undefined;
 
 	return {
 		context: R4X_DIR_PATH_ABSOLUTE_PROJECT, // Used as default for resolve.roots
@@ -217,7 +218,10 @@ export default (
 		resolve: {
 			alias: {
 				// Graalvm works with server-side version only!
-				"html-dom-parser": resolve(R4X_DIR_PATH_ABSOLUTE_PROJECT, 'node_modules/html-dom-parser/lib/server/html-to-dom.js'),
+				"html-dom-parser": [
+					resolve(R4X_DIR_PATH_ABSOLUTE_PROJECT, 'node_modules/html-dom-parser/lib/server/html-to-dom.js'),
+					resolve(DIR_PATH_ABSOLUTE_BUILD_SYSTEM, 'node_modules/html-dom-parser/lib/server/html-to-dom.js'),
+				]
 			},
 			extensions: ['.ts', '.tsx', '.es6', '.es', '.jsx', '.js', '.json'],
 			modules: [
