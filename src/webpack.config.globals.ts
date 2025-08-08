@@ -217,7 +217,7 @@ export default (
 		resolve: {
 			alias: {
 				// Graalvm works with server-side version only!
-				"html-dom-parser": resolve(DIR_PATH_ABSOLUTE_BUILD_SYSTEM, 'node_modules/html-dom-parser/lib/server/html-to-dom.js'),
+				"html-dom-parser": resolve(R4X_DIR_PATH_ABSOLUTE_PROJECT, 'node_modules/html-dom-parser/lib/server/html-to-dom.js'),
 			},
 			extensions: ['.ts', '.tsx', '.es6', '.es', '.jsx', '.js', '.json'],
 			modules: [

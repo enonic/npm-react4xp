@@ -29,7 +29,7 @@
     "es6-set-and-map": "^1",
     "esbuild-plugin-external-global": "^1.0.1",
     "esbuild-plugin-manifest": "^1.0.1",
-    "filemanager-webpack-plugin": "^9",
+    "filemanager-webpack-plugin": "8.0.0",
     "globby": "^14.0.2",
     "prop-types": "^15",
     "properties": "^1.2.1",
@@ -100,9 +100,9 @@
   },
   "peerDependencies": {
     "@babel/plugin-transform-class-properties": "^7",
+    "html-react-parser": "*",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "html-react-parser": "*"
+    "react-dom": "^18.0.0"
   },
   "publishConfig": {
     "access": "public"
