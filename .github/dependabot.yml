@@ -1,4 +1,6 @@
 version: 2
+ignore:
+  - dependency-name: "filemanager-webpack-plugin"
 updates:
   - package-ecosystem: "npm"
     directory: "/"
