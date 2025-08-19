@@ -16,7 +16,6 @@ import {statSync} from 'fs';
 import {isAbsolute, join, resolve} from 'path';
 
 import Chunks2json from 'chunks-2-json-webpack-plugin';
-import FileManagerPlugin from 'filemanager-webpack-plugin';
 //import * as CoreWebPlugin from '@mrhenry/core-web';
 import {DIR_PATH_RELATIVE_BUILD_ASSETS_R4X, GLOBALS_DEFAULT, FILE_NAME_R4X_CONFIG_JS} from './constants.buildtime';
 
@@ -26,6 +25,9 @@ import {generateTempES6SourceAndGetFilename} from './globals/generateTempES6Sour
 
 import {makeVerboseLogger} from './util/makeVerboseLogger';
 import webpackLogLevel, {R4X_BUILD_LOG_LEVEL, WEBPACK_STATS_LOG_LEVEL} from './util/webpackLogLevel';
+// Starting from version 9 this plugin can't be imported in cjs build, so we use require() instead.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 //import {toStr} from './util/toStr';
 
 
