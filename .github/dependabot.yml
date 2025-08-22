@@ -1,11 +1,11 @@
 version: 2
-ignore:
-  - dependency-name: "filemanager-webpack-plugin"
 updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "filemanager-webpack-plugin"
     open-pull-requests-limit: 10
   - package-ecosystem: "github-actions"
     directory: "/"
