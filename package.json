@@ -30,7 +30,7 @@
     "esbuild-plugin-external-global": "^1.0.1",
     "esbuild-plugin-manifest": "^1.0.1",
     "filemanager-webpack-plugin": "^8.0.0",
-    "globby": "^15.0.0",
+    "globby": "^16.0.0",
     "prop-types": "^15",
     "properties": "^1.2.1",
     "q-i": "^2",
