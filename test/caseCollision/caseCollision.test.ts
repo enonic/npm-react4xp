@@ -13,7 +13,8 @@ describe('components', () => {
 				stdio: 'pipe'
 			});
 		} catch (e) {
-			expect(e.message.split(/\r?\n/)[1]).toEqual('Error: Entry name collision:ChUnKdIr!');
+			const errorLines = e.message.split(/\r?\n/);
+			expect(errorLines.find(line => line.startsWith("Error: Entry name collision:"))).toEqual('Error: Entry name collision:ChUnKdIr!');
 		}
 	});
 });

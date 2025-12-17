@@ -32,6 +32,9 @@ import {ucFirst} from './util/ucFirst';
 import {regexpEscape} from './util/regexpEscape';
 
 
+// @ts-ignore - require is available in CommonJS output
+const restrictImportsLoaderPath = typeof require !== 'undefined' ? require.resolve('restrict-imports-loader') : 'restrict-imports-loader';
+
 const slashCode = "/".charCodeAt(0);
 const backslashCode = "\\".charCodeAt(0);
 
@@ -653,7 +656,7 @@ export default (env: Environment = {}) => {
 						sourceMaps: !DEVMODE
 					}
 				}, {
-					loader: 'restrict-imports-loader',
+					loader: restrictImportsLoaderPath,
 					options: {
 						severity: "error",
 						rules: [
