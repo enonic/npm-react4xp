@@ -70,18 +70,16 @@ describe('components', () => {
 
 				{ "name": "vendors.js" }, // rspack added this line
 
-				// Rspack swapped the order of these two lines:
-				{ "name": "site/parts/allowedFunctionalJsx/entry.js" },
 				{ "name": "site/parts/allowedFunctionalJsx/entry.css" },
+				{ "name": "site/parts/allowedFunctionalJsx/entry.js" },
 			]);
 			expect(statsObject.entrypoints['site/parts/allowedFunctionalTsx/entry'].assets).toStrictEqual([
 				{ "name": "runtime.js" },
 
 				{ "name": "vendors.js" }, // rspack added this line
 
-				// Rspack swapped the order of these two lines:
-				{ "name": "site/parts/allowedFunctionalTsx/entry.js" },
 				{ "name": "site/parts/allowedFunctionalTsx/entry.css" },
+				{ "name": "site/parts/allowedFunctionalTsx/entry.js" },
 			]);
 			const css = `.bold {
   font-weight: bold;
