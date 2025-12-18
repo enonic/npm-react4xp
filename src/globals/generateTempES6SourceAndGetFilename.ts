@@ -57,10 +57,22 @@ export function generateTempES6SourceAndGetFilename(
 		globalsImports += `import ${globalsObj[key]} from '${key}';\n`;
 	});
 
+	// React 19: Import client-side functions from react-dom/client
+	// and merge them with ReactDOM to maintain backward compatibility
+	if (globalsObj['react-dom']) {
+		globalsImports += `import * as ReactDOMClient from 'react-dom/client';\n`;
+	}
+
 	globalsImports += `import {getPublicPath} from './index.js';\n`;
 
 	Object.keys(globalsObj).forEach((key) => {
-		globalsExports += `\tglobalThis.${globalsObj[key]} = ${globalsObj[key]};\n`;
+		const globalName = globalsObj[key];
+		// Special handling for ReactDOM to merge react-dom/client exports
+		if (key === 'react-dom' && globalName === 'ReactDOM') {
+			globalsExports += `\tglobalThis.${globalName} = Object.assign({}, ${globalName}, ReactDOMClient);\n`;
+		} else {
+			globalsExports += `\tglobalThis.${globalName} = ${globalName};\n`;
+		}
 	});
 
 	globalsExports += `\t
