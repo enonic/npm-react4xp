@@ -1,4 +1,4 @@
-name: Coverage
+name: Build
 
 on: [ push ]
 
@@ -24,9 +24,4 @@ jobs:
 
       - name: Test
         run: npm run test
-
-      - uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: false
 
