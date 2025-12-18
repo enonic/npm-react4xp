@@ -7,9 +7,14 @@ on:
 
 concurrency: release
 
+permissions:
+  id-token: write  # Required for OIDC
+  contents: write
+
 jobs:
 
-  build:
+  release:
+    name: Release
     runs-on: ubuntu-latest
 
     steps:
@@ -21,16 +26,26 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v6
         with:
-          node-version: '20.x'
+          node-version: '22.x'
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Set npm tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "NPM_TAG=latest" >> $GITHUB_ENV
+          else
+            echo "NPM_TAG=beta" >> $GITHUB_ENV
+          fi
 
       - name: Install Node Modules
         run: npm install
 
       - name: Publish
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm install -g npm@latest
+          npm ci
+          npm publish --tag $NPM_TAG
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
