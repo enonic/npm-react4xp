@@ -81,7 +81,7 @@
   },
   "peerDependencies": {
     "@babel/plugin-transform-class-properties": "^7",
-    "html-react-parser": "*",
+    "html-react-parser": "^5",
     "react": "^19",
     "react-dom": "^19"
   },
