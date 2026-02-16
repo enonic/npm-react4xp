@@ -36,7 +36,7 @@
     "@types/webpack-stats-plugin": "^0.3.5",
     "concurrently": "^9",
     "css-loader": "^7.1.2",
-    "eslint": "^9.23.0",
+    "eslint": "^10.0.0",
     "html-element": "^2.3.1",
     "jest": "^30",
     "jquery": "^4.0.0",
