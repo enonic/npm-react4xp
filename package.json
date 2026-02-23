@@ -26,7 +26,7 @@
   },
   "description": "Build tools for React4xp",
   "devDependencies": {
-    "@eslint/js": "^9.1.1",
+    "@eslint/js": "^10.0.1",
     "@jest/globals": "^30",
     "@mui/material": "^7.0.1",
     "@types/lodash": "^4.14.192",
