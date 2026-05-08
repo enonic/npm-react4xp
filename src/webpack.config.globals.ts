@@ -13,7 +13,7 @@
 
 import {statSync} from 'fs';
 
-import {isAbsolute, join, resolve} from 'path';
+import {join, resolve} from 'path';
 
 import Chunks2json from 'chunks-2-json-webpack-plugin';
 //import * as CoreWebPlugin from '@mrhenry/core-web';
@@ -37,11 +37,11 @@ export default (
 ) => {
 	//console.debug('env', toStr(env));
 
-	const R4X_DIR_PATH_ABSOLUTE_PROJECT = process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
-	// console.debug('R4X_DIR_PATH_ABSOLUTE_PROJECT', R4X_DIR_PATH_ABSOLUTE_PROJECT);
-	if (!isAbsolute(R4X_DIR_PATH_ABSOLUTE_PROJECT)) {
-		throw new Error(`System environment variable R4X_DIR_PATH_ABSOLUTE_PROJECT:${R4X_DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
+	if (!process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT) {
+		throw new Error(`System environment variable $R4X_DIR_PATH_ABSOLUTE_PROJECT is required!`);
 	}
+	const R4X_DIR_PATH_ABSOLUTE_PROJECT = resolve(process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT!);
+	// console.debug('R4X_DIR_PATH_ABSOLUTE_PROJECT', R4X_DIR_PATH_ABSOLUTE_PROJECT);
 
 	const DIR_PATH_ABSOLUTE_BUILD_SYSTEM = resolve(__dirname, '..');
 	// console.debug('DIR_PATH_ABSOLUTE_BUILD_SYSTEM', DIR_PATH_ABSOLUTE_BUILD_SYSTEM);

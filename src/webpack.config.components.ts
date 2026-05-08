@@ -5,7 +5,7 @@ import type {EntrySet, SymlinksUnderR4xRoot} from './buildComponents/index.d';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import {StatsWriterPlugin} from 'webpack-stats-plugin';
 
-import {isAbsolute, join, parse, resolve, sep} from 'path';
+import {join, parse, resolve, sep} from 'path';
 import {basename as posixBasename} from 'node:path/posix';
 
 import {statSync} from 'fs';
@@ -51,12 +51,11 @@ const isInside = (path: string, parent: string) => {
 
 
 export default (env: Environment = {}) => {
-	const R4X_DIR_PATH_ABSOLUTE_PROJECT = process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
-	// console.debug('R4X_DIR_PATH_ABSOLUTE_PROJECT', R4X_DIR_PATH_ABSOLUTE_PROJECT);
-	if (!isAbsolute(R4X_DIR_PATH_ABSOLUTE_PROJECT)) {
-		throw new Error(
-			`System environment variable $R4X_DIR_PATH_ABSOLUTE_PROJECT:${R4X_DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
+	if (!process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT) {
+		throw new Error(`System environment variable $R4X_DIR_PATH_ABSOLUTE_PROJECT is required!`);
 	}
+	const R4X_DIR_PATH_ABSOLUTE_PROJECT = resolve(process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT!);
+	// console.debug('R4X_DIR_PATH_ABSOLUTE_PROJECT', R4X_DIR_PATH_ABSOLUTE_PROJECT);
 
 	if (!process.env.R4X_APP_NAME) {
 		throw new Error(`System environment variable $R4X_APP_NAME is required!`);
