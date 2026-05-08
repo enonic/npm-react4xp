@@ -22,10 +22,11 @@ interface MyOptions
 export default defineConfig((options: MyOptions) => {
 	// print(process.env, { maxItems: Infinity });
 	// print(options, { maxItems: Infinity });
-	if (!process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT) {
+	const envProjectPath = process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
+	if (!envProjectPath) {
 		throw new Error(`System environment variable $R4X_DIR_PATH_ABSOLUTE_PROJECT is required!`);
 	}
-	const R4X_DIR_PATH_ABSOLUTE_PROJECT = resolve(process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT!);
+	const R4X_DIR_PATH_ABSOLUTE_PROJECT = resolve(envProjectPath);
 
 	if (!process.env.R4X_APP_NAME) {
 		throw new Error(`System environment variable $R4X_APP_NAME is required!`);
