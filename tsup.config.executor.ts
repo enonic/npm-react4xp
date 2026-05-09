@@ -12,7 +12,7 @@ interface MyOptions extends Options {
 	env?: {
 		R4X_APP_NAME?: string
 		R4X_CLIENT_NAME?: string
-		R4X_DIR_PATH_ABSOLUTE_PROJECT?: string
+		R4X_DIR_PATH_PROJECT?: string
 		R4X_LIBRARY_NAME?: string
 	}
 }
@@ -20,9 +20,9 @@ interface MyOptions extends Options {
 
 export default defineConfig((options: MyOptions) => {
 	// print(options, { maxItems: Infinity });
-	const envProjectPath = process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
+	const envProjectPath = process.env.R4X_DIR_PATH_PROJECT;
 	if (!envProjectPath) {
-		throw new Error(`System environment variable $R4X_DIR_PATH_ABSOLUTE_PROJECT is required!`);
+		throw new Error(`System environment variable $R4X_DIR_PATH_PROJECT is required!`);
 	}
 	const R4X_DIR_PATH_ABSOLUTE_PROJECT = resolve(envProjectPath);
 
