@@ -22,9 +22,9 @@ const FILE_STEM_NASHORNPOLYFILLS_USERADDED = 'nashornPolyfills.userAdded';
 export default (
 	// env: Environment = {}
 ) => {
-	const envProjectPath = process.env.R4X_DIR_PATH_PROJECT;
+	const envProjectPath = process.env.R4X_PROJECT_PATH || process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
 	if (!envProjectPath) {
-		throw new Error(`System environment variable $R4X_DIR_PATH_PROJECT is required!`);
+		throw new Error(`System environment variable $R4X_PROJECT_PATH is required!`);
 	}
 	const R4X_DIR_PATH_ABSOLUTE_PROJECT = resolve(envProjectPath);
 	// console.debug('R4X_DIR_PATH_ABSOLUTE_PROJECT', R4X_DIR_PATH_ABSOLUTE_PROJECT);
