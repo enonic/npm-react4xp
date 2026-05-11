@@ -14,9 +14,9 @@ import buildWebpackOptions from '../dist/webpack.config.components';
 
 process.env.NODE_ENV='development';
 process.env.R4X_APP_NAME='com.enonic.app.whatever';
-process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT=`${process.env.INIT_CWD}/test/importRestrictions`;
+process.env.R4X_PROJECT_PATH='test/importRestrictions';
 
-const DIR_R4X = join(process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT, 'build/resources/main/r4xAssets');
+const DIR_R4X = join(process.cwd(), 'test/importRestrictions', 'build/resources/main/r4xAssets');
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -26,7 +26,7 @@ describe('components', () => {
 		await sleep(2000);
 	});
 	test('import restrictions', () => {
-		// console.log(process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT);
+		// console.log(process.env.R4X_PROJECT_PATH);
 		const options = buildWebpackOptions(process.env as Environment);
 		// print(options);
 		rspack(options, function(err, stats) {

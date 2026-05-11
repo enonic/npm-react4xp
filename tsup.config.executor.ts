@@ -1,5 +1,5 @@
 import manifestPlugin from 'esbuild-plugin-manifest';
-import { isAbsolute, join } from 'path';
+import { join, resolve } from 'path';
 // import { print } from 'q-i';
 import { defineConfig, type Options } from 'tsup';
 import { DIR_PATH_RELATIVE_BUILD_ASSETS_R4X } from './src/constants.buildtime';
@@ -12,7 +12,7 @@ interface MyOptions extends Options {
 	env?: {
 		R4X_APP_NAME?: string
 		R4X_CLIENT_NAME?: string
-		R4X_DIR_PATH_ABSOLUTE_PROJECT?: string
+		R4X_PROJECT_PATH?: string
 		R4X_LIBRARY_NAME?: string
 	}
 }
@@ -20,10 +20,11 @@ interface MyOptions extends Options {
 
 export default defineConfig((options: MyOptions) => {
 	// print(options, { maxItems: Infinity });
-	const R4X_DIR_PATH_ABSOLUTE_PROJECT = process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT
-	if (!R4X_DIR_PATH_ABSOLUTE_PROJECT || !isAbsolute(R4X_DIR_PATH_ABSOLUTE_PROJECT)) {
-		throw new Error(`env.R4X_DIR_PATH_ABSOLUTE_PROJECT:${R4X_DIR_PATH_ABSOLUTE_PROJECT} not an absolute path!`);
+	const envProjectPath = process.env.R4X_PROJECT_PATH || process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
+	if (!envProjectPath) {
+		throw new Error(`System environment variable $R4X_PROJECT_PATH is required!`);
 	}
+	const R4X_DIR_PATH_ABSOLUTE_PROJECT = resolve(envProjectPath);
 
 	if (!process.env.R4X_APP_NAME) {
 		throw new Error(`System environment variable $R4X_APP_NAME is required!`);
