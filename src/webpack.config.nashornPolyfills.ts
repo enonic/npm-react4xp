@@ -177,6 +177,10 @@ export default (
 					resolve(DIR_PATH_ABSOLUTE_BUILD_SYSTEM, 'node_modules/html-dom-parser/lib/server/html-to-dom.js'),
 				]
 			},
+			// Use edge-light condition to resolve React packages for SSR compatibility
+			// This resolves react-dom/server to server.edge.js instead of server.browser.js
+			// See: https://github.com/facebook/react/issues/31827
+			conditionNames: ['edge-light', 'worker', 'import', 'module', 'require', 'default'],
 			extensions: ['.ts', '.tsx', '.es6', '.es', '.jsx', '.js', '.json'],
 			modules: [
 				// Tell webpack what directories should be searched when resolving
