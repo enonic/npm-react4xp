@@ -14,7 +14,11 @@ export default tseslint.config(
 			'examples/**/*.*',
 			'test/**/*.*',
 			'**/*.cjs',
-			// 'tsup.config.client.ts',
+			// Config files are not part of the linted source.
+			'**/webpack.config.*',
+			'tsup.config.*.ts',
+			'tsup.config.ts',
+			'eslint.config.mjs',
 		],
 	},
 
