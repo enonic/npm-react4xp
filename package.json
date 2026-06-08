@@ -9,8 +9,8 @@
   ],
   "dependencies": {
     "@babel/core": "^7",
-    "@rspack/cli": "^1",
-    "@rspack/core": "^1",
+    "@rspack/cli": "^2",
+    "@rspack/core": "^2",
     "@swc/core": "^1.3.42",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "chunks-2-json-webpack-plugin": "^1",
@@ -94,7 +94,6 @@
   },
   "scripts": {
     "build": "tsup",
-    "build:react4xp": "npm run tsup:client && npm run webpack:components && npm run tsup:executor && npm run webpack:globals && npm run webpack:nashornPolyfills",
     "build:test:client": "cross-env R4X_APP_NAME=com.enonic.app.whatever R4X_PROJECT_PATH=test/components NODE_ENV=development npm run tsup:client",
     "build:test:components": "cross-env NODE_ENV=development R4X_APP_NAME=com.enonic.app.whatever R4X_PROJECT_PATH=test/components npm run webpack:components",
     "build:test:executor": "cross-env R4X_APP_NAME=com.enonic.app.whatever R4X_PROJECT_PATH=test/components npm run tsup:executor",
@@ -102,7 +101,7 @@
     "build:test:nashornPolyfills": "cross-env R4X_PROJECT_PATH=test/nashornPolyfills npm run webpack:nashornPolyfills",
     "clean": "rimraf bin build coverage dist test/caseCollision/build test/components/build test/constants/build test/constants/output test/nashornPolyfills/build test/importRestrictions/build",
     "lint": "eslint",
-    "prebuild": "npm run clean",
+    "prebuild": "npm install && npm run lint && npm run clean",
     "prepack": "npm run test",
     "prepublishOnly": "node setversion.cjs",
     "pretest": "npm run build && concurrently -c auto -g --timings npm:build:test:*",

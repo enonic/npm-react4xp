@@ -44,7 +44,7 @@ export const normalizeDirList = (
               let dir = resolve(join(dirPathAbsoluteSrcR4x, orig));
               //console.debug('normalizeDirList() dir', toStr(dir)); // /<...>/src/main/resources/react4xp/lodash
 
-              let realDir = null;
+              let realDir;
               try {
                 realDir = realpathSync(dir);
               } catch (e) {
@@ -66,7 +66,7 @@ export const normalizeDirList = (
                 return null;
               }
 
-              let symlinkTargetDir = null;
+              let symlinkTargetDir;
               let lstat = lstatSync(dir);
               while (lstat.isSymbolicLink()) {
                 symlinkTargetDir = readlinkSync(dir);

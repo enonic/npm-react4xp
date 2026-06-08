@@ -96,7 +96,8 @@ export function loadScripts(
           document.getElementsByTagName("head")[0].appendChild(script as ScriptElement);
         } catch (e) {
           throw new Error(
-            `Error occurred while trying to load script from url [ ${url} ]: ${e.message}`
+            `Error occurred while trying to load script from url [ ${url} ]: ${e.message}`,
+            { cause: e }
           );
         }
       } else {

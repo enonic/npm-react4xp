@@ -30,7 +30,7 @@ export const getPublicPath = (appName: string): string | undefined => {
 			let data = {} as Data;
 			try {
 				data = JSON.parse(json as string);
-			} catch (e) {
+			} catch {
 				console.error('Something went wrong while trying to JSON.parse(' + json + ')');
 			}
 			//console.debug('data', data);
