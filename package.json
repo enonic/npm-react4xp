@@ -43,7 +43,7 @@
     "lodash": "^4.17.21",
     "rimraf": "^6.0.1",
     "sass": "^1.97.0",
-    "sass-loader": "^16.0.6",
+    "sass-loader": "^17.0.0",
     "stylus": "^0.64.0",
     "stylus-loader": "^8.1.2",
     "ts-jest": "^29",
