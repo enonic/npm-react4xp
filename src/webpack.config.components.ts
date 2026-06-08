@@ -50,7 +50,7 @@ const isInside = (path: string, parent: string) => {
 };
 
 
-export default (env: Environment = {}) => {
+const webpackConfigComponents = (env: Environment = {}) => {
 	const envProjectPath = process.env.R4X_PROJECT_PATH || process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
 	if (!envProjectPath) {
 		throw new Error(`System environment variable $R4X_PROJECT_PATH is required!`);
@@ -762,6 +762,14 @@ export default (env: Environment = {}) => {
 			new CaseSensitivePathsPlugin(),
 			new StatsWriterPlugin({
 				filename: COMPONENT_STATS_FILENAME,
+				stats: {
+					all: false,
+					assets: true,
+					assetsByChunkName: true,
+					entrypoints: true,
+					errors: true,
+					warnings: true,
+				},
 				fields: [
 					'assetsByChunkName',
 					'assets',
@@ -797,8 +805,8 @@ export default (env: Environment = {}) => {
 					Object.keys(data.entrypoints).forEach((key) => {
 						filteredEntrypoints[key] = {
 							// name, // this is just the same as key
-							assets: data.entrypoints[key].assets.map(({name}) => ({name})),
-							auxiliaryAssets: data.entrypoints[key].auxiliaryAssets.map(({name}) => ({name})),
+							assets: (data.entrypoints[key].assets || []).map(({name}) => ({name})),
+							auxiliaryAssets: (data.entrypoints[key].auxiliaryAssets || []).map(({name}) => ({name})),
 							// NOTE: Currently not using these for anything:
 							// assetsSize
 							// auxiliaryAssetsSize
@@ -886,3 +894,5 @@ export default (env: Environment = {}) => {
 
 	return outputConfig;
 };
+
+export = webpackConfigComponents;

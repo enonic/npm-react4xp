@@ -32,7 +32,7 @@ import FileManagerPlugin from 'filemanager-webpack-plugin';
 // TODO: Find a good pattern to control output name for chunks,
 // allowing for multi-chunks and still doing it in one pass (only one globals.json)
 
-export default (
+const webpackConfigGlobals = (
 	// env: Environment = {}
 ) => {
 	//console.debug('env', toStr(env));
@@ -268,3 +268,5 @@ export default (
 
 	}; // return
 };
+
+export = webpackConfigGlobals;

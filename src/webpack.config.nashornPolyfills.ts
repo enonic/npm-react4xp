@@ -19,7 +19,7 @@ import webpackLogLevel, {R4X_BUILD_LOG_LEVEL, WEBPACK_STATS_LOG_LEVEL} from './u
 const FILE_STEM_NASHORNPOLYFILLS_USERADDED = 'nashornPolyfills.userAdded';
 
 
-export default (
+const webpackConfigNashornPolyfills = (
 	// env: Environment = {}
 ) => {
 	const envProjectPath = process.env.R4X_PROJECT_PATH || process.env.R4X_DIR_PATH_ABSOLUTE_PROJECT;
@@ -223,3 +223,5 @@ export default (
 	//console.debug('webpackConfigObjectNashornPolyfills', webpackConfigObjectNashornPolyfills);
 	return webpackConfigObjectNashornPolyfills;
 };
+
+export = webpackConfigNashornPolyfills;

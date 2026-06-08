@@ -262,14 +262,14 @@ describe('externals', () => {
 	global.eval(readFileSync(FILE_PATH_VENDORS_JS).toString()); // jquery requires window
 
 	it('lodash should NOT exist in the vendors bundle', () => {
-		// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
-		expect(Array.isArray(webpackChunkComEnonicAppWhateverReact4xp)).toBeTruthy();
+		// @ts-expect-error TS2304: Cannot find name 'rspackChunkComEnonicAppWhateverReact4xp'.
+		expect(Array.isArray(rspackChunkComEnonicAppWhateverReact4xp)).toBeTruthy();
 
 		let found = false;
-		// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
-		outer: for (let i = 0; i < webpackChunkComEnonicAppWhateverReact4xp.length; i++) {
-			// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
-			const anArray = webpackChunkComEnonicAppWhateverReact4xp[i];
+		// @ts-expect-error TS2304: Cannot find name 'rspackChunkComEnonicAppWhateverReact4xp'.
+		outer: for (let i = 0; i < rspackChunkComEnonicAppWhateverReact4xp.length; i++) {
+			// @ts-expect-error TS2304: Cannot find name 'rspackChunkComEnonicAppWhateverReact4xp'.
+			const anArray = rspackChunkComEnonicAppWhateverReact4xp[i];
 			expect(Array.isArray(anArray)).toBeTruthy();
 			middle: for (let j = 0; j < anArray.length; j++) {
 				const arrayOrObject = anArray[j];
@@ -288,14 +288,14 @@ describe('externals', () => {
 	});
 
 	it('jquery should NOT exist in the vendors bundle', () => {
-		// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
-		expect(Array.isArray(webpackChunkComEnonicAppWhateverReact4xp)).toBeTruthy();
+		// @ts-expect-error TS2304: Cannot find name 'rspackChunkComEnonicAppWhateverReact4xp'.
+		expect(Array.isArray(rspackChunkComEnonicAppWhateverReact4xp)).toBeTruthy();
 
 		let found = false;
-		// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
-		outer: for (let i = 0; i < webpackChunkComEnonicAppWhateverReact4xp.length; i++) {
-			// @ts-expect-error TS2304: Cannot find name 'webpackChunkComEnonicAppWhateverReact4xp'.
-			const anArray = webpackChunkComEnonicAppWhateverReact4xp[i];
+		// @ts-expect-error TS2304: Cannot find name 'rspackChunkComEnonicAppWhateverReact4xp'.
+		outer: for (let i = 0; i < rspackChunkComEnonicAppWhateverReact4xp.length; i++) {
+			// @ts-expect-error TS2304: Cannot find name 'rspackChunkComEnonicAppWhateverReact4xp'.
+			const anArray = rspackChunkComEnonicAppWhateverReact4xp[i];
 			expect(Array.isArray(anArray)).toBeTruthy();
 			middle: for (let j = 0; j < anArray.length; j++) {
 				const arrayOrObject = anArray[j];
