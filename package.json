@@ -94,6 +94,7 @@
   },
   "scripts": {
     "build": "tsup",
+    "build:react4xp": "npm run tsup:client && npm run webpack:components && npm run tsup:executor && npm run webpack:globals && npm run webpack:nashornPolyfills",
     "build:test:client": "cross-env R4X_APP_NAME=com.enonic.app.whatever R4X_PROJECT_PATH=test/components NODE_ENV=development npm run tsup:client",
     "build:test:components": "cross-env NODE_ENV=development R4X_APP_NAME=com.enonic.app.whatever R4X_PROJECT_PATH=test/components npm run webpack:components",
     "build:test:executor": "cross-env R4X_APP_NAME=com.enonic.app.whatever R4X_PROJECT_PATH=test/components npm run tsup:executor",
