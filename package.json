@@ -45,7 +45,7 @@
     "sass": "^1.97.0",
     "sass-loader": "^17.0.0",
     "stylus": "^0.64.0",
-    "stylus-loader": "^8.1.2",
+    "stylus-loader": "^9.0.0",
     "ts-jest": "^29",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2",
