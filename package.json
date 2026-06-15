@@ -16,7 +16,7 @@
     "chunks-2-json-webpack-plugin": "^1",
     "cross-env": "^10.0.0",
     "esbuild-plugin-external-global": "^1.0.1",
-    "esbuild-plugin-manifest": "^1.0.1",
+    "esbuild-plugin-manifest": "^1.0.5",
     "filemanager-webpack-plugin": "^9.0.0",
     "globby": "^16.0.0",
     "q-i": "^2",
@@ -48,7 +48,7 @@
     "stylus-loader": "^9.0.0",
     "ts-jest": "^29",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.2",
+    "typescript": "^5.9.3",
     "typescript-eslint": "^8.0.0"
   },
   "engines": {
@@ -75,6 +75,9 @@
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "name": "@enonic/react4xp",
+  "overrides": {
+    "esbuild": "^0.28.1"
+  },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "*",
     "@rspack/binding-linux-x64-gnu": "2.0.8"
