@@ -26,7 +26,7 @@ describe('client', () => {
 		const exists = existsSync(FILE_PATH_JS);
 		expect(exists).toBeTruthy();
 	});
-	it('the js file export the correct global, and have hydrate, render and renderWithDependencies', () => {
+	it('the js file export the correct global, and have hydrate and render', () => {
 		const script = readFileSync(FILE_PATH_JS).toString();
 		global.eval(script);
 		// @ts-expect-error TS2304: Cannot find name 'ComEnonicAppWhateverReact4xpClient'.
@@ -35,7 +35,5 @@ describe('client', () => {
 		expect(!!ComEnonicAppWhateverReact4xpClient.hydrate).toBeTruthy();
 		// @ts-expect-error TS2304: Cannot find name 'ComEnonicAppWhateverReact4xpClient'.
 		expect(!!ComEnonicAppWhateverReact4xpClient.render).toBeTruthy();
-		// @ts-expect-error TS2304: Cannot find name 'ComEnonicAppWhateverReact4xpClient'.
-		expect(!!ComEnonicAppWhateverReact4xpClient.renderWithDependencies).toBeTruthy();
 	});
 });
