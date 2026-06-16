@@ -1,5 +1,4 @@
 export {
 	hydrate,
-	render,
-	renderWithDependencies
+	render
 } from './client/index'; // Without index tsup thinks it's cyclic...
