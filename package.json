@@ -97,13 +97,12 @@
   },
   "scripts": {
     "build": "tsup",
-    "build:react4xp": "npm run tsup:client && npm run webpack:components && npm run tsup:executor && npm run webpack:globals && npm run webpack:nashornPolyfills",
+    "build:react4xp": "npm run tsup:client && npm run webpack:components && npm run tsup:executor && npm run webpack:globals",
     "build:test:client": "cross-env R4X_APP_NAME=com.enonic.app.whatever R4X_PROJECT_PATH=test/components NODE_ENV=development npm run tsup:client",
     "build:test:components": "cross-env NODE_ENV=development R4X_APP_NAME=com.enonic.app.whatever R4X_PROJECT_PATH=test/components npm run webpack:components",
     "build:test:executor": "cross-env R4X_APP_NAME=com.enonic.app.whatever R4X_PROJECT_PATH=test/components npm run tsup:executor",
     "build:test:globals": "cross-env R4X_PROJECT_PATH=test/components npm run webpack:globals",
-    "build:test:nashornPolyfills": "cross-env R4X_PROJECT_PATH=test/nashornPolyfills npm run webpack:nashornPolyfills",
-    "clean": "rimraf bin build coverage dist test/caseCollision/build test/components/build test/constants/build test/constants/output test/nashornPolyfills/build test/importRestrictions/build",
+    "clean": "rimraf bin build coverage dist test/caseCollision/build test/components/build test/constants/build test/constants/output test/importRestrictions/build",
     "lint": "eslint",
     "prebuild": "npm install && npm run lint && npm run clean",
     "prepack": "npm run test",
@@ -113,8 +112,7 @@
     "tsup:client": "npx tsup --config tsup.config.client.ts",
     "tsup:executor": "npx tsup --config tsup.config.executor.ts",
     "webpack:components": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" rspack --config dist/webpack.config.components.js",
-    "webpack:globals": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" rspack --config dist/webpack.config.globals.js",
-    "webpack:nashornPolyfills": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" rspack --config dist/webpack.config.nashornPolyfills.js"
+    "webpack:globals": "cross-env TS_NODE_PROJECT=\"tsconfig.browserAndGraalJS.json\" rspack --config dist/webpack.config.globals.js"
   },
   "version": "0.0.0"
 }
