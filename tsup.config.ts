@@ -7,8 +7,7 @@ export default defineConfig(() => ({
 		'src/constants.runtime.ts',
 		'src/index.ts',
 		'src/webpack.config.components.ts',
-		'src/webpack.config.globals.ts',
-		'src/webpack.config.nashornPolyfills.ts'
+		'src/webpack.config.globals.ts'
 	],
 	format: [
 		'cjs',

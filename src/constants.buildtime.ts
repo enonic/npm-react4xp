@@ -23,5 +23,4 @@ export const GLOBALS_DEFAULT = {
 } as const;
 
 export const FILE_NAME_R4X_CONFIG_JS = 'react4xp.config.js';
-export const FILE_NAME_R4X_NASHORN_POLYFILLS = 'react4xpNashornPolyfills.es6';
 export const FILE_NAME_WEBPACK_CONFIG_R4X_JS = 'webpack.config.react4xp.js';

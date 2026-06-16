@@ -1,5 +1,5 @@
 {
-	// This file is used when builing React4XP components, globals and nashornPolyfills
+	// This file is used when building React4XP components and globals
 	"compilerOptions": {
 
 		"module": "ES2015", // Graal-JS supports ESM?
